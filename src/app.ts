@@ -8,6 +8,7 @@
 import express from 'express';
 import { config } from './common/config';
 import healthRouter from './routers/health';
+import newsRouter from './routers/news';
 
 const app: any = express();
 
@@ -24,6 +25,9 @@ indexRouter.get('/', (req: any, res: any) => {
 
 // Health page displays info about uptime and data base connection
 indexRouter.use(config.baseUrl.health, healthRouter);
+
+// News router
+indexRouter.use(config.baseUrl.news, newsRouter);
 
 // Configure router to be based on a path where it's deployed, default: '/'
 app.use(config.baseUrl.index, indexRouter);
