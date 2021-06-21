@@ -9,4 +9,4 @@ router.get('/', (req: any, res: any) => {
     .then((data: any) => res.status(200).send(data));
 });
 
-export default router; 
+export default router;  
