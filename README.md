@@ -1,2 +1,2 @@
 # news-scraper
-News scraping server
+This API lists news headlines and descriptions in various categories.
