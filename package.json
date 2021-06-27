@@ -19,9 +19,11 @@
   },
   "homepage": "https://github.com/spookydoodle/news-scraper#readme",
   "devDependencies": {
+    "@types/log-symbols": "^3.0.0",
     "@types/node": "^15.12.4",
     "@types/prettier": "^2.3.0",
     "husky": "^6.0.0",
+    "log-symbols": "^5.0.0",
     "prettier": "^2.3.2",
     "ts-node-dev": "^1.1.6",
     "typescript": "^4.3.4"
