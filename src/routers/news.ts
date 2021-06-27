@@ -5,6 +5,10 @@ import { SearchResult } from "../logic/types";
 const router = express.Router();
 
 router.get("/", (req: any, res: any) => {
+    res.status(200).send("Hello from the News API");
+});
+
+router.get("/general", (req: any, res: any) => {
   getResults("news", 1, "lang_en").then((data: SearchResult) =>
     res.status(200).send(data)
   );

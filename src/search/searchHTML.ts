@@ -52,7 +52,7 @@ export const getResults = (
 
       // Otherwise display results
       // return data;// For troubleshooting display HTML body data
-      return { err: null, results };
+      return { error: null, results };
     })
     .catch((err: { message?: string }) => ({
       error: err?.message || "Unknown error",
