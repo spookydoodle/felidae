@@ -1,6 +1,5 @@
 // This class is created to schedule automatic data updates and writing them in the data base
 // Data should be updated every 24 hours
-// import logSymbols from "log-symbols";
 import createLogMsg from "../utils/createLogMsg";
 import { SearchResult, UpdateTime } from "../logic/types";
 
@@ -136,7 +135,7 @@ class Scraper {
     createLogMsg(
       `*** Data fetch for ${this.name} is set and will check if it needs to update every ${intervalText}.`
     );
-    
+
     createLogMsg(
       `*** New data will be fetched every day at around: ${this.updateTimes
         .map((arr) => arr.join(":"))
