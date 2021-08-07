@@ -21,7 +21,7 @@ class Scraper {
     name: string,
     requestFunc: any,
     updateTimes = [[2, 0, 0, 0] as UpdateTime],
-    checkUpdateFreq = 5 * 60 * 1000, // every 5 min = 5 * 60 (s) * 1000 (ms)
+    checkUpdateFreq = 1 * 60 * 60 * 1000, // every hour = 1 (h) * 60 (min) * 60 (s) * 1000 ms
     initDelay: number = 0
   ) {
     this.name = name;
