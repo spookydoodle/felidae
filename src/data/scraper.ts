@@ -1,13 +1,8 @@
 // This class is created to schedule automatic data updates and writing them in the data base
 // Data should be updated every 24 hours
 // import logSymbols from "log-symbols";
+import logSymbols from '../utils/log-symbols';
 import { SearchResult, UpdateTime } from "../logic/types";
-
-const logSymbols = {
-  error: ' ! ',
-  success: ' ok ',
-  info: ' i '
-}
 
 class Scraper {
   name: string;
@@ -106,7 +101,7 @@ class Scraper {
           console.log(
             `[${new Date().toLocaleString()}] ${
               logSymbols.success
-            } Data fetch for ${this.name} finished. Data saved in the data base.`
+            } Data for ${this.name} successfully saved in the data base.`
           );
           
           // Update last update date on successful database update and unlock the queue
