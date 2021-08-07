@@ -20,7 +20,9 @@
   },
   "homepage": "https://github.com/spookydoodle/news-scraper#readme",
   "devDependencies": {
+    "@babel/core": "^7.15.0",
     "@babel/preset-env": "^7.15.0",
+    "@babel/preset-typescript": "^7.15.0",
     "@types/jest": "^26.0.24",
     "@types/log-symbols": "^3.0.0",
     "@types/node": "^15.12.4",
