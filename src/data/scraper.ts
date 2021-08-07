@@ -11,13 +11,16 @@ class Scraper {
   checkUpdateFreq: any;
   isUpdateInProgress: boolean;
   lastUpdate: Date | null;
-  lastError: string | null;
+  lastError: {
+    time: Date;
+    message: string | null;
+  } | null;
 
   constructor(
     name: string,
     requestFunc: any,
     updateTimes = [[2, 0, 0, 0] as UpdateTime],
-    checkUpdateFreq = 5 * 60 * 1000,
+    checkUpdateFreq = 5 * 60 * 1000, // every 5 min = 5 * 60 (s) * 1000 (ms)
     initDelay: number
   ) {
     this.name = name;
@@ -39,8 +42,8 @@ class Scraper {
     console.log(
       `[${new Date().toLocaleString()}] ${
         bool === true
-          ? `-> Initiating data load for ${this.name}. New requests won't be sent to data center until this one is finshed.`
-          : `-> Data load process for ${this.name} finished, new data may be requested again.`
+          ? `-> Initiating data fetch for ${this.name}. New requests won't be sent until this one is finished.`
+          : `-> Data fetch process for ${this.name} finished, new data may be requested again.`
       }`
     );
 
@@ -78,7 +81,7 @@ class Scraper {
     // If one update is in progress, do not initiate another
     if (this.shouldUpdateData() && !this.isUpdateInProgress) {
       console.log(
-        `[${new Date().toLocaleString()}] Updatiing data for ${this.name}...`
+        `[${new Date().toLocaleString()}] Fetching data for ${this.name}...`
       );
 
       this.setUpdateInProgress(true);
@@ -86,10 +89,41 @@ class Scraper {
       this.requestFunc()
         .then((response: any) => {
           console.log(
-            `[${new Date().toLocaleString()}] ${logSymbols.success} Data for ${
-              this.name
-            } updated.`
+            `[${new Date().toLocaleString()}] ${
+              logSymbols.success
+            } Data fetch for ${this.name} finished. Saving in the data base...`
           );
+
+          // Check response code and update last error if errors occur; otherwise write in the data base.
+          if (response.status !== 200) {
+            console.log(
+              `[${new Date().toLocaleString()}] ${
+                logSymbols.error
+              } Error fetching data for ${this.name}.`
+            );
+
+            this.lastError = {
+              time: new Date(),
+              message: response.error,
+            };
+          } 
+          // If successful fetch, add entries to data base
+          else {
+            // TODO: Add data base
+            console.log('TODOTODOTODO TODOTODOTODO TODOTODOTODO TODOTODOTODO');
+
+            console.log(
+              `[${new Date().toLocaleString()}] ${
+                logSymbols.success
+              } Data fetch for ${this.name} finished. Data saved in the data base.`
+            );
+            
+            // Update last update date on successful database update
+            this.lastUpdate = new Date();
+          }
+
+          // Unblock the queue
+          this.setUpdateInProgress(false);
         })
         .catch((error: any) => {
           console.log(
@@ -98,6 +132,9 @@ class Scraper {
             } Fatal error updating data for ${this.name}.`
           );
           console.error(error);
+
+          // Unblock the queue
+          this.setUpdateInProgress(false);
 
           return;
         });
@@ -118,14 +155,14 @@ class Scraper {
         ? `${n / 1000} seconds`
         : `${n} milliseconds`;
     console.log(
-      `[${new Date().toLocaleString()}] *** Data updates for ${
+      `[${new Date().toLocaleString()}] *** Data fetch for ${
         this.name
       } is set and will check if it needs to update every ${intervalText}.`
     );
     console.log(
-      `[${new Date().toLocaleString()}] *** Data will be updated every day at around: ${this.updateTimes
+      `[${new Date().toLocaleString()}] *** New data will be fetched every day at around: ${this.updateTimes
         .map((arr) => arr.join(":"))
-        .join(", ")} (H:M:S:MS).`
+        .join(", ")} (H:M:S:MS) UTC.`
     );
 
     const interval = setInterval(() => {
