@@ -1,3 +1,9 @@
+/* 
+  Below tests should not mock the fetch but actually pull data from the source
+  to make sure that the source's DOM structure is still the same
+  and returns expected values. If the test fails, the scrape method might need to 
+  adjust the query selectors accordingly.
+*/
 import { getResults } from "../search/searchHTML";
 
 test("Check result objects key structure", async () => {
@@ -10,24 +16,3 @@ test("Check result objects key structure", async () => {
   expect(heading.length > 0).toBe(true);
   expect(url.substring(0, 4)).toBe("http");
 });
-
-// test("Check if heading type is string", async () => {
-//   const res = await getResults();
-//   const heading = res.results[0].heading;
-
-//   expect(typeof heading).toBe("string");
-// });
-
-// test("Check if heading length > 0", async () => {
-//   const res = await getResults();
-//   const heading = res.results[0].heading;
-
-//   expect(heading.length > 0).toBe(true);
-// });
-
-// test("Check that url starts with 'http'", async () => {
-//   const res = await getResults();
-//   const url = res.results[0].url;
-
-//   expect(url.substring(0, 4)).toBe("http");
-// });
