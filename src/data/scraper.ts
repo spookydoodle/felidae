@@ -1,12 +1,11 @@
 // This class is created to schedule automatic data updates and writing them in the data base
 // Data should be updated every 24 hours
-import { getAllResults } from "../search/searchHTML";
 import logSymbols from "log-symbols";
 import { SearchResult, UpdateTime } from "../logic/types";
 
 class Scraper {
   name: string;
-  requestFunc: any;
+  requestFunc: () => Promise<SearchResult>;
   updateTimes: Array<UpdateTime>;
   initDelay: number;
   checkUpdateFreq: any;
