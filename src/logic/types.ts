@@ -14,6 +14,6 @@ interface SearchResult {
   results: Array<Heading>;
 }
 
-type UpdateTime = Array<number>;
+type UpdateTime = [number, number, number, number];
 
 export { ResultPage, Lang, Heading, SearchResult, UpdateTime };
