@@ -1,7 +1,13 @@
 // This class is created to schedule automatic data updates and writing them in the data base
 // Data should be updated every 24 hours
-import logSymbols from "log-symbols";
+// import logSymbols from "log-symbols";
 import { SearchResult, UpdateTime } from "../logic/types";
+
+const logSymbols = {
+  error: ' ! ',
+  success: ' ok ',
+  info: ' i '
+}
 
 class Scraper {
   name: string;
@@ -21,7 +27,7 @@ class Scraper {
     requestFunc: any,
     updateTimes = [[2, 0, 0, 0] as UpdateTime],
     checkUpdateFreq = 5 * 60 * 1000, // every 5 min = 5 * 60 (s) * 1000 (ms)
-    initDelay: number
+    initDelay: number = 0
   ) {
     this.name = name;
     this.requestFunc = requestFunc;
@@ -94,46 +100,34 @@ class Scraper {
             } Data fetch for ${this.name} finished. Saving in the data base...`
           );
 
-          // Check response code and update last error if errors occur; otherwise write in the data base.
-          if (response.status !== 200) {
-            console.log(
-              `[${new Date().toLocaleString()}] ${
-                logSymbols.error
-              } Error fetching data for ${this.name}.`
-            );
+          // TODO: Add data base
+          console.log('TODOTODOTODO TODOTODOTODO TODOTODOTODO TODOTODOTODO');
 
-            this.lastError = {
-              time: new Date(),
-              message: response.error,
-            };
-          } 
-          // If successful fetch, add entries to data base
-          else {
-            // TODO: Add data base
-            console.log('TODOTODOTODO TODOTODOTODO TODOTODOTODO TODOTODOTODO');
-
-            console.log(
-              `[${new Date().toLocaleString()}] ${
-                logSymbols.success
-              } Data fetch for ${this.name} finished. Data saved in the data base.`
-            );
-            
-            // Update last update date on successful database update
-            this.lastUpdate = new Date();
-          }
-
-          // Unblock the queue
+          console.log(
+            `[${new Date().toLocaleString()}] ${
+              logSymbols.success
+            } Data fetch for ${this.name} finished. Data saved in the data base.`
+          );
+          
+          // Update last update date on successful database update and unlock the queue
+          this.lastUpdate = new Date();
           this.setUpdateInProgress(false);
         })
         .catch((error: any) => {
           console.log(
             `[${new Date().toLocaleString()}] ${
               logSymbols.error
-            } Fatal error updating data for ${this.name}.`
+            } Error fetching data for ${this.name}.`
           );
-          console.error(error);
+          console.log(error);
 
-          // Unblock the queue
+          // Update last error on the object
+          this.lastError = {
+            time: new Date(),
+            message: error,
+          };
+
+          // Unlock the queue
           this.setUpdateInProgress(false);
 
           return;
