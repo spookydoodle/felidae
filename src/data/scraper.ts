@@ -1,7 +1,7 @@
 // This class is created to schedule automatic data updates and writing them in the data base
 // Data should be updated every 24 hours
 // import logSymbols from "log-symbols";
-import logSymbols from '../utils/log-symbols';
+import createLogMsg from "../utils/createLogMsg";
 import { SearchResult, UpdateTime } from "../logic/types";
 
 class Scraper {
@@ -40,12 +40,10 @@ class Scraper {
   }
 
   setUpdateInProgress = (bool: boolean) => {
-    console.log(
-      `[${new Date().toLocaleString()}] ${
-        bool === true
-          ? `-> Initiating data fetch for ${this.name}. New requests won't be sent until this one is finished.`
-          : `-> Data fetch process for ${this.name} finished, new data may be requested again.`
-      }`
+    createLogMsg(
+      bool === true
+        ? `-> Initiating data fetch for ${this.name}. New requests won't be sent until this one is finished.`
+        : `-> Data fetch process for ${this.name} finished, new data may be requested again.`
     );
 
     this.isUpdateInProgress = bool;
@@ -81,40 +79,32 @@ class Scraper {
   updateData = () => {
     // If one update is in progress, do not initiate another
     if (this.shouldUpdateData() && !this.isUpdateInProgress) {
-      console.log(
-        `[${new Date().toLocaleString()}] Fetching data for ${this.name}...`
-      );
+      createLogMsg(`Fetching data for ${this.name}...`);
 
       this.setUpdateInProgress(true);
 
       this.requestFunc()
         .then((response: any) => {
-          console.log(
-            `[${new Date().toLocaleString()}] ${
-              logSymbols.success
-            } Data fetch for ${this.name} finished. Saving in the data base...`
+          createLogMsg(
+            `Data fetch for ${this.name} finished. Saving in the data base...`,
+            "success"
           );
 
           // TODO: Add data base
-          console.log('TODOTODOTODO TODOTODOTODO TODOTODOTODO TODOTODOTODO');
+          console.log("TODOTODOTODO TODOTODOTODO TODOTODOTODO TODOTODOTODO");
 
-          console.log(
-            `[${new Date().toLocaleString()}] ${
-              logSymbols.success
-            } Data for ${this.name} successfully saved in the data base.`
+          createLogMsg(
+            `Data for ${this.name} successfully saved in the data base.`,
+            "success"
           );
-          
+
           // Update last update date on successful database update and unlock the queue
           this.lastUpdate = new Date();
           this.setUpdateInProgress(false);
         })
         .catch((error: any) => {
-          console.log(
-            `[${new Date().toLocaleString()}] ${
-              logSymbols.error
-            } Error fetching data for ${this.name}.`
-          );
-          console.log(error);
+          createLogMsg(`Error fetching data for ${this.name}.`, "error");
+          createLogMsg(error, "error");
 
           // Update last error on the object
           this.lastError = {
@@ -128,10 +118,9 @@ class Scraper {
           return;
         });
     } else {
-      console.log(
-        `[${new Date().toLocaleString()}] ${
-          logSymbols.info
-        } Data does not need to be updated yet for ${this.name}.`
+      createLogMsg(
+        `Data does not need to be updated yet for ${this.name}.`,
+        "info"
       );
     }
   };
@@ -143,13 +132,13 @@ class Scraper {
         : n > 1000
         ? `${n / 1000} seconds`
         : `${n} milliseconds`;
-    console.log(
-      `[${new Date().toLocaleString()}] *** Data fetch for ${
-        this.name
-      } is set and will check if it needs to update every ${intervalText}.`
+
+    createLogMsg(
+      `*** Data fetch for ${this.name} is set and will check if it needs to update every ${intervalText}.`
     );
-    console.log(
-      `[${new Date().toLocaleString()}] *** New data will be fetched every day at around: ${this.updateTimes
+    
+    createLogMsg(
+      `*** New data will be fetched every day at around: ${this.updateTimes
         .map((arr) => arr.join(":"))
         .join(", ")} (H:M:S:MS) UTC.`
     );
