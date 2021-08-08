@@ -8,11 +8,14 @@ import { ResultPage, Lang, SearchResult } from "../logic/types";
 const axios = require("axios").default;
 const { JSDOM } = jsdom;
 
+const defaultQuery = "news";
+const defaultLang = "lang_en";
+
 // Get raw HTML and pull HTML elements properties. Only 20 results returned.
 export const getResults = (
-  query: string = "news",
+  query: string = defaultQuery,
   resultPageIndex: ResultPage = 1,
-  lang: Lang = "lang_en"
+  lang: Lang = defaultLang,
 ): Promise<SearchResult> => {
   // https://stenevang.wordpress.com/2013/02/22/google-advanced-power-search-url-request-parameters/
   // q - query;
@@ -38,7 +41,7 @@ export const getResults = (
 
       // Expected result set is 10
       // TODO: Set up automated check for length 10
-      const results = transform(headlines);
+      const results = transform(headlines).map(headline => ({ category: query === "news" ? "general" : query, lang, ...headline}));
 
       // return data; // For troubleshooting display HTML body data
       return {
@@ -57,9 +60,9 @@ export const getResults = (
 };
 
 export const getAllResults = (
-  query: string = "business",
+  query: string = defaultQuery,
   maxPageIndex: ResultPage = 10,
-  lang: Lang = "lang_en"
+  lang: Lang = defaultLang,
 ): Promise<SearchResult> => {
   // Get data for pages from 1 to maxPageIndex
   const requests = new Array(maxPageIndex)

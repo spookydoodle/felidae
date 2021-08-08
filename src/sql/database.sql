@@ -2,6 +2,8 @@ CREATE DATABASE scraper;
 
 CREATE TABLE newsheadlines(
     id SERIAL PRIMARY KEY,
+    category VARCHAR(20),
+    lang VARCHAR(7),
     headline VARCHAR(150),
     provider VARCHAR(40),
     url VARCHAR(255),
