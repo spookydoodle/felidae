@@ -1,6 +1,6 @@
 import logSymbols from "./logSymbols";
 
-type LogSymbol = "info" | "warning" | "success" | "error";
+type LogSymbol = keyof typeof logSymbols;
 
 export default (msg: string, logSymbol?: LogSymbol) => {
   const newMsg = `[${new Date().toLocaleString()}] ${

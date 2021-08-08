@@ -1,6 +1,6 @@
 // TODO: test 1: Check for an empty array = Google changed table structure in html
 // TODO: test 2: checl for an array of empty objects = Google changed row structure in the image results table
-
+import createLogMsg from '../utils/createLogMsg'
 import { AxiosResponse } from "axios";
 // import fetch from 'node-fetch';
 import jsdom from "jsdom";
@@ -23,7 +23,7 @@ export const getResults = (
   const url = `https://www.google.com/search?q=${query}&tbm=nws&start=${
     (resultPageIndex - 1) * 10
   }&lr=${lang}&tbs=qdr:d,sbd:0`;
-  console.log(url);
+  // console.log(url);
 
   // Request url and transform results to the right format
   return axios
@@ -32,11 +32,9 @@ export const getResults = (
       const { document } = new JSDOM(data).window;
 
       // The news headings are provided in the div list in the #main div, starting from the third div
-      const headings = [
-        ...document.querySelectorAll(
-          "#main > div:nth-child(n+2) > div > div:nth-child(1) > a"
-        ),
-      ];
+      const selector =
+        "#main > div:nth-child(n+2) > div > div:nth-child(1) > a";
+      const headings = [...document.querySelectorAll(selector)];
 
       // Expected result set is 10
       // TODO: Set up automated check for length 10
@@ -49,7 +47,7 @@ export const getResults = (
       };
     })
     .catch((err: { message?: string }) => {
-      console.log(`Error fetching data from ${url}: ${err?.message}`);
+      createLogMsg(`Error fetching data from ${url}: ${err?.message}`, "error");
 
       return {
         error: err?.message || "Unknown error",
@@ -79,7 +77,7 @@ export const getAllResults = (
         .flat(), // Promise.all returns an array of arrays so needs to be flattened
     }))
     .catch((err: { message?: string }) => {
-      console.log(`Error fetching all data: ${err?.message}`);
+      createLogMsg(`Error fetching all data: ${err?.message}`, "error");
 
       return {
         error: err?.message || "Unknown error",
