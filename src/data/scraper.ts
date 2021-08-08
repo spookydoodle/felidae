@@ -1,11 +1,12 @@
 // This class is created to schedule automatic data updates and writing them in the data base
 // Data should be updated every 24 hours
 import createLogMsg from "../utils/createLogMsg";
-import { SearchResult, UpdateTime } from "../logic/types";
+import { SearchResult, UpdateTime, Headlines } from "../logic/types";
 
 class Scraper {
   name: string;
   requestFunc: () => Promise<SearchResult>;
+  postFunc: (data: Headlines) => void;
   updateTimes: Array<UpdateTime>;
   initDelay: number;
   checkUpdateFreq: any;
@@ -18,13 +19,15 @@ class Scraper {
 
   constructor(
     name: string,
-    requestFunc: any,
+    requestFunc: () => Promise<SearchResult>,
+    postFunc: (data: Headlines) => void,
     updateTimes = [[2, 0, 0, 0] as UpdateTime],
     checkUpdateFreq = 1 * 60 * 60 * 1000, // every hour = 1 (h) * 60 (min) * 60 (s) * 1000 ms
     initDelay: number = 0
   ) {
     this.name = name;
     this.requestFunc = requestFunc;
+    this.postFunc = postFunc;
     this.updateTimes = updateTimes;
     this.checkUpdateFreq = checkUpdateFreq;
     this.initDelay = initDelay;
@@ -85,13 +88,14 @@ class Scraper {
             "success"
           );
 
-          // TODO: Add data base
-          console.log("TODOTODOTODO TODOTODOTODO TODOTODOTODO TODOTODOTODO");
+          // TODO: receive promise and add logic based on success/err
+          this.postFunc(response.results);
+          // TODO: heading char length max 150 - if longer, do not add to db
 
-          createLogMsg(
-            `Data for ${this.name} successfully saved in the data base.`,
-            "success"
-          );
+          // createLogMsg(
+          //   `Data for ${this.name} successfully saved in the data base.`,
+          //   "success"
+          // );
 
           // Update last update date on successful database update and unlock the queue
           this.lastUpdate = new Date();

@@ -6,14 +6,16 @@ interface Headline {
   headline: string;
   provider: string;
   url: string;
-  date: Date;
+  timestamp: number;
 }
+
+type Headlines = Array<Headline>;
 
 interface SearchResult {
   error: null | string;
-  results: Array<Headline>;
+  results: Headlines;
 }
 
 type UpdateTime = [number, number, number, number];
 
-export { ResultPage, Lang, Headline, SearchResult, UpdateTime };
+export { ResultPage, Lang, Headlines, Headline, SearchResult, UpdateTime };
