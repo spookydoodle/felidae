@@ -57,7 +57,7 @@ export const getResults = (
 };
 
 export const getAllResults = (
-  query: string = "news",
+  query: string = "business",
   maxPageIndex: ResultPage = 10,
   lang: Lang = "lang_en"
 ): Promise<SearchResult> => {
