@@ -6,17 +6,21 @@
 // the caller initializing the connection. This allows using a different connection
 // in unit tests, and a different one in a production environment.
 import express from 'express';
+import cors from 'cors';
 import { config } from './common/config';
 import healthRouter from './routers/health';
 import newsRouter from './routers/news';
 
-const app: any = express();
+const app = express();
+
+// Middleware
+app.use(cors());
 
 // Define main router
 const indexRouter = express.Router();
 
 // Define hello page for index - should be available for health checks on ALB
-indexRouter.get('/', (req: any, res: any) => {
+indexRouter.get('/', (req, res) => {
     res.status(200).send(`
     <h1>Hello from Node.js server.</h1>
     <p>Contact: spookydoodle0@gmail.com</p>

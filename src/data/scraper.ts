@@ -32,10 +32,6 @@ class Scraper {
     this.lastError = null;
     this.lastUpdate = null;
     this.isUpdateInProgress = false;
-
-    // Get data while initializing and set automatic check
-    // if update is needed to be executed every 'checkUpdateFreq' seconds
-    this.initializeUpdates(initDelay);
   }
 
   setUpdateInProgress = (bool: boolean) => {
@@ -149,11 +145,11 @@ class Scraper {
     // clearInterval(interval);
   };
 
-  initializeUpdates = (n: number) => {
+  initialize = () => {
     const timeout = setTimeout(() => {
       this.setAutomaticUpdate(this.checkUpdateFreq);
       this.updateData();
-    }, n || 0);
+    }, this.initDelay || 0);
 
     // clearTimeout(timeout);
   };

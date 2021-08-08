@@ -1,6 +1,6 @@
 // TODO: test 1: Check for an empty array = Google changed table structure in html
 // TODO: test 2: checl for an array of empty objects = Google changed row structure in the image results table
-import createLogMsg from '../utils/createLogMsg'
+import createLogMsg from "../utils/createLogMsg";
 import { AxiosResponse } from "axios";
 // import fetch from 'node-fetch';
 import jsdom from "jsdom";
@@ -31,14 +31,14 @@ export const getResults = (
     .then(({ data }: AxiosResponse) => {
       const { document } = new JSDOM(data).window;
 
-      // The news headings are provided in the div list in the #main div, starting from the third div
+      // The news headlines are provided in the div list in the #main div, starting from the third div
       const selector =
         "#main > div:nth-child(n+2) > div > div:nth-child(1) > a";
-      const headings = [...document.querySelectorAll(selector)];
+      const headlines = [...document.querySelectorAll(selector)];
 
       // Expected result set is 10
       // TODO: Set up automated check for length 10
-      const results = transform(headings);
+      const results = transform(headlines);
 
       // return data; // For troubleshooting display HTML body data
       return {
@@ -88,12 +88,12 @@ export const getAllResults = (
   return results;
 };
 
-// Receive html elements with headings and transform to desired output format
-// HTML objects array is in format: [heading0, image0, heading1, image1, heading2...].
-// We need only the heading, so the array is first filtered by even indexes
-const transform = (headings: Array<any>) =>
-  headings.map((el: any, i: number) => ({
-    heading: el.querySelector("h3 > div").textContent,
+// Receive html elements with headlines and transform to desired output format
+// HTML objects array is in format: [headline0, image0, headline1, image1, headline2...].
+// We need only the headline, so the array is first filtered by even indexes
+const transform = (headlines: Array<any>) =>
+  headlines.map((el: any, i: number) => ({
+    headline: el.querySelector("h3 > div").textContent,
     provider: el.querySelector("h3 + div").textContent,
     // TODO: Set up automated test for href format
     url: el.href.substring(7, el.href.indexOf("&")), // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url

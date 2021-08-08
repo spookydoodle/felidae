@@ -9,10 +9,10 @@ import { getResults } from "../search/searchHTML";
 test("Check result objects key structure", async () => {
   const res = await getResults();
   const keys = Object.keys(res.results[0]);
-  const { heading, url } = res.results[0];
+  const { headline, url } = res.results[0];
   
-  expect(keys).toStrictEqual(["heading", "provider", "url", "date"]);
-  expect(typeof heading).toBe("string");
-  expect(heading.length > 0).toBe(true);
+  expect(keys).toStrictEqual(["headline", "provider", "url", "date"]);
+  expect(typeof headline).toBe("string");
+  expect(headline.length > 0).toBe(true);
   expect(url.substring(0, 4)).toBe("http");
 });
