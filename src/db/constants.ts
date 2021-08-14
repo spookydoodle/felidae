@@ -1,4 +1,4 @@
 const DB_NAME = "scraper";
-const NEWS_TABLE = "newsheadlines";
+const TB_NEWS = "newsheadlines";
 
-export { DB_NAME, NEWS_TABLE };
+export { DB_NAME, TB_NEWS };

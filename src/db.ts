@@ -5,7 +5,7 @@
     with existing db and table.
 */
 import { Pool } from "pg";
-import { DB_NAME, NEWS_TABLE } from "./db/constants";
+import { qCreateDb, qCreateTb } from './db/queries';
 
 const config = {
   user: "postgres",
@@ -14,19 +14,10 @@ const config = {
   port: 5432,
 };
 
-const qCreateDb = `CREATE DATABASE ${DB_NAME};`;
+type TableType = keyof ReturnType<typeof qCreateTb>;
 
-const qCreateTb = `CREATE TABLE ${NEWS_TABLE}(
-    id SERIAL PRIMARY KEY,
-    category VARCHAR(20),
-    lang VARCHAR(7),
-    headline VARCHAR(150),
-    provider VARCHAR(40),
-    url VARCHAR(255),
-    timestamp TIMESTAMP
-);`;
-
-const initializeDb = (): Promise<Pool> =>
+// Returns database name
+const initializeDb = (dbName: string): Promise<string> =>
   new Promise(async (resolve, reject) => {
     // Connect to new pool
     let pool = new Pool(config);
@@ -34,40 +25,55 @@ const initializeDb = (): Promise<Pool> =>
     pool.connect();
 
     // Create DB if doesn't exist; then end pool and re-connect again on the right db to create table
-    await pool.query(qCreateDb, (dbErr) => {
+    await pool.query(qCreateDb(dbName), (dbErr) => {
       if (!dbErr || dbErr.message.indexOf("already exists") != -1) {
         console.log(
-          `Data base ${DB_NAME} ${!dbErr ? "created" : "already exists"}.`
+          `Data base '${dbName}' ${!dbErr ? "created" : "already exists"}.`
         );
-        
+
         pool.end();
-
-        // Connect to the right database and create table if doesn't exist
-        pool = new Pool({ ...config, database: DB_NAME});
-
-        pool.query(
-          qCreateTb,
-          (tbErr) => {
-            if (!tbErr || tbErr.message.indexOf("already exists") != -1) {
-              console.log(
-                `Table base ${NEWS_TABLE} ${
-                  !tbErr ? "created" : "already exists"
-                }.`
-              );
-
-              // Resolve by returning the pool; no need to end
-              resolve(pool);
-            } else {
-              reject(tbErr);
-              pool.end();
-            }
-          }
-        );
+        resolve(dbName);
       } else {
-        reject(dbErr);
         pool.end();
+        reject(dbErr);
       }
     });
   });
+
+// Returns database name
+export const initializeTb = (
+  dbName: string,
+  tbType: TableType,
+  tbName: string,
+): Promise<string> =>
+  new Promise(async (resolve, reject) => {
+    // Connect to the right database and create table if doesn't exist
+    let pool = new Pool({ ...config, database: dbName });
+    pool.connect();
+
+    pool.query(qCreateTb(tbName).news, (tbErr) => {
+      if (!tbErr || tbErr.message.indexOf("already exists") != -1) {
+        console.log(
+          `Table structure of type '${tbType}' ${
+            !tbErr ? "created" : "already exists"
+          }.`
+        );
+
+        // End pool and resolve by returning the database name
+        pool.end();
+        resolve(dbName);
+      } else {
+        pool.end();
+        reject(tbErr);
+      }
+    });
+  });
+
+export const getPool = (dbName: string,): Pool => {
+  let pool = new Pool({ ...config, database: dbName });
+  pool.connect();
+  
+  return pool;
+}
 
 export { initializeDb };

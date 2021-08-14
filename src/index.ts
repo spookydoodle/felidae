@@ -7,20 +7,29 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { initializeDb } from "./db";
+import { getPool, initializeDb, initializeTb } from "./db";
 import app from "./app";
-import Scraper from "./data/scraper";
+import Scraper from "./scrapers/scraper";
 import { getAllResults } from "./search/searchHTML";
 import { postNewsToDb } from "./db/postNewsData";
+import { DB_NAME, TB_NEWS } from "./db/constants";
 
 // Create db and table if they don't exist; then connect.
 // Create an instance of the basic news scraper.
 // initialize() method sets data fetch&save to run every 24 hrs.
-let newsScraperGeneral: Scraper;
-initializeDb()
+let scraperNewsGeneral: Scraper;
+initializeDb(DB_NAME)
+  .then((dbName) => initializeTb(dbName, "news", TB_NEWS))
+  .then((dbName) => getPool(dbName))
   .then((pool) => {
-    newsScraperGeneral = new Scraper("news", getAllResults, (data) => postNewsToDb(pool, data), [[2, 0, 0, 0]]).initialize();
+    scraperNewsGeneral = new Scraper(
+      "General News",
+      getAllResults,
+      (data) => postNewsToDb(pool, data),
+      [[2, 0, 0, 0]]
+    ).initialize();
   })
+  .then(() => {})
   .catch((err) => console.log(err));
 
 // Run express app

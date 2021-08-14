@@ -1,13 +1,7 @@
 import { Pool } from "pg";
 import { Headlines } from "../logic/types";
-import { NEWS_TABLE, DB_NAME } from "./constants";
-
-const qUrlExists = (url: string) =>
-  `SELECT COUNT(*) FROM ${NEWS_TABLE} WHERE url = '${url}';`;
-
-const qInsert = () =>
-  `INSERT INTO ${NEWS_TABLE}(category, lang, headline, provider, url, timestamp) 
-  VALUES ($1, $2, $3, $4, $5, to_timestamp($6)) RETURNING *;`;
+import { TB_NEWS, DB_NAME } from "./constants";
+import { qRowExists, qInsertToNews } from "./queries";
 
 export const postNewsData = async (pool: Pool, data: Headlines) => {
   const items: Headlines[] = [];
@@ -18,12 +12,12 @@ export const postNewsData = async (pool: Pool, data: Headlines) => {
   for (const { category, lang, headline, provider, url, timestamp } of data) {
     if (headline.length <= 150 && url.length <= 255) {
       await pool
-        .query(qUrlExists(url))
+        .query(qRowExists(TB_NEWS, 'url', url))
         .then(async ({ rows }) => {
           // Don't check type, just value
           if (rows[0].count == 0) {
             await pool
-              .query(qInsert(), [
+              .query(qInsertToNews(TB_NEWS), [
                 category,
                 lang,
                 headline,
@@ -50,7 +44,7 @@ export const postNewsData = async (pool: Pool, data: Headlines) => {
   }
 
   console.log(
-    `Added ${items.length} items to ${NEWS_TABLE} table in ${DB_NAME} data base. ${duplicateCount} duplicate url's omitted.`
+    `Added ${items.length} items to ${TB_NEWS} table in ${DB_NAME} data base. ${duplicateCount} duplicate url's omitted.`
   );
   
   return items.flat();
