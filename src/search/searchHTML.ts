@@ -11,11 +11,12 @@ const { JSDOM } = jsdom;
 const defaultQuery = "news";
 const defaultLang = "lang_en";
 
+// TODO: In dev environment, use a local path with static content
 // Get raw HTML and pull HTML elements properties. Only 20 results returned.
 export const getResults = (
   query: string = defaultQuery,
-  resultPageIndex: ResultPage = 1,
   lang: Lang = defaultLang,
+  resultPageIndex: ResultPage = 1,
 ): Promise<SearchResult> => {
   // https://stenevang.wordpress.com/2013/02/22/google-advanced-power-search-url-request-parameters/
   // q - query;
@@ -61,14 +62,14 @@ export const getResults = (
 
 export const getAllResults = (
   query: string = defaultQuery,
-  maxPageIndex: ResultPage = 10,
   lang: Lang = defaultLang,
+  maxPageIndex: ResultPage = 1,
 ): Promise<SearchResult> => {
   // Get data for pages from 1 to maxPageIndex
   const requests = new Array(maxPageIndex)
     .fill(null)
     .map((el: any, i: number) =>
-      getResults(query, (i + 1) as ResultPage, lang)
+      getResults(query, lang, (i + 1) as ResultPage)
     );
 
   const results = Promise.all(requests)
