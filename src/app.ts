@@ -7,7 +7,7 @@
 // in unit tests, and a different one in a production environment.
 import express from 'express';
 import cors from 'cors';
-import { config } from './common/config';
+import { config } from './routers/config';
 import healthRouter from './routers/health';
 import newsRouter from './routers/news';
 
