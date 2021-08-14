@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import { Headlines, Category, Lang } from "../logic/types";
 import { TB_NEWS, DB_NAME } from "./constants";
-import { qRowExists, qInsertToNews, qSelectNewsHeadlines } from "./queries";
+import { qRowExists, qInsertToNews, qSelectNewsHeadlines, SelectConfig } from "./queries";
 
 export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
   const items: Headlines[] = [];
@@ -12,7 +12,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
   for (const { category, lang, headline, provider, url, timestamp } of data) {
     if (headline.length <= 150 && url.length <= 255) {
       await pool
-        .query(qRowExists(TB_NEWS, [['url', 'equal', url]]))
+        .query(qRowExists(TB_NEWS, [["url", "equal", url]]))
         .then(async ({ rows }) => {
           // Don't check type, just value
           if (rows[0].count == 0) {
@@ -59,9 +59,10 @@ interface SelectFilter {
   dateTo?: number;
 }
 
-export const selectNewsData = async (
+export const selectNewsData = (
   pool: Pool,
-  filter: SelectFilter = { category: "general", lang: "lang_en" }
-): Promise<Headlines> => {
-  return [];
-};
+  selectConfig: SelectConfig = {}
+): Promise<Headlines> =>
+  pool
+    .query(qSelectNewsHeadlines(TB_NEWS, ["category", "lang", "headline", "provider", "url", "timestamp"], selectConfig))
+    .then((res) => res.rows);

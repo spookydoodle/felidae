@@ -1,4 +1,4 @@
-import { HeadlineColumn } from "../logic/types";
+import { Headline, HeadlineColumn } from "../logic/types";
 
 const conditions = {
   equal: "=",
@@ -27,15 +27,15 @@ export const qCreateTb = (tbName: string) => ({
   news: qCreateTbNews(tbName),
 });
 
-type NewsFilterCondition = [
-  "category" | "provider" | "lang" | "url",
+export type NewsFilterCondition = [
+  keyof Headline,
   keyof typeof conditions,
   string
 ];
 
-type OrderBy = [HeadlineColumn, "ASC" | "DESC"];
+export type OrderBy = [HeadlineColumn, "ASC" | "DESC"];
 
-interface SelectConfig {
+export interface SelectConfig {
   filters?: NewsFilterCondition[];
   orderBy?: OrderBy[];
   top?: number;

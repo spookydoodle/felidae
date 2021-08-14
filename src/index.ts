@@ -29,8 +29,7 @@ initializeDb(DB_NAME)
       [[2, 0, 0, 0]]
     ).initialize();
   })
-  .then(() => {})
-  .catch((err) => console.log(err));
+  .catch((err) => console.error(err));
 
 // Run express app
 const PORT = process.env.PORT || 5000;

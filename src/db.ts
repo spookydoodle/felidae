@@ -51,7 +51,7 @@ export const initializeTb = (
     let pool = new Pool({ ...config, database: dbName });
     pool.connect();
 
-    pool.query(qCreateTb(tbName).news, (tbErr) => {
+    await pool.query(qCreateTb(tbName).news, (tbErr) => {
       if (!tbErr || tbErr.message.indexOf("already exists") != -1) {
         console.log(
           `Table structure of type '${tbType}' ${

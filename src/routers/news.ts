@@ -1,24 +1,32 @@
 import express from "express";
-import { getAllResults } from "../search/searchHTML";
-import { SearchResult } from "../logic/types";
-import generatePage from '../pages/generatePage';
+import { getPool } from "../db";
+import { selectNewsData } from "../db/postNewsData";
+import { DB_NAME } from "../db/constants";
+import generatePage from "../pages/generatePage";
+// import { SearchResult } from "../logic/types";
 
 const router = express.Router();
+const pool = getPool(DB_NAME);
 
 router.get("/", (req: any, res: any) => {
-  res.status(200).send(generatePage('Hello from the News Scraper API.'));
+  res.status(200).send(generatePage("Hello from the News Scraper API."));
 });
 
-router.get("/general", (req: any, res: any) => {
-  getAllResults("news", 10, "lang_en")
-    .then((data: SearchResult) => {
-      res.status(200).send(data);
-    })
-    .catch((err: any) => {
-      res.status(500).send({
-        error: "Unknown error",
-      });
-    });
+router.get("/:category", async (req, res) => {
+  const { category } = req.params;
+  const { lang, top } = req.query;
+  console.log(lang);
+
+  const data = await selectNewsData(pool, {
+    filters: [
+      ["category", "equal", category],
+      ["lang", "equal", (lang as string || "lang_en")],
+      // ["timestamp", "greaterOrEqual", "TODO:"],
+    ],
+    top: Number(top as string || 100),
+  });
+
+  res.status(200).send(data);
 });
 
 export default router;
