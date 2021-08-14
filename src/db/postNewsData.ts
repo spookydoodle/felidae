@@ -52,5 +52,6 @@ export const postNewsData = async (pool: Pool, data: Headlines) => {
   console.log(
     `Added ${items.length} items to ${NEWS_TABLE} table in ${DB_NAME} data base. ${duplicateCount} duplicate url's omitted.`
   );
+  
   return items.flat();
 };

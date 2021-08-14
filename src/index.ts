@@ -14,10 +14,9 @@ import { getAllResults } from "./search/searchHTML";
 import { postNewsData } from "./db/postNewsData";
 import { Headlines } from "./logic/types";
 
-// Create db and table if they don't exist; then connect
+// Create db and table if they don't exist; then connect.
 // Create an instance of the basic news scraper.
-// Initialize method sets data fetch to run once every 24 hrs
-// and to save results in postgreSQL data base
+// initialize() method sets data fetch&save to run every 24 hrs.
 initializeDb()
   .then((pool) => {
     const postNewsToDb = (data: Headlines) => postNewsData(pool, data);
