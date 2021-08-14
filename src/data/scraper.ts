@@ -16,6 +16,8 @@ class Scraper {
     time: Date;
     message: string | null;
   } | null;
+  timeout: NodeJS.Timeout | null;
+  interval: NodeJS.Timeout | null;
 
   constructor(
     name: string,
@@ -23,7 +25,7 @@ class Scraper {
     postFunc: (data: Headlines) => Promise<Headlines>,
     updateTimes = [[2, 0, 0, 0] as UpdateTime],
     checkUpdateFreq = 1 * 60 * 60 * 1000, // every hour = 1 (h) * 60 (min) * 60 (s) * 1000 ms
-    initDelay: number = 0
+    initDelay: number = 0,
   ) {
     this.name = name;
     this.requestFunc = requestFunc;
@@ -35,6 +37,8 @@ class Scraper {
     this.lastError = null;
     this.lastUpdate = null;
     this.isUpdateInProgress = false;
+    this.timeout = null;
+    this.interval = null;
   }
 
   setUpdateInProgress = (bool: boolean) => {
@@ -142,21 +146,33 @@ class Scraper {
         .join(", ")} (H:M:S:MS) UTC.`
     );
 
-    const interval = setInterval(() => {
+    this.interval = setInterval(() => {
       this.updateData();
     }, n);
-
-    // clearInterval(interval);
   };
 
-  initialize = () => {
-    const timeout = setTimeout(() => {
+  initialize = (): Scraper => {
+    this.timeout = setTimeout(() => {
       this.setAutomaticUpdate(this.checkUpdateFreq);
       this.updateData();
     }, this.initDelay || 0);
 
-    // clearTimeout(timeout);
+    return this;
   };
+
+  stop = (): Scraper => {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
+
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    }
+
+    return this;
+  }
 }
 
 export default Scraper;

@@ -55,3 +55,5 @@ export const postNewsData = async (pool: Pool, data: Headlines) => {
   
   return items.flat();
 };
+
+export const postNewsToDb = (pool: Pool, data: Headlines) => postNewsData(pool, data);

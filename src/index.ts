@@ -11,17 +11,15 @@ import { initializeDb } from "./db";
 import app from "./app";
 import Scraper from "./data/scraper";
 import { getAllResults } from "./search/searchHTML";
-import { postNewsData } from "./db/postNewsData";
-import { Headlines } from "./logic/types";
+import { postNewsToDb } from "./db/postNewsData";
 
 // Create db and table if they don't exist; then connect.
 // Create an instance of the basic news scraper.
 // initialize() method sets data fetch&save to run every 24 hrs.
+let newsScraperGeneral: Scraper;
 initializeDb()
   .then((pool) => {
-    const postNewsToDb = (data: Headlines) => postNewsData(pool, data);
-    const scraper = new Scraper("news", getAllResults, postNewsToDb);
-    scraper.initialize();
+    newsScraperGeneral = new Scraper("news", getAllResults, (data) => postNewsToDb(pool, data), [[2, 0, 0, 0]]).initialize();
   })
   .catch((err) => console.log(err));
 
