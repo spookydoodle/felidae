@@ -5,6 +5,7 @@ import { selectNewsData } from "../db/postNewsData";
 import { DB_NAME } from "../db/constants";
 import generatePage from "../pages/generatePage";
 import createLogMsg from '../utils/createLogMsg';
+import dummyPage from "../search/dummyPage";
 
 const addQuery = (req: any, res: any, next: any) => {
   const { page } = req.query;
@@ -29,6 +30,11 @@ setTimeout(() => {
 router.get("/", (req: any, res: any) => {
   res.status(200).send(generatePage("Hello from the News Scraper API."));
 });
+
+// Dummy page for local development - static page to avoid 429 error
+router.get("/dummy", (req, res) => {
+  res.status(200).send(dummyPage);
+})
 
 router.get("/:category", addQuery, async (req, res) => {
   const { category } = req.params;

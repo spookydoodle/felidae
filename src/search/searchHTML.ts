@@ -5,6 +5,7 @@ import { AxiosResponse } from "axios";
 // import fetch from 'node-fetch';
 import jsdom from "jsdom";
 import { ResultPage, Lang, SearchResult } from "../logic/types";
+
 const axios = require("axios").default;
 const { JSDOM } = jsdom;
 
@@ -16,7 +17,7 @@ const defaultLang = "lang_en";
 export const getResults = (
   query: string = defaultQuery,
   lang: Lang = defaultLang,
-  resultPageIndex: ResultPage = 1,
+  resultPageIndex: ResultPage = 1
 ): Promise<SearchResult> => {
   // https://stenevang.wordpress.com/2013/02/22/google-advanced-power-search-url-request-parameters/
   // q - query;
@@ -24,9 +25,12 @@ export const getResults = (
   // start=10 - second page, start from the 10th result (10 per page)
   // lr=lang_xx - results language
   // tbs=qdr:d,sbd:n -  (sbd)sort by: relevance 0; date 1
-  const url = `https://www.google.com/search?q=${query}&tbm=nws&start=${
-    (resultPageIndex - 1) * 10
-  }&lr=${lang}&tbs=qdr:d,sbd:0`;
+  const url =
+    process.env.NODE_ENV === "dev"
+      ? "http://localhost:5000/news/dummy"
+      : `https://www.google.com/search?q=${query}&tbm=nws&start=${
+          (resultPageIndex - 1) * 10
+        }&lr=${lang}&tbs=qdr:d,sbd:0`;
   // console.log(url);
 
   // Request url and transform results to the right format
@@ -37,12 +41,18 @@ export const getResults = (
 
       // The news headlines are provided in the div list in the #main div, starting from the third div
       const selector =
-        "#main > div:nth-child(n+2) > div > div:nth-child(1) > a";
+        process.env.NODE_ENV === "dev"
+          ? ".dbsr a"
+          : "#main > div:nth-child(n+2) > div > div:nth-child(1) > a";
       const headlines = [...document.querySelectorAll(selector)];
 
       // Expected result set is 10
       // TODO: Set up automated check for length 10
-      const results = transform(headlines).map(headline => ({ category: query === "news" ? "general" : query, lang, ...headline}));
+      const results = transform(headlines).map((headline) => ({
+        category: query === "news" ? "general" : query,
+        lang,
+        ...headline,
+      }));
 
       // return data; // For troubleshooting display HTML body data
       return {
@@ -63,7 +73,7 @@ export const getResults = (
 export const getAllResults = (
   query: string = defaultQuery,
   lang: Lang = defaultLang,
-  maxPageIndex: ResultPage = 1,
+  maxPageIndex: ResultPage = 1
 ): Promise<SearchResult> => {
   // Get data for pages from 1 to maxPageIndex
   const requests = new Array(maxPageIndex)
@@ -97,9 +107,13 @@ export const getAllResults = (
 // We need only the headline, so the array is first filtered by even indexes
 const transform = (headlines: any[]) =>
   headlines.map((el: any, i: number) => ({
-    headline: el.querySelector("h3 > div").textContent,
-    provider: el.querySelector("h3 + div").textContent,
+    headline: el.querySelector(
+      process.env.NODE_ENV === "dev" ? ".JheGif.nDgy9d" : "h3 > div"
+    ).textContent.trim(),
+    provider: el.querySelector(
+      process.env.NODE_ENV === "dev" ? ".XTjFC.WF4CUc" : "h3 + div"
+    ).textContent.trim(),
     // TODO: Set up automated test for href format
-    url: el.href.substring(7, el.href.indexOf("&")), // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url
+    url: process.env.NODE_ENV === 'dev' ? el.href : el.href.substring(7, el.href.indexOf("&")).trim(), // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url
     timestamp: Date.now(),
   }));

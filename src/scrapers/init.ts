@@ -29,7 +29,7 @@ export const initializeNewsScrapers = (pool: Pool, dbName: string) => {
                 ? "news"
                 : `news in category ${categories[categoryIndex]}`,
               languages[langIndex],
-              1
+              10
             ),
           (data) => postNewsDataToDb(pool, data),
           [[2, 0, 0, 0]]
