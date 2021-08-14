@@ -13,7 +13,9 @@ interface Headline {
   timestamp: number;
 }
 
-type Headlines = Array<Headline>;
+type HeadlineColumn = keyof Headline;
+
+type Headlines = Headline[];
 
 interface SearchResult {
   error: null | string;
@@ -22,4 +24,4 @@ interface SearchResult {
 
 type UpdateTime = [number, number, number, number];
 
-export { ResultPage, Lang, Headlines, Headline, SearchResult, UpdateTime };
+export { ResultPage, Lang, Headlines, Headline, HeadlineColumn, Category, SearchResult, UpdateTime, };

@@ -94,7 +94,7 @@ export const getAllResults = (
 // Receive html elements with headlines and transform to desired output format
 // HTML objects array is in format: [headline0, image0, headline1, image1, headline2...].
 // We need only the headline, so the array is first filtered by even indexes
-const transform = (headlines: Array<any>) =>
+const transform = (headlines: any[]) =>
   headlines.map((el: any, i: number) => ({
     headline: el.querySelector("h3 > div").textContent,
     provider: el.querySelector("h3 + div").textContent,

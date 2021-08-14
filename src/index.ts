@@ -11,7 +11,7 @@ import { getPool, initializeDb, initializeTb } from "./db";
 import app from "./app";
 import Scraper from "./scrapers/scraper";
 import { getAllResults } from "./search/searchHTML";
-import { postNewsToDb } from "./db/postNewsData";
+import { postNewsDataToDb } from "./db/postNewsData";
 import { DB_NAME, TB_NEWS } from "./db/constants";
 
 // Create db and table if they don't exist; then connect.
@@ -25,7 +25,7 @@ initializeDb(DB_NAME)
     scraperNewsGeneral = new Scraper(
       "General News",
       getAllResults,
-      (data) => postNewsToDb(pool, data),
+      (data) => postNewsDataToDb(pool, data),
       [[2, 0, 0, 0]]
     ).initialize();
   })

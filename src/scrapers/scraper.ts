@@ -7,7 +7,7 @@ class Scraper {
   name: string;
   requestFunc: () => Promise<SearchResult>;
   postFunc: (data: Headlines) => Promise<Headlines>;
-  updateTimes: Array<UpdateTime>;
+  updateTimes: UpdateTime[];
   initDelay: number;
   checkUpdateFreq: any;
   isUpdateInProgress: boolean;

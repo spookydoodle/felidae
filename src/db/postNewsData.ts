@@ -1,9 +1,9 @@
 import { Pool } from "pg";
-import { Headlines } from "../logic/types";
+import { Headlines, Category, Lang } from "../logic/types";
 import { TB_NEWS, DB_NAME } from "./constants";
-import { qRowExists, qInsertToNews } from "./queries";
+import { qRowExists, qInsertToNews, qSelectNewsHeadlines } from "./queries";
 
-export const postNewsData = async (pool: Pool, data: Headlines) => {
+export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
   const items: Headlines[] = [];
   let duplicateCount: number = 0;
 
@@ -12,7 +12,7 @@ export const postNewsData = async (pool: Pool, data: Headlines) => {
   for (const { category, lang, headline, provider, url, timestamp } of data) {
     if (headline.length <= 150 && url.length <= 255) {
       await pool
-        .query(qRowExists(TB_NEWS, 'url', url))
+        .query(qRowExists(TB_NEWS, [['url', 'equal', url]]))
         .then(async ({ rows }) => {
           // Don't check type, just value
           if (rows[0].count == 0) {
@@ -46,8 +46,22 @@ export const postNewsData = async (pool: Pool, data: Headlines) => {
   console.log(
     `Added ${items.length} items to ${TB_NEWS} table in ${DB_NAME} data base. ${duplicateCount} duplicate url's omitted.`
   );
-  
+
   return items.flat();
 };
 
-export const postNewsToDb = (pool: Pool, data: Headlines) => postNewsData(pool, data);
+// Mandatory to provide category and language; default general in English
+interface SelectFilter {
+  category: Category;
+  lang: Lang;
+  provider?: string;
+  dateFrom?: number;
+  dateTo?: number;
+}
+
+export const selectNewsData = async (
+  pool: Pool,
+  filter: SelectFilter = { category: "general", lang: "lang_en" }
+): Promise<Headlines> => {
+  return [];
+};
