@@ -39,19 +39,21 @@ export interface SelectConfig {
   filters?: NewsFilterCondition[];
   orderBy?: OrderBy[];
   top?: number;
+  skip?: number;
 }
 
 // Select data queries
 export const qSelectNewsHeadlines = (
   tbName: string,
   columns: (HeadlineColumn | "*")[],
-  { filters, orderBy, top }: SelectConfig = {}
+  { filters, orderBy, top, skip }: SelectConfig = {}
 ): string =>
   `SELECT ${columns?.join(", ") || "*"}` +
   ` FROM ${tbName}` +
   (filters ? addWhere(filters) : "") +
   (orderBy ? addOrderBy(orderBy) : "") +
   (top ? ` LIMIT ${top}` : "") +
+  (skip ? ` OFFSET ${skip}` : "") +
   ";";
 
 export const qRowExists = (
