@@ -5,7 +5,7 @@
     with existing db and table.
 */
 import { Pool } from "pg";
-import { qCreateDb, qCreateTb } from './db/queries';
+import { qCreateDb, qCreateTb } from "./db/queries";
 
 const config = {
   user: "postgres",
@@ -44,7 +44,7 @@ const initializeDb = (dbName: string): Promise<string> =>
 export const initializeTb = (
   dbName: string,
   tbType: TableType,
-  tbName: string,
+  tbName: string
 ): Promise<string> =>
   new Promise(async (resolve, reject) => {
     // Connect to the right database and create table if doesn't exist
@@ -69,11 +69,11 @@ export const initializeTb = (
     });
   });
 
-export const getPool = (dbName: string,): Pool => {
+export const getPool = (dbName: string): Pool => {
   let pool = new Pool({ ...config, database: dbName });
-  pool.connect();
-  
+  pool.connect().catch((err) => console.log(err));
+
   return pool;
-}
+};
 
 export { initializeDb };

@@ -1,9 +1,10 @@
 import express from "express";
+import { Pool } from "pg";
 import { getPool } from "../db";
 import { selectNewsData } from "../db/postNewsData";
 import { DB_NAME } from "../db/constants";
 import generatePage from "../pages/generatePage";
-// import { SearchResult } from "../logic/types";
+import createLogMsg from '../utils/createLogMsg';
 
 const addQuery = (req: any, res: any, next: any) => {
   const { page } = req.query;
@@ -15,8 +16,15 @@ const addQuery = (req: any, res: any, next: any) => {
   }
 };
 
+// Initialize router
 const router = express.Router();
-const pool = getPool(DB_NAME);
+
+// Initialize PostgreSQL - give timeout for the first run, if DB_NAME does not exist, it will first need to be created
+let pool: Pool | undefined;
+setTimeout(() => {
+  pool = getPool(DB_NAME);
+  createLogMsg(`Connection between router 'News' and database '${DB_NAME}' established.`, 'info')
+}, 5000);
 
 router.get("/", (req: any, res: any) => {
   res.status(200).send(generatePage("Hello from the News Scraper API."));
@@ -27,22 +35,24 @@ router.get("/:category", addQuery, async (req, res) => {
   const { lang, page } = req.query;
   const pageNum = Number(page);
 
-  const pg = (page && !isNaN(pageNum) && pageNum > 0) ? pageNum : 1;
+  const pg = page && !isNaN(pageNum) && pageNum > 0 ? pageNum : 1;
   const [top, skip] = [100, (pg - 1) * 100];
 
-  const data = await selectNewsData(pool, {
-    filters: [
-      ["category", "equal", category],
-      ["lang", "equal", (lang as string) || "lang_en"],
-      // ["timestamp", "greaterOrEqual", "TODO:"],
-    ],
-    top: top,
-    skip: skip,
-    // top: Number(top as string || 100),
-    // skip: Number(skip as string || 100),
-  });
+  if (pool) {
+    const data = await selectNewsData(pool, {
+      filters: [
+        ["category", "equal", category],
+        ["lang", "equal", (lang as string) || "lang_en"],
+        // ["timestamp", "greaterOrEqual", "TODO:"],
+      ],
+      top: top,
+      skip: skip,
+    });
 
-  res.status(200).send(data);
+    res.status(200).send(data);
+  } else {
+    res.status(200).send([]);
+  }
 });
 
 export default router;

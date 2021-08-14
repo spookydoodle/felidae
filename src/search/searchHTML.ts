@@ -100,5 +100,5 @@ const transform = (headlines: any[]) =>
     provider: el.querySelector("h3 + div").textContent,
     // TODO: Set up automated test for href format
     url: el.href.substring(7, el.href.indexOf("&")), // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url
-    date: Date.now(),
+    timestamp: Date.now(),
   }));

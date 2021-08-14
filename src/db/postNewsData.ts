@@ -65,4 +65,8 @@ export const selectNewsData = (
 ): Promise<Headlines> =>
   pool
     .query(qSelectNewsHeadlines(TB_NEWS, ["category", "lang", "headline", "provider", "url", "timestamp"], selectConfig))
-    .then((res) => res.rows);
+    .then((res) => res.rows)
+    .catch((err) => {
+      console.log(err);
+      return [];
+    });

@@ -94,12 +94,6 @@ class Scraper {
 
           // TODO: receive promise and add logic based on success/err
           this.postFunc(response.results);
-          // TODO: heading char length max 150 - if longer, do not add to db
-
-          // createLogMsg(
-          //   `Data for ${this.name} successfully saved in the data base.`,
-          //   "success"
-          // );
 
           // Update last update date on successful database update and unlock the queue
           this.lastUpdate = new Date();
