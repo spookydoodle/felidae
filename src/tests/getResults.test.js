@@ -7,6 +7,7 @@
 import { getResults } from "../search/searchHTML";
 
 test("Check result objects key structure", async () => {
+  process.env.NODE_ENV = 'production';
   const res = await getResults();
   const keys = Object.keys(res.results[0]);
   const { headline, url } = res.results[0];
