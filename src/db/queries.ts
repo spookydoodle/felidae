@@ -12,16 +12,26 @@ const conditions = {
 export const qCreateDb = (dbName: string) => `CREATE DATABASE ${dbName};`;
 
 // Create table queries
-export const qCreateTbNews = (tbName: string) =>
-  `CREATE TABLE ${tbName}(
+export const newsTbDataTypeLengths = {
+  categoryLen: 20,
+  langLen: 7,
+  headlineLen: 150,
+  providerLen: 40,
+  urlLen: 255,
+};
+export const qCreateTbNews = (tbName: string) => {
+  const { categoryLen, langLen, headlineLen, providerLen, urlLen } = newsTbDataTypeLengths;
+
+  return `CREATE TABLE ${tbName}(
     id SERIAL PRIMARY KEY,
-    category VARCHAR(20),
-    lang VARCHAR(7),
-    headline VARCHAR(150),
-    provider VARCHAR(40),
-    url VARCHAR(255),
+    category VARCHAR(${categoryLen}),
+    lang VARCHAR(${langLen}),
+    headline VARCHAR(${headlineLen}),
+    provider VARCHAR(${providerLen}),
+    url VARCHAR(${urlLen}),
     timestamp TIMESTAMP
   );`;
+}
 
 export const qCreateTb = (tbName: string) => ({
   news: qCreateTbNews(tbName),

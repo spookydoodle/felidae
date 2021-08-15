@@ -1,16 +1,23 @@
 import { Pool } from "pg";
 import { Headlines, Category, Lang } from "../logic/types";
 import { TB_NEWS, DB_NAME } from "./constants";
-import { qRowExists, qInsertToNews, qSelectNewsHeadlines, SelectConfig } from "./queries";
+import { qRowExists, qInsertToNews, qSelectNewsHeadlines, SelectConfig, newsTbDataTypeLengths } from "./queries";
 
 export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
   const items: Headlines[] = [];
   let duplicateCount: number = 0;
+  const { categoryLen, langLen, headlineLen, providerLen, urlLen } = newsTbDataTypeLengths;
 
   // Before inserting make sure data meets data type criteria defined in postgres table
   // Also, make sure entry does not exist yet; if it does, then skip it
   for (const { category, lang, headline, provider, url, timestamp } of data) {
-    if (headline.length <= 150 && url.length <= 255) {
+    if (
+      category.length <= categoryLen &&
+      lang.length <= langLen &&
+      headline.length <= headlineLen && 
+      provider.length <= providerLen &&
+      url.length <= urlLen
+      ) {
       await pool
         .query(qRowExists(TB_NEWS, [["url", "equal", url]]))
         .then(async ({ rows }) => {
@@ -35,9 +42,15 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
     } else {
       console.log(
         `Headline: "${headline}" not added due to ${
-          headline.length > 150
-            ? `its length of ${headline.length} char (max 150)`
-            : `its source url's length of ${url.length} (max 255)`
+          category.length > categoryLen
+            ? `its category '${category}' length of ${category.length} (max ${categoryLen})`
+            : lang.length > langLen 
+            ? `its lang '${lang}' length of ${lang.length} (max ${langLen})` 
+            : headline.length > headlineLen
+            ? `its headline length of ${headline.length} char (max ${headlineLen})`
+            : provider.length > providerLen
+            ? `its provider length of ${provider.length} char (max ${providerLen})`
+            : `its url length of ${url.length} (max ${urlLen})`
         }`
       );
     }
