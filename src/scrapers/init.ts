@@ -33,6 +33,7 @@ export const initializeNewsScrapers = (pool: Pool) => {
             categories[categoryIndex] === "general"
               ? "news"
               : `news in category ${category}`,
+            category,
             lang,
             process.env.NODE_ENV === "production"
               ? 10

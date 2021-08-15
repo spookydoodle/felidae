@@ -4,7 +4,7 @@ import createLogMsg from "../utils/createLogMsg";
 import { AxiosResponse } from "axios";
 // import fetch from 'node-fetch';
 import jsdom from "jsdom";
-import { ResultPage, Lang, SearchResult, Headlines } from "../logic/types";
+import { ResultPage, Lang, SearchResult, Headlines, Category } from "../logic/types";
 
 const prod = "production";
 
@@ -25,6 +25,7 @@ const defaultLang = "lang_en";
 // Get raw HTML and pull HTML elements properties. Only 20 results returned.
 export const getResults = (
   query: string = defaultQuery,
+  category: Category,
   lang: Lang = defaultLang,
   resultPageIndex: ResultPage = 1
 ): Promise<SearchResult> => {
@@ -59,7 +60,7 @@ export const getResults = (
       // Expected result set is 10
       // TODO: Set up automated check for length 10
       const results = transform(headlines).map((headline) => ({
-        category: query === "news" ? "general" : query,
+        category,
         lang,
         ...headline,
       }));
@@ -89,6 +90,7 @@ export const getResults = (
 // TODO: Add generic 'for ... of ...'throttle method as a wrapper to reuse in the other parts of the app
 export const getAllResults = async (
   query: string = defaultQuery,
+  category: Category,
   lang: Lang = defaultLang,
   maxPageIndex: ResultPage = 1
 ): Promise<SearchResult> => {
@@ -109,7 +111,7 @@ export const getAllResults = async (
     })
     clearTimeout(timeout);
 
-    let response = await getResults(query, lang, (i + 1) as ResultPage)
+    let response = await getResults(query, category, lang, (i + 1) as ResultPage)
       .then((res) => {
         createLogMsg(`Data for query '${query}' in lang '${lang}' from page ${i + 1} processed successfully.`, "success");
         return res;
