@@ -6,6 +6,8 @@ import { AxiosResponse } from "axios";
 import jsdom from "jsdom";
 import { ResultPage, Lang, SearchResult, Headlines } from "../logic/types";
 
+const prod = "production";
+
 type ErrorType = { 
   response?: { 
     status?: string | number 
@@ -33,11 +35,11 @@ export const getResults = (
   // lr=lang_xx - results language
   // tbs=qdr:d,sbd:n -  (sbd)sort by: relevance 0; date 1
   const url =
-    process.env.NODE_ENV === "dev"
-      ? "http://localhost:5000/news/dummy"
-      : `https://www.google.com/search?q=${query}&tbm=nws&start=${
+    process.env.NODE_ENV === prod
+      ? `https://www.google.com/search?q=${query}&tbm=nws&start=${
           (resultPageIndex - 1) * 10
-        }&lr=${lang}&tbs=qdr:d,sbd:0`;
+        }&lr=${lang}&tbs=qdr:d,sbd:0`
+      : "http://localhost:5000/news/dummy";
   // console.log(url);
 
   // Request url and transform results to the right format
@@ -49,9 +51,9 @@ export const getResults = (
 
       // The news headlines are provided in the div list in the #main div, starting from the third div
       const selector =
-        process.env.NODE_ENV === "dev"
-          ? ".dbsr a"
-          : "#main > div:nth-child(n+2) > div > div:nth-child(1) > a";
+        process.env.NODE_ENV === prod
+          ? "#main > div:nth-child(n+2) > div > div:nth-child(1) > a"
+          : ".dbsr a";
       const headlines = [...document.querySelectorAll(selector)];
 
       // Expected result set is 10
@@ -69,7 +71,10 @@ export const getResults = (
       };
     })
     .catch((err: ErrorType) => {
-      createLogMsg(`Error fetching data from ${url}: ${err?.message}.`, "error");
+      createLogMsg(
+        `Error fetching data from ${url}: ${err?.message}.`,
+        "error"
+      );
       console.log(err);
 
       return {
@@ -137,18 +142,18 @@ const transform = (headlines: any[]) =>
   headlines.map((el: any, i: number) => ({
     headline: el
       .querySelector(
-        process.env.NODE_ENV === "dev" ? ".JheGif.nDgy9d" : "h3 > div"
+        process.env.NODE_ENV === prod ? "h3 > div" : ".JheGif.nDgy9d"
       )
       .textContent.trim(),
     provider: el
       .querySelector(
-        process.env.NODE_ENV === "dev" ? ".XTjFC.WF4CUc" : "h3 + div"
+        process.env.NODE_ENV === prod ? "h3 + div" : ".XTjFC.WF4CUc"
       )
       .textContent.trim(),
     // TODO: Set up automated test for href format
     url:
-      process.env.NODE_ENV === "dev"
-        ? el.href
-        : el.href.substring(7, el.href.indexOf("&")).trim(), // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url
+      process.env.NODE_ENV === prod
+        ? el.href.substring(7, el.href.indexOf("&")).trim()
+        : el.href, // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url
     timestamp: Date.now(),
   }));

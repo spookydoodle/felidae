@@ -4,6 +4,10 @@
 //
 // Note, that this file should be kept as simple as possible, as it is not
 // covered by unit tests.
+// 
+// In production (or for production tests) NODE_ENV should be set to 'production' - see the checks in ./search/searchHTML.
+// In any other case the app will fetch data from a local dummy page, in order to prevent 429 errors while constantly refreshing.
+// You can also use the value 'staging' to initiate only 1 request per day per scraper (instead of 10 on prod, see ./scrapers/init).
 import dotenv from "dotenv";
 dotenv.config();
 
