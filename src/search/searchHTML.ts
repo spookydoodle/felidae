@@ -4,7 +4,7 @@ import createLogMsg from "../utils/createLogMsg";
 import { AxiosResponse } from "axios";
 // import fetch from 'node-fetch';
 import jsdom from "jsdom";
-import { ResultPage, Lang, SearchResult } from "../logic/types";
+import { ResultPage, Lang, SearchResult, Headlines } from "../logic/types";
 
 const axios = require("axios").default;
 const { JSDOM } = jsdom;
@@ -62,6 +62,7 @@ export const getResults = (
     })
     .catch((err: { message?: string }) => {
       createLogMsg(`Error fetching data from ${url}: ${err?.message}`, "error");
+      console.log(err);
 
       return {
         error: err?.message || "Unknown error",
@@ -70,36 +71,51 @@ export const getResults = (
     });
 };
 
-export const getAllResults = (
+// To avoid 429 errors, add throttling and assure 5s breaks between each request
+// Below method needs to be executed synchronously 
+// TODO: Add generic 'for ... of ...'throttle method as a wrapper to reuse in the other parts of the app
+export const getAllResults = async (
   query: string = defaultQuery,
   lang: Lang = defaultLang,
   maxPageIndex: ResultPage = 1
 ): Promise<SearchResult> => {
-  // Get data for pages from 1 to maxPageIndex
-  const requests = new Array(maxPageIndex)
-    .fill(null)
-    .map((el: any, i: number) =>
-      getResults(query, lang, (i + 1) as ResultPage)
-    );
 
-  const results = Promise.all(requests)
-    .then((res) => ({
-      error: null,
-      results: res
-        .filter((el: SearchResult) => el.error === null) // Filter out unsuccessful results
-        .map((el: SearchResult) => el.results) // Get only results items
-        .flat(), // Promise.all returns an array of arrays so needs to be flattened
-    }))
-    .catch((err: { message?: string }) => {
-      createLogMsg(`Error fetching all data: ${err?.message}`, "error");
+  let results: {
+    error: string | null;
+    results: Headlines[];
+  } = {
+    error: null,
+    results: [],
+  };
 
-      return {
-        error: err?.message || "Unknown error",
-        results: [],
-      };
-    });
+  for (let i = 0; i < maxPageIndex; i++) {
+    // Assure incremental breaks of multipilication of 5s to avoid 429 errors
+    let timeout;
+    await new Promise(resolve => {
+      timeout = setTimeout(resolve, (i + 1) * 5000);
+    })
+    clearTimeout(timeout);
 
-  return results;
+    let response = await getResults(query, lang, (i + 1) as ResultPage)
+      .then((res) => {
+        createLogMsg(`Received data for query '${query}' in lang '${lang}' from page ${i + 1}`, "success");
+        return res;
+      })
+      .catch((err) => {
+        createLogMsg(`Requesting data for query '${query}' in lang '${lang}' from page ${i + 1} returned an error`, "error");
+
+        return err;
+      });
+
+    if (response.error === null) {
+      results.results.push(response.results);
+    } 
+  }
+
+  return { 
+    error: results.error,
+    results: results.results.flat(),
+  };
 };
 
 // Receive html elements with headlines and transform to desired output format
@@ -107,13 +123,20 @@ export const getAllResults = (
 // We need only the headline, so the array is first filtered by even indexes
 const transform = (headlines: any[]) =>
   headlines.map((el: any, i: number) => ({
-    headline: el.querySelector(
-      process.env.NODE_ENV === "dev" ? ".JheGif.nDgy9d" : "h3 > div"
-    ).textContent.trim(),
-    provider: el.querySelector(
-      process.env.NODE_ENV === "dev" ? ".XTjFC.WF4CUc" : "h3 + div"
-    ).textContent.trim(),
+    headline: el
+      .querySelector(
+        process.env.NODE_ENV === "dev" ? ".JheGif.nDgy9d" : "h3 > div"
+      )
+      .textContent.trim(),
+    provider: el
+      .querySelector(
+        process.env.NODE_ENV === "dev" ? ".XTjFC.WF4CUc" : "h3 + div"
+      )
+      .textContent.trim(),
     // TODO: Set up automated test for href format
-    url: process.env.NODE_ENV === 'dev' ? el.href : el.href.substring(7, el.href.indexOf("&")).trim(), // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url
+    url:
+      process.env.NODE_ENV === "dev"
+        ? el.href
+        : el.href.substring(7, el.href.indexOf("&")).trim(), // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url
     timestamp: Date.now(),
   }));
