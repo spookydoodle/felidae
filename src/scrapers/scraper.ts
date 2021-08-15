@@ -2,6 +2,7 @@
 // Data should be updated every 24 hours
 import createLogMsg from "../utils/createLogMsg";
 import { SearchResult, UpdateTime, Headlines } from "../logic/types";
+import { clear } from "console";
 
 class Scraper {
   name: string;
@@ -86,7 +87,7 @@ class Scraper {
       this.setUpdateInProgress(true);
 
       this.requestFunc()
-        .then((response: any) => {
+        .then((response: SearchResult) => {
           createLogMsg(
             `Data fetch for ${this.name} finished. Saving in the data base...`,
             "success"
@@ -98,6 +99,9 @@ class Scraper {
           // Update last update date on successful database update and unlock the queue
           this.lastUpdate = new Date();
           this.setUpdateInProgress(false);
+
+          // Check for 429 error and stop scraper, if occured
+          this.checkFor429(response.error);
         })
         .catch((error: any) => {
           createLogMsg(`Error fetching data for ${this.name}.`, "error");
@@ -111,6 +115,9 @@ class Scraper {
 
           // Unlock the queue
           this.setUpdateInProgress(false);
+          
+          // Check for 429 error and stop scraper, if occured
+          this.checkFor429(error);
 
           return;
         });
@@ -121,6 +128,19 @@ class Scraper {
       );
     }
   };
+
+  checkFor429 = (err: string | number | null) => {
+    if (err === 429) {
+      createLogMsg(`Scraper ${this.name} will stop due to error 429: Too many requests. Setting resume in 24 hours.`, "error");
+      this.stop();
+
+      let timeout = setTimeout(() => {
+        this.initialize();
+        createLogMsg(`Resuming scraper ${this.name}.`, "info");
+        clearTimeout(timeout);
+      }, 24 * 60 * 60 * 1000)
+    }
+  }
 
   setAutomaticUpdate = (n: number) => {
     const intervalText =

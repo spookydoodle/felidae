@@ -6,6 +6,13 @@ import { AxiosResponse } from "axios";
 import jsdom from "jsdom";
 import { ResultPage, Lang, SearchResult, Headlines } from "../logic/types";
 
+type ErrorType = { 
+  response?: { 
+    status?: string | number 
+  }; 
+  message?: string 
+};
+
 const axios = require("axios").default;
 const { JSDOM } = jsdom;
 
@@ -37,6 +44,7 @@ export const getResults = (
   return axios
     .get(url)
     .then(({ data }: AxiosResponse) => {
+      createLogMsg(`Processing data received from ${url}`, "info");
       const { document } = new JSDOM(data).window;
 
       // The news headlines are provided in the div list in the #main div, starting from the third div
@@ -60,12 +68,12 @@ export const getResults = (
         results,
       };
     })
-    .catch((err: { message?: string }) => {
-      createLogMsg(`Error fetching data from ${url}: ${err?.message}`, "error");
+    .catch((err: ErrorType) => {
+      createLogMsg(`Error fetching data from ${url}: ${err?.message}.`, "error");
       console.log(err);
 
       return {
-        error: err?.message || "Unknown error",
+        error: Number(err?.response?.status) || err?.message || "Unknown error",
         results: [],
       };
     });
@@ -81,7 +89,7 @@ export const getAllResults = async (
 ): Promise<SearchResult> => {
 
   let results: {
-    error: string | null;
+    error: string | number | null;
     results: Headlines[];
   } = {
     error: null,
@@ -98,20 +106,24 @@ export const getAllResults = async (
 
     let response = await getResults(query, lang, (i + 1) as ResultPage)
       .then((res) => {
-        createLogMsg(`Received data for query '${query}' in lang '${lang}' from page ${i + 1}`, "success");
+        createLogMsg(`Data for query '${query}' in lang '${lang}' from page ${i + 1} processed successfully.`, "success");
         return res;
       })
       .catch((err) => {
-        createLogMsg(`Requesting data for query '${query}' in lang '${lang}' from page ${i + 1} returned an error`, "error");
+        createLogMsg(`Requesting data for query '${query}' in lang '${lang}' from page ${i + 1} returned an error.`, "error");
 
         return err;
       });
 
     if (response.error === null) {
       results.results.push(response.results);
-    } 
+    } else if (Number(response.error) == 429) {
+      results.error = 429;
+    }
   }
 
+  // The returned value will have the error prop set to null only if all requests were successful
+  // If one of the returned
   return { 
     error: results.error,
     results: results.results.flat(),

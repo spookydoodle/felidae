@@ -18,7 +18,7 @@ type HeadlineColumn = keyof Headline;
 type Headlines = Headline[];
 
 interface SearchResult {
-  error: null | string;
+  error: null | string | number;
   results: Headlines;
 }
 

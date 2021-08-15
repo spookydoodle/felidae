@@ -33,7 +33,7 @@ export const initializeNewsScrapers = (pool: Pool) => {
                 ? "news"
                 : `news in category ${category}`,
               lang,
-              10
+              process.env.NODE_ENV === 'stg' ? 1 : 10
             ),
           (data) => postNewsDataToDb(pool, data),
           [[i % 24, 0, 0, 0]]
