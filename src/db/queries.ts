@@ -97,4 +97,4 @@ const addOrderBy = (orderByArr: OrderBy[]) => {
 // Post data queries
 export const qInsertToNews = (tbNews: string) =>
   `INSERT INTO ${tbNews}(category, lang, headline, provider, url, timestamp) 
-  VALUES ($1, $2, $3, $4, $5, to_timestamp($6)) RETURNING *;`;
+  VALUES ($1, $2, $3, $4, $5, (to_timestamp($6 / 1000.0))) RETURNING *;`;
