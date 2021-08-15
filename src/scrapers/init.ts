@@ -2,12 +2,14 @@ import { Pool } from "pg";
 import Scraper from "./scraper";
 import { getAllResults } from "../search/searchHTML";
 import { postNewsDataToDb } from "../db/postNewsData";
-import { Lang, Category } from "../logic/types";
+import { Lang, Category, Config } from "../logic/types";
 
 const capitalize = (text: string) =>
   text.charAt(0).toUpperCase() + text.substring(1).toLowerCase();
 
-export const initializeNewsScrapers = (pool: Pool) => {
+export const initializeNewsScrapers = (pool: Pool, config: Config) => {
+  const { environment } = config;
+
   let scrapers: Scraper[] = [];
   const categories: Category[] = [
     "general",
@@ -35,11 +37,12 @@ export const initializeNewsScrapers = (pool: Pool) => {
               : `news in category ${category}`,
             category,
             lang,
-            process.env.NODE_ENV === "production"
+            environment === "production"
               ? 10
-              : process.env.NODE_ENV === "staging"
+              : environment === "staging"
               ? 1
-              : 10
+              : 10,
+            config
           ),
         (data) => postNewsDataToDb(pool, data),
         [[i % 24, 0, 0, 0]]

@@ -4,7 +4,7 @@ import createLogMsg from "../utils/createLogMsg";
 import { AxiosResponse } from "axios";
 // import fetch from 'node-fetch';
 import jsdom from "jsdom";
-import { ResultPage, Lang, SearchResult, Headlines, Category } from "../logic/types";
+import { ResultPage, Lang, SearchResult, Headlines, Category, Config } from "../logic/types";
 
 const prod = "production";
 
@@ -27,7 +27,8 @@ export const getResults = (
   query: string = defaultQuery,
   category: Category,
   lang: Lang = defaultLang,
-  resultPageIndex: ResultPage = 1
+  resultPageIndex: ResultPage,
+  config: Config
 ): Promise<SearchResult> => {
   // https://stenevang.wordpress.com/2013/02/22/google-advanced-power-search-url-request-parameters/
   // q - query;
@@ -35,8 +36,9 @@ export const getResults = (
   // start=10 - second page, start from the 10th result (10 per page)
   // lr=lang_xx - results language
   // tbs=qdr:d,sbd:n -  (sbd)sort by: relevance 0; date 1
+  const { environment } = config;
   const url =
-    process.env.NODE_ENV === prod
+    environment === prod
       ? `https://www.google.com/search?q=${query}&tbm=nws&start=${
           (resultPageIndex - 1) * 10
         }&lr=${lang}&tbs=qdr:d,sbd:0`
@@ -52,14 +54,14 @@ export const getResults = (
 
       // The news headlines are provided in the div list in the #main div, starting from the third div
       const selector =
-        process.env.NODE_ENV === prod
+        environment === prod
           ? "#main > div:nth-child(n+2) > div > div:nth-child(1) > a"
           : ".dbsr a";
       const headlines = [...document.querySelectorAll(selector)];
 
       // Expected result set is 10
       // TODO: Set up automated check for length 10
-      const results = transform(headlines).map((headline) => ({
+      const results = transform(headlines, config).map((headline) => ({
         category,
         lang,
         ...headline,
@@ -92,8 +94,10 @@ export const getAllResults = async (
   query: string = defaultQuery,
   category: Category,
   lang: Lang = defaultLang,
-  maxPageIndex: ResultPage = 1
+  maxPageIndex: ResultPage,
+  config: Config
 ): Promise<SearchResult> => {
+  const { environment } = config;
 
   let results: {
     error: string | number | null;
@@ -111,7 +115,7 @@ export const getAllResults = async (
     })
     clearTimeout(timeout);
 
-    let response = await getResults(query, category, lang, (i + 1) as ResultPage)
+    let response = await getResults(query, category, lang, (i + 1) as ResultPage, config)
       .then((res) => {
         createLogMsg(`Data for query '${query}' in lang '${lang}' from page ${i + 1} processed successfully.`, "success");
         return res;
@@ -140,22 +144,25 @@ export const getAllResults = async (
 // Receive html elements with headlines and transform to desired output format
 // HTML objects array is in format: [headline0, image0, headline1, image1, headline2...].
 // We need only the headline, so the array is first filtered by even indexes
-const transform = (headlines: any[]) =>
-  headlines.map((el: any, i: number) => ({
+const transform = (headlines: any[], config: Config) => {
+  const { environment } = config;
+  
+  return headlines.map((el: any, i: number) => ({
     headline: el
       .querySelector(
-        process.env.NODE_ENV === prod ? "h3 > div" : ".JheGif.nDgy9d"
+        environment === prod ? "h3 > div" : ".JheGif.nDgy9d"
       )
       .textContent.trim(),
     provider: el
       .querySelector(
-        process.env.NODE_ENV === prod ? "h3 + div" : ".XTjFC.WF4CUc"
+        environment === prod ? "h3 + div" : ".XTjFC.WF4CUc"
       )
       .textContent.trim(),
     // TODO: Set up automated test for href format
     url:
-      process.env.NODE_ENV === prod
+      environment === prod
         ? el.href.substring(7, el.href.indexOf("&")).trim()
         : el.href, // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url
     timestamp: Date.now(),
   }));
+}

@@ -95,6 +95,7 @@ const addOrderBy = (orderByArr: OrderBy[]) => {
 }
 
 // Post data queries
+// to_timestamp is expecting a value in seconds, while provided js timestamp is in ms, hence division by 1000.0
 export const qInsertToNews = (tbNews: string) =>
   `INSERT INTO ${tbNews}(category, lang, headline, provider, url, timestamp) 
   VALUES ($1, $2, $3, $4, $5, (to_timestamp($6 / 1000.0))) RETURNING *;`;

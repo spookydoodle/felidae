@@ -24,4 +24,8 @@ interface SearchResult {
 
 type UpdateTime = [number, number, number, number];
 
-export { ResultPage, Lang, Headlines, Headline, HeadlineColumn, Category, SearchResult, UpdateTime, };
+interface Config {
+  environment?: string;
+}
+
+export { ResultPage, Lang, Headlines, Headline, HeadlineColumn, Category, SearchResult, UpdateTime, Config };

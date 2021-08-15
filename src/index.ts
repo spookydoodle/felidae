@@ -22,7 +22,7 @@ import { DB_NAME, TB_NEWS } from "./db/constants";
 initializeDb(DB_NAME)
   .then((dbName) => initializeTb(dbName, "news", TB_NEWS))
   .then((dbName) => getPool(dbName))
-  .then((pool) => initializeNewsScrapers(pool))
+  .then((pool) => initializeNewsScrapers(pool, { environment: process.env.NODE_ENV }))
   .catch((err) => console.error(err));
 
 // Run express app
