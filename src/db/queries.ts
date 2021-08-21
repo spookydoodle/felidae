@@ -62,7 +62,7 @@ export const qSelectNewsHeadlines = (
   columns: (HeadlineColumn | "*")[],
   { filters, orderBy, top, skip }: SelectConfig = {}
 ): string =>
-  `SELECT ${columns?.join(", ") || "*"}` +
+  `SELECT ${["id", ...columns]?.join(", ") || "*"}` +
   ` FROM ${tbName}` +
   (filters ? addWhere(filters) : "") +
   (orderBy ? addOrderBy(orderBy) : "") +

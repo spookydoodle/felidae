@@ -2,7 +2,8 @@ import { Pool } from "pg";
 import Scraper from "./scraper";
 import { getAllResults } from "../search/searchHTML";
 import { postNewsDataToDb } from "../db/postNewsData";
-import { Lang, Category, SearchConfig, Country } from "../logic/types";
+import { SearchConfig, Country } from "../logic/types";
+import { categories, countryLang, queries } from "./constants";
 
 const capitalize = (text: string) =>
   text.charAt(0).toUpperCase() + text.substring(1).toLowerCase();
@@ -11,21 +12,6 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
   const { environment, maxPageIndex, updateFreqInHrs } = config;
 
   let scrapers: Scraper[] = [];
-  const categories: Category[] = [
-    "general",
-    "business",
-    "entertainment",
-    "sport",
-    "health",
-    "science",
-  ];
-  const countryLang: { [key in Country]: Lang } = {
-    "gb": "en",
-    "us": "en",
-    "de": "de",
-    "nl": "nl",
-    "pl": "pl",
-  }
 
   const countries = Object.keys(countryLang);
 
@@ -41,9 +27,7 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
         `${capitalize(category)} News from ${country} in ${lang}`,
         () =>
           getAllResults(
-            categories[categoryIndex] === "general"
-              ? "news today"
-              : `news in category ${category}`,
+            queries[lang][category],
             category,
             country,
             lang,
@@ -56,8 +40,8 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
             config
           ),
         (data) => postNewsDataToDb(pool, data),
-        new Array(24).fill(null).map((el, i) => [i, 0, 0, 0]),  // Update to be done every hour
-        15 * 60 * 1000  // Update check every 15 min
+        new Array(24).fill(null).map((el, i) => [i, 0, 0, 0]), // Update to be done every hour
+        15 * 60 * 1000 // Update check every 15 min
       ).initialize();
 
       scrapers.push(scraper);
