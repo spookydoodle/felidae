@@ -117,7 +117,7 @@ const transformBing = (
 ): HeadlineData[] =>
   headlines
     .filter((el: any) => el.textContent !== "")
-    .filter((el: any) => el.href !== "")
+    .filter((el: any) => el.querySelector("a.title").textContent !== "")
     .map((el: any) => {
       const anchor = el.querySelector("a.title");
       const ageEl = el.querySelector(".source span:nth-child(3)");
