@@ -8,7 +8,7 @@ const capitalize = (text: string) =>
   text.charAt(0).toUpperCase() + text.substring(1).toLowerCase();
 
 export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
-  const { environment } = config;
+  const { environment, maxPageIndex, updateFreqInHrs } = config;
 
   let scrapers: Scraper[] = [];
   const categories: Category[] = [
@@ -37,7 +37,7 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
               : `news in category ${category}`,
             category,
             lang,
-            environment === "production"
+            maxPageIndex || environment === "production"
               ? 10
               : environment === "staging"
               ? 1
@@ -45,7 +45,7 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
             config
           ),
         (data) => postNewsDataToDb(pool, data),
-        [[i % 24, 0, 0, 0]]
+        [[i % (updateFreqInHrs || 24), 0, 0, 0]]
       ).initialize();
 
       scrapers.push(scraper);

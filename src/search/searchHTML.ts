@@ -83,12 +83,12 @@ export const getResults = (
     },
     bing: {
       production: {
-        url: `https://www.bing.com/news/search?q=${query}&setLang=${lang}&count=50`,
+        url: `https://www.bing.com/news/search?q=${query}&setLang=${lang}`,
         selector: ".news-card a.title",
         transform: transformBing,
       },
       staging: {
-        url: `https://www.bing.com/news/search?q=${query}&setLang=${lang}&count=50`,
+        url: `https://www.bing.com/news/search?q=${query}&setLang=${lang}`,
         selector: ".news-card a.title",
         transform: transformBing,
       },

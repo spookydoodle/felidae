@@ -2,7 +2,6 @@
 // Data should be updated every 24 hours
 import createLogMsg from "../utils/createLogMsg";
 import { SearchResult, UpdateTime, Headlines } from "../logic/types";
-import { clear } from "console";
 
 class Scraper {
   name: string;

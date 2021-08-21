@@ -3,6 +3,8 @@ type Environment = "production" | "staging" | "development";
 interface SearchConfig {
   environment?: Environment;
   engine: "google" | "bing";
+  maxPageIndex?: number;
+  updateFreqInHrs?: number
 }
 
 type ResultPage = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;

@@ -27,6 +27,8 @@ initializeDb(DB_NAME)
     initializeNewsScrapers(pool, {
       environment: process.env.NODE_ENV as Environment,
       engine: "bing",
+      maxPageIndex: 1,
+      updateFreqInHrs: 1, // Update every hour - the link for bing collects data from last hr
     })
   )
   .catch((err) => console.error(err));
