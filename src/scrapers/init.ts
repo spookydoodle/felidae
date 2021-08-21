@@ -37,11 +37,12 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
               : `news in category ${category}`,
             category,
             lang,
-            maxPageIndex || environment === "production"
-              ? 10
-              : environment === "staging"
-              ? 1
-              : 10,
+            maxPageIndex ||
+              (environment === "production"
+                ? 10
+                : environment === "staging"
+                ? 1
+                : 10),
             config
           ),
         (data) => postNewsDataToDb(pool, data),
