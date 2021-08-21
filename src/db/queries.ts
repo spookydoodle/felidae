@@ -14,17 +14,19 @@ export const qCreateDb = (dbName: string) => `CREATE DATABASE ${dbName};`;
 // Create table queries
 export const newsTbDataTypeLengths = {
   categoryLen: 20,
-  langLen: 7,
+  countryLen: 2,
+  langLen: 2,
   headlineLen: 150,
   providerLen: 40,
   urlLen: 255,
 };
 export const qCreateTbNews = (tbName: string) => {
-  const { categoryLen, langLen, headlineLen, providerLen, urlLen } = newsTbDataTypeLengths;
+  const { categoryLen, countryLen, langLen, headlineLen, providerLen, urlLen } = newsTbDataTypeLengths;
 
   return `CREATE TABLE ${tbName}(
     id SERIAL PRIMARY KEY,
     category VARCHAR(${categoryLen}),
+    country VARCHAR(${countryLen}),
     lang VARCHAR(${langLen}),
     headline VARCHAR(${headlineLen}),
     provider VARCHAR(${providerLen}),
@@ -97,5 +99,5 @@ const addOrderBy = (orderByArr: OrderBy[]) => {
 // Post data queries
 // to_timestamp is expecting a value in seconds, while provided js timestamp is in ms, hence division by 1000.0
 export const qInsertToNews = (tbNews: string) =>
-  `INSERT INTO ${tbNews}(category, lang, headline, provider, url, timestamp) 
-  VALUES ($1, $2, $3, $4, $5, (to_timestamp($6 / 1000.0))) RETURNING *;`;
+  `INSERT INTO ${tbNews}(category, country, lang, headline, provider, url, timestamp) 
+  VALUES ($1, $2, $3, $4, $5, $6, (to_timestamp($7 / 1000.0))) RETURNING *;`;

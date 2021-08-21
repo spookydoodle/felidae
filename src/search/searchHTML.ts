@@ -4,11 +4,11 @@ import jsdom from "jsdom";
 import {
   ResultPage,
   Lang,
+  Country,
   SearchResult,
   Headlines,
   Category,
   SearchConfig,
-  Headline,
   HeadlineData,
   SelectorData,
 } from "../logic/types";
@@ -27,6 +27,7 @@ const { JSDOM } = jsdom;
 
 const defaultQuery = "news";
 const defaultLang: Lang = "en";
+const defaultCountry: Country = "gb";
 
 const headers = {
   "User-Agent":
@@ -37,6 +38,7 @@ const headers = {
 export const getResults = (
   query: string = defaultQuery,
   category: Category,
+  country: Country = defaultCountry,
   lang: Lang = defaultLang,
   resultPageIndex: ResultPage,
   config: SearchConfig
@@ -45,6 +47,7 @@ export const getResults = (
   // q - query;
   // tbm=nws - search in news section
   // start=10 - second page, start from the 10th result (10 per page)
+  // cr=xx - results from country of origin
   // lr=lang_xx - results language
   // tbs=qdr:d,sbd:n -  (sbd)sort by: relevance 0; date 1
 
@@ -64,15 +67,16 @@ export const getResults = (
       production: {
         url: `https://www.google.com/search?q=${query}&tbm=nws&start=${
           (resultPageIndex - 1) * 10
-        }&lr=lang_${lang}&tbs=qdr:d,sbd:0`,
-        selector: "#main > div:nth-child(n+2) > div > div:nth-child(1) > a",
+        }&cr=${country}&lr=lang_${lang}&tbs=qdr:d,sbd:0`,
+        // selector: "#main > div:nth-child(n+2) > div > div:nth-child(1) > a",
+        selector: "#search > div > div > div a",
         transform: transformGoogle,
       },
       staging: {
         url: `https://www.google.com/search?q=${query}&tbm=nws&start=${
           (resultPageIndex - 1) * 10
-        }&lr=lang_${lang}&tbs=qdr:d,sbd:0`,
-        selector: "#main > div:nth-child(n+2) > div > div:nth-child(1) > a",
+        }&cr=${country}&lr=lang_${lang}&tbs=qdr:d,sbd:0`,
+        selector: "#search > div > div > div a",
         transform: transformGoogle,
       },
       development: {
@@ -83,12 +87,12 @@ export const getResults = (
     },
     bing: {
       production: {
-        url: `https://www.bing.com/news/search?q=${query}&cc=${lang === 'en' ? 'gb' : lang}`,
+        url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}`,
         selector: ".news-card a.title",
         transform: transformBing,
       },
       staging: {
-        url: `https://www.bing.com/news/search?q=${query}&cc=${lang === 'en' ? 'gb' : lang}`,
+        url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}`,
         selector: ".news-card a.title",
         transform: transformBing,
       },
@@ -116,6 +120,7 @@ export const getResults = (
       // TODO: Set up automated check for length 10
       const results = transform(headlines, config).map((headline) => ({
         category,
+        country,
         lang,
         ...headline,
       }));
@@ -146,6 +151,7 @@ export const getResults = (
 export const getAllResults = async (
   query: string = defaultQuery,
   category: Category,
+  country: Country = defaultCountry,
   lang: Lang = defaultLang,
   maxPageIndex: ResultPage,
   config: SearchConfig
@@ -169,13 +175,14 @@ export const getAllResults = async (
     let response = await getResults(
       query,
       category,
+      country,
       lang,
       (i + 1) as ResultPage,
       config
     )
       .then((res) => {
         createLogMsg(
-          `Data for query '${query}' in lang '${lang}' from page ${
+          `Data for query '${query}' from country '${country}' in lang '${lang}' from page ${
             i + 1
           } processed successfully.`,
           "success"
@@ -184,7 +191,7 @@ export const getAllResults = async (
       })
       .catch((err) => {
         createLogMsg(
-          `Requesting data for query '${query}' in lang '${lang}' from page ${
+          `Requesting data for query '${query}' from country '${country}' in lang '${lang}' from page ${
             i + 1
           } returned an error.`,
           "error"
@@ -211,6 +218,7 @@ export const getAllResults = async (
 // Receive html elements with headlines and transform to desired output format
 // HTML objects array is in format: [headline0, image0, headline1, image1, headline2...].
 // We need only the headline, so the array is first filtered by even indexes
+// TODO: this is not working well enough yet
 const transformGoogle = (
   headlines: any[],
   config: SearchConfig
@@ -218,17 +226,19 @@ const transformGoogle = (
   const { environment } = config;
 
   return headlines.map((el: any, i: number) => ({
-    headline: el
-      .querySelector(environment === prod ? "h3 > div" : ".JheGif.nDgy9d")
-      .textContent.trim(),
-    provider: el
-      .querySelector(environment === prod ? "h3 + div" : ".XTjFC.WF4CUc")
-      .textContent.trim(),
+    headline: el.querySelector("div > div:nth-child(2) > div + div:nth-child(2)") != null ? el.querySelector("div > div:nth-child(2) > div + div:nth-child(2)").textContent: "", 
+    // el
+    //   .querySelector(environment === prod ? "h3 > div" : ".JheGif.nDgy9d")
+    //   .textContent.trim(),
+    url: el.href,
+    // environment === prod
+    //   ? el.href.substring(7, el.href.indexOf("&")).trim()
+    //   : el.href, // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url
+    provider: el.querySelector("div > div:nth-child(2) > div + div:nth-child(1)") != null ? el.querySelector("div > div:nth-child(2) > div + div:nth-child(1)").textContent : "",
+    // el
+    //   .querySelector(environment === prod ? "h3 + div" : ".XTjFC.WF4CUc")
+    //   .textContent.trim(),
     // TODO: Set up automated test for href format
-    url:
-      environment === prod
-        ? el.href.substring(7, el.href.indexOf("&")).trim()
-        : el.href, // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url
     timestamp: Date.now(),
   }));
 };

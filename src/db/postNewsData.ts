@@ -1,18 +1,19 @@
 import { Pool } from "pg";
-import { Headlines, Category, Lang } from "../logic/types";
+import { Headlines, Category, Lang, Country } from "../logic/types";
 import { TB_NEWS, DB_NAME } from "./constants";
 import { qRowExists, qInsertToNews, qSelectNewsHeadlines, SelectConfig, newsTbDataTypeLengths } from "./queries";
 
 export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
   const items: Headlines[] = [];
   let duplicateCount: number = 0;
-  const { categoryLen, langLen, headlineLen, providerLen, urlLen } = newsTbDataTypeLengths;
+  const { categoryLen, countryLen, langLen, headlineLen, providerLen, urlLen } = newsTbDataTypeLengths;
 
   // Before inserting make sure data meets data type criteria defined in postgres table
   // Also, make sure entry does not exist yet; if it does, then skip it
-  for (const { category, lang, headline, provider, url, timestamp } of data) {
+  for (const { category, country, lang, headline, provider, url, timestamp } of data) {
     if (
       category.length <= categoryLen &&
+      country.length <= countryLen &&
       lang.length <= langLen &&
       headline.length <= headlineLen && 
       provider.length <= providerLen &&
@@ -26,6 +27,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
             await pool
               .query(qInsertToNews(TB_NEWS), [
                 category,
+                country,
                 lang,
                 headline,
                 provider.substring(0, 40),
@@ -44,6 +46,8 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
         `Headline: "${headline}" not added due to ${
           category.length > categoryLen
             ? `its category '${category}' length of ${category.length} (max ${categoryLen})`
+            : country.length > countryLen 
+            ? `its country '${country}' length of ${country.length} (max ${countryLen})` 
             : lang.length > langLen 
             ? `its lang '${lang}' length of ${lang.length} (max ${langLen})` 
             : headline.length > headlineLen
@@ -66,6 +70,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
 // Mandatory to provide category and language; default general in English
 interface SelectFilter {
   category: Category;
+  country: Country;
   lang: Lang;
   provider?: string;
   dateFrom?: number;
@@ -77,7 +82,7 @@ export const selectNewsData = (
   selectConfig: SelectConfig = {}
 ): Promise<Headlines> =>
   pool
-    .query(qSelectNewsHeadlines(TB_NEWS, ["category", "lang", "headline", "provider", "url", "timestamp"], selectConfig))
+    .query(qSelectNewsHeadlines(TB_NEWS, ["category", "country", "lang", "headline", "provider", "url", "timestamp"], selectConfig))
     .then((res) => res.rows)
     .catch((err) => {
       console.log(err);

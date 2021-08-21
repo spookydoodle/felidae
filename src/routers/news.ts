@@ -42,7 +42,7 @@ router.get("/dummy/bing", (req, res) => {
 
 router.get("/:category", addQuery, async (req, res) => {
   const { category } = req.params;
-  const { lang, page } = req.query;
+  const { country, lang, page } = req.query;
   const pageNum = Number(page);
 
   const pg = page && !isNaN(pageNum) && pageNum > 0 ? pageNum : 1;
@@ -52,6 +52,7 @@ router.get("/:category", addQuery, async (req, res) => {
     const data = await selectNewsData(pool, {
       filters: [
         ["category", "equal", category],
+        ["country", "equal", (country as string) || "gb"],
         ["lang", "equal", (lang as string) || "en"],
         // ["timestamp", "greaterOrEqual", "TODO:"],
       ],

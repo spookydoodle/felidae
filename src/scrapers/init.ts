@@ -2,7 +2,7 @@ import { Pool } from "pg";
 import Scraper from "./scraper";
 import { getAllResults } from "../search/searchHTML";
 import { postNewsDataToDb } from "../db/postNewsData";
-import { Lang, Category, SearchConfig } from "../logic/types";
+import { Lang, Category, SearchConfig, Country } from "../logic/types";
 
 const capitalize = (text: string) =>
   text.charAt(0).toUpperCase() + text.substring(1).toLowerCase();
@@ -19,23 +19,33 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
     "health",
     "science",
   ];
-  const languages: Lang[] = ["en", "de", "nl", "pl"];
+  const countryLang: { [key in Country]: Lang } = {
+    "gb": "en",
+    "us": "en",
+    "de": "de",
+    "nl": "nl",
+    "pl": "pl",
+  }
+
+  const countries = Object.keys(countryLang);
 
   // Set timeout for each initialization with interval of 60 seconds to prevent from 429 errors
-  for (let i = 0; i < categories.length * languages.length; i++) {
+  for (let i = 0; i < categories.length * countries.length; i++) {
     const timeout = setTimeout(async () => {
-      const categoryIndex = Math.floor(i / languages.length);
-      const langIndex = i % languages.length;
+      const categoryIndex = Math.floor(i / countries.length);
+      const countryIndex = i % countries.length;
       const category = categories[categoryIndex];
-      const lang = languages[langIndex];
+      const country = countries[countryIndex] as Country;
+      const lang = countryLang[country];
       let scraper = await new Scraper(
-        `${capitalize(category)} News in ${lang}`,
+        `${capitalize(category)} News from ${country} in ${lang}`,
         () =>
           getAllResults(
             categories[categoryIndex] === "general"
               ? "news"
               : `news in category ${category}`,
             category,
+            country,
             lang,
             maxPageIndex ||
               (environment === "production"

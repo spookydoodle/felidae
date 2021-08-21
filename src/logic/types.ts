@@ -17,6 +17,7 @@ type Category =
   | "health"
   | "science";
 type Lang = "en" | "de" | "nl" | "pl";
+type Country = "gb" | "us" | "de" | "nl" | "pl";
 
 interface HeadlineData {
   headline: string;
@@ -27,6 +28,7 @@ interface HeadlineData {
 interface Headline extends HeadlineData {
   id?: number;
   category: Category;
+  country: Country;
   lang: Lang;
 }
 
@@ -60,6 +62,7 @@ export {
   SearchConfig,
   ResultPage,
   Lang,
+  Country,
   HeadlineData,
   Headlines,
   Headline,
