@@ -56,7 +56,8 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
             config
           ),
         (data) => postNewsDataToDb(pool, data),
-        [[i % (updateFreqInHrs || 24), 0, 0, 0]]
+        new Array(24).fill(null).map((el, i) => [i, 0, 0, 0]),  // Update to be done every hour
+        15 * 60 * 1000  // Update check every 15 min
       ).initialize();
 
       scrapers.push(scraper);
