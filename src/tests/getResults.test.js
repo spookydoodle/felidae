@@ -7,12 +7,26 @@
 import { getResults } from "../search/searchHTML";
 
 test("Check result objects key structure", async () => {
-  const res = await getResults("news", "general", "lang_en", 1, { environment: "production" });
-  const keys = Object.keys(res.results[0]);
-  const { headline, url } = res.results[0];
-  
-  expect(keys).toStrictEqual(["category", "lang", "headline", "provider", "url", "timestamp"]);
-  expect(typeof headline).toBe("string");
-  expect(headline.length > 0).toBe(true);
-  expect(url.substring(0, 4)).toBe("http");
+  const enginesToCheck = ["google", "bing"];
+
+  for (const engine of enginesToCheck) {
+    const res = await getResults("news", "general", "en", 1, {
+      environment: "production",
+      engine: engine,
+    });
+    const keys = Object.keys(res.results[0]);
+    const { headline, url } = res.results[0];
+
+    expect(keys).toStrictEqual([
+      "category",
+      "lang",
+      "headline",
+      "provider",
+      "url",
+      "timestamp",
+    ]);
+    expect(typeof headline).toBe("string");
+    expect(headline.length > 0).toBe(true);
+    expect(url.substring(0, 4)).toBe("http");
+  }
 });

@@ -5,7 +5,8 @@ import { selectNewsData } from "../db/postNewsData";
 import { DB_NAME } from "../db/constants";
 import generatePage from "../pages/generatePage";
 import createLogMsg from '../utils/createLogMsg';
-import dummyPage from "../search/dummyPage";
+import dummyPageGoogle from "../search/dummyPageGoogle";
+import dummyPageBing from "../search/dummyPageBing";
 
 const addQuery = (req: any, res: any, next: any) => {
   const { page } = req.query;
@@ -32,8 +33,11 @@ router.get("/", (req: any, res: any) => {
 });
 
 // Dummy page for local development - static page to avoid 429 error
-router.get("/dummy", (req, res) => {
-  res.status(200).send(dummyPage);
+router.get("/dummy/google", (req, res) => {
+  res.status(200).send(dummyPageGoogle);
+})
+router.get("/dummy/bing", (req, res) => {
+  res.status(200).send(dummyPageBing);
 })
 
 router.get("/:category", addQuery, async (req, res) => {
@@ -48,7 +52,7 @@ router.get("/:category", addQuery, async (req, res) => {
     const data = await selectNewsData(pool, {
       filters: [
         ["category", "equal", category],
-        ["lang", "equal", (lang as string) || "lang_en"],
+        ["lang", "equal", (lang as string) || "en"],
         // ["timestamp", "greaterOrEqual", "TODO:"],
       ],
       top: top,

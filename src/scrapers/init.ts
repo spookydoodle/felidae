@@ -2,12 +2,12 @@ import { Pool } from "pg";
 import Scraper from "./scraper";
 import { getAllResults } from "../search/searchHTML";
 import { postNewsDataToDb } from "../db/postNewsData";
-import { Lang, Category, Config } from "../logic/types";
+import { Lang, Category, SearchConfig } from "../logic/types";
 
 const capitalize = (text: string) =>
   text.charAt(0).toUpperCase() + text.substring(1).toLowerCase();
 
-export const initializeNewsScrapers = (pool: Pool, config: Config) => {
+export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
   const { environment } = config;
 
   let scrapers: Scraper[] = [];
@@ -19,7 +19,7 @@ export const initializeNewsScrapers = (pool: Pool, config: Config) => {
     "health",
     "science",
   ];
-  const languages: Lang[] = ["lang_en", "lang_de", "lang_nl", "lang_pl"];
+  const languages: Lang[] = ["en", "de", "nl", "pl"];
 
   // Set timeout for each initialization with interval of 60 seconds to prevent from 429 errors
   for (let i = 0; i < categories.length * languages.length; i++) {

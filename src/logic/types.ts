@@ -1,16 +1,31 @@
+type Environment = "production" | "staging" | "development";
+
+interface SearchConfig {
+  environment?: Environment;
+  engine: "google" | "bing";
+}
+
 type ResultPage = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
-type Category = "general" | "business" | "entertainment" | "sport" | "health" | "science";
-type Lang = "lang_en" | "lang_de" | "lang_nl" | "lang_pl";
+type Category =
+  | "general"
+  | "business"
+  | "entertainment"
+  | "sport"
+  | "health"
+  | "science";
+type Lang = "en" | "de" | "nl" | "pl";
 
-interface Headline {
-  id?: number;
-  category: Category;
-  lang: Lang;
+interface HeadlineData {
   headline: string;
   provider: string;
   url: string;
   timestamp: number;
+}
+interface Headline extends HeadlineData {
+  id?: number;
+  category: Category;
+  lang: Lang;
 }
 
 type HeadlineColumn = keyof Headline;
@@ -24,8 +39,34 @@ interface SearchResult {
 
 type UpdateTime = [number, number, number, number];
 
-interface Config {
-  environment?: string;
+type Engine = "google" | "bing";
+// type Environment = "production" | "local";
+interface UrlSelectorData {
+  url: string;
+  selector: string;
+  transform: (headlines: any[], config: SearchConfig) => HeadlineData[];
 }
+type EnvUrlSelectorData = {
+  [key in Environment]: UrlSelectorData;
+};
+type SelectorData = {
+  [key in Engine]: EnvUrlSelectorData;
+};
 
-export { ResultPage, Lang, Headlines, Headline, HeadlineColumn, Category, SearchResult, UpdateTime, Config };
+export {
+  Environment,
+  SearchConfig,
+  ResultPage,
+  Lang,
+  HeadlineData,
+  Headlines,
+  Headline,
+  HeadlineColumn,
+  Category,
+  SearchResult,
+  UpdateTime,
+  Engine,
+  UrlSelectorData,
+  EnvUrlSelectorData,
+  SelectorData,
+};
