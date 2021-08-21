@@ -6,17 +6,18 @@ import { qRowExists, qInsertToNews, qSelectNewsHeadlines, SelectConfig, newsTbDa
 export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
   const items: Headlines[] = [];
   let duplicateCount: number = 0;
-  const { categoryLen, countryLen, langLen, headlineLen, providerLen, urlLen } = newsTbDataTypeLengths;
+  const { categoryLen, countryLen, langLen, headlineLen, providerLen, urlLen, ageLen } = newsTbDataTypeLengths;
 
   // Before inserting make sure data meets data type criteria defined in postgres table
   // Also, make sure entry does not exist yet; if it does, then skip it
-  for (const { category, country, lang, headline, provider, url, timestamp } of data) {
+  for (const { category, country, lang, headline, provider, url, age, timestamp } of data) {
     if (
       category.length <= categoryLen &&
       country.length <= countryLen &&
       lang.length <= langLen &&
       headline.length <= headlineLen && 
       provider.length <= providerLen &&
+      age.length <= ageLen &&
       url.length <= urlLen
       ) {
       await pool
@@ -32,6 +33,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
                 headline,
                 provider.substring(0, 40),
                 url,
+                age,
                 timestamp,
               ])
               .then(({ rows }) => items.push(rows))
@@ -54,6 +56,8 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
             ? `its headline length of ${headline.length} char (max ${headlineLen})`
             : provider.length > providerLen
             ? `its provider length of ${provider.length} char (max ${providerLen})`
+            : age.length > ageLen
+            ? `its age length of ${age.length} char (max ${ageLen})`
             : `its url length of ${url.length} (max ${urlLen})`
         }`
       );
@@ -73,6 +77,7 @@ interface SelectFilter {
   country: Country;
   lang: Lang;
   provider?: string;
+  age?: string;
   dateFrom?: number;
   dateTo?: number;
 }
@@ -82,7 +87,7 @@ export const selectNewsData = (
   selectConfig: SelectConfig = {}
 ): Promise<Headlines> =>
   pool
-    .query(qSelectNewsHeadlines(TB_NEWS, ["category", "country", "lang", "headline", "provider", "url", "timestamp"], selectConfig))
+    .query(qSelectNewsHeadlines(TB_NEWS, ["category", "country", "lang", "headline", "provider", "url", "age", "timestamp"], selectConfig))
     .then((res) => res.rows)
     .catch((err) => {
       console.log(err);

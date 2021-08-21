@@ -88,17 +88,17 @@ export const getResults = (
     bing: {
       production: {
         url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}&qft=sortbydate%3d"1"+interval%3d"4"`,
-        selector: ".news-card a.title",
+        selector: ".news-card",
         transform: transformBing,
       },
       staging: {
         url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}&qft=sortbydate%3d"1"+interval%3d"4"`,
-        selector: ".news-card a.title",
+        selector: ".news-card",
         transform: transformBing,
       },
       development: {
         url: "http://localhost:5000/news/dummy/bing",
-        selector: ".news-card a.title",
+        selector: ".news-card",
         transform: transformBing,
       },
     },
@@ -226,7 +226,12 @@ const transformGoogle = (
   const { environment } = config;
 
   return headlines.map((el: any, i: number) => ({
-    headline: el.querySelector("div > div:nth-child(2) > div + div:nth-child(2)") != null ? el.querySelector("div > div:nth-child(2) > div + div:nth-child(2)").textContent: "", 
+    headline:
+      el.querySelector("div > div:nth-child(2) > div + div:nth-child(2)") !=
+      null
+        ? el.querySelector("div > div:nth-child(2) > div + div:nth-child(2)")
+            .textContent
+        : "",
     // el
     //   .querySelector(environment === prod ? "h3 > div" : ".JheGif.nDgy9d")
     //   .textContent.trim(),
@@ -234,11 +239,17 @@ const transformGoogle = (
     // environment === prod
     //   ? el.href.substring(7, el.href.indexOf("&")).trim()
     //   : el.href, // href is in format: '/url?q=https://...&param1=...', so we need to extract here the actual url
-    provider: el.querySelector("div > div:nth-child(2) > div + div:nth-child(1)") != null ? el.querySelector("div > div:nth-child(2) > div + div:nth-child(1)").textContent : "",
+    provider:
+      el.querySelector("div > div:nth-child(2) > div + div:nth-child(1)") !=
+      null
+        ? el.querySelector("div > div:nth-child(2) > div + div:nth-child(1)")
+            .textContent
+        : "",
     // el
     //   .querySelector(environment === prod ? "h3 + div" : ".XTjFC.WF4CUc")
     //   .textContent.trim(),
     // TODO: Set up automated test for href format
+    age: "",
     timestamp: Date.now(),
   }));
 };
@@ -249,13 +260,19 @@ const transformBing = (
 ): HeadlineData[] =>
   headlines
     .filter((el: any) => el.textContent !== "")
-    .map((el: any) => ({
-      // remove spaces, tabs and new line substrings '\n'
-      headline: el.textContent.replace(/\s\s+/g, " ").trim(),
-      url: el.href,
-      provider:
-        el.attributes.getNamedItem("data-author") !== null
-          ? el.attributes.getNamedItem("data-author").value
-          : "",
-      timestamp: Date.now(),
-    }));
+    .map((el: any) => {
+      const anchor = el.querySelector("a.title");
+      const ageEl = el.querySelector(".source > span:nth-child(3)");
+
+      return {
+        // remove spaces, tabs and new line substrings '\n'
+        headline: anchor.textContent.replace(/\s\s+/g, " ").trim(),
+        url: anchor.href,
+        provider:
+          anchor.attributes.getNamedItem("data-author") !== null
+            ? anchor.attributes.getNamedItem("data-author").value
+            : "",
+        age: ageEl.textContent,
+        timestamp: Date.now(),
+      };
+    });

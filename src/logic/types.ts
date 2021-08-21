@@ -23,8 +23,10 @@ interface HeadlineData {
   headline: string;
   provider: string;
   url: string;
+  age: string;
   timestamp: number;
 }
+
 interface Headline extends HeadlineData {
   id?: number;
   category: Category;

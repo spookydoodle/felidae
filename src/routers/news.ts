@@ -7,6 +7,7 @@ import generatePage from "../pages/generatePage";
 import createLogMsg from '../utils/createLogMsg';
 import dummyPageGoogle from "../search/dummyPageGoogle";
 import dummyPageBing from "../search/dummyPageBing";
+import { NewsFilterCondition } from "../db/queries";
 
 const addQuery = (req: any, res: any, next: any) => {
   const { page } = req.query;
@@ -48,14 +49,14 @@ router.get("/:category", addQuery, async (req, res) => {
   const pg = page && !isNaN(pageNum) && pageNum > 0 ? pageNum : 1;
   const [top, skip] = [100, (pg - 1) * 100];
 
+  const filters: NewsFilterCondition[] = [["category", "equal", category]];
+
+  if (country) filters.push(["country", "equal", (country as string)]);
+  if (lang) filters.push(["lang", "equal", (lang as string)]);
+
   if (pool) {
     const data = await selectNewsData(pool, {
-      filters: [
-        ["category", "equal", category],
-        ["country", "equal", (country as string) || "gb"],
-        ["lang", "equal", (lang as string) || "en"],
-        // ["timestamp", "greaterOrEqual", "TODO:"],
-      ],
+      filters: filters,
       top: top,
       skip: skip,
     });

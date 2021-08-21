@@ -21,6 +21,7 @@ test("Check bing result objects key structure", async () => {
     "headline",
     "url",
     "provider",
+    "age",
     "timestamp",
   ]);
   expect(typeof headline).toBe("string");
@@ -43,6 +44,7 @@ test("Check google result objects key structure", async () => {
     "headline",
     "url",
     "provider",
+    "age",
     "timestamp",
   ]);
   expect(typeof headline).toBe("string");
