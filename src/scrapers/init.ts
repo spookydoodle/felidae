@@ -42,7 +42,7 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
         () =>
           getAllResults(
             categories[categoryIndex] === "general"
-              ? "news"
+              ? "news today"
               : `news in category ${category}`,
             category,
             country,
