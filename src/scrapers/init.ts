@@ -38,7 +38,7 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
             config
           ),
         (data) => postNewsDataToDb(pool, data),
-        new Array(24).fill(null).map((el, i) => [i, 0, 0, 0]), // Update to be done every hour
+        new Array(12).fill(null).map((el, i) => [i * 2, 0, 0, 0]), // Update to be done every two hours
         15 * 60 * 1000 // Update check every 15 min
       ).initialize();
 
