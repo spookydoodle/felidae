@@ -29,25 +29,26 @@ test("Check bing result objects key structure", async () => {
   expect(url.substring(0, 4)).toBe("http");
 });
 
-test("Check google result objects key structure", async () => {
-  const res = await getResults("news", "general", "gb", "en", 1, {
-    environment: "production",
-    engine: "google",
-  });
-  const keys = Object.keys(res.results[0] || {});
-  const { headline, url } = res.results[0] || {};
+// // Obsolete - google sucks
+// test("Check google result objects key structure", async () => {
+//   const res = await getResults("news", "general", "gb", "en", 1, {
+//     environment: "production",
+//     engine: "google",
+//   });
+//   const keys = Object.keys(res.results[0] || {});
+//   const { headline, url } = res.results[0] || {};
 
-  expect(keys).toStrictEqual([
-    "category",
-    "country",
-    "lang",
-    "headline",
-    "url",
-    "provider",
-    "age",
-    "timestamp",
-  ]);
-  expect(typeof headline).toBe("string");
-  expect(headline.length > 0).toBe(true);
-  expect(url.substring(0, 4)).toBe("http");
-});
+//   expect(keys).toStrictEqual([
+//     "category",
+//     "country",
+//     "lang",
+//     "headline",
+//     "url",
+//     "provider",
+//     "age",
+//     "timestamp",
+//   ]);
+//   expect(typeof headline).toBe("string");
+//   expect(headline.length > 0).toBe(true);
+//   expect(url.substring(0, 4)).toBe("http");
+// });
