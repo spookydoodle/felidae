@@ -9,10 +9,10 @@ import { qCreateDb, qCreateTb } from "./db/queries";
 import createLogMsg from "./utils/createLogMsg";
 
 const config = {
-  user: "postgres",
+  user: process.env.DATABASE_USER || "postgres",
   password: process.env.DATABASE_PASS,
   host: process.env.DATABASE_HOST || "localhost",
-  port: 5432,
+  port: Number(process.env.DATABASE_PORT || 5432),
 };
 
 type TableType = keyof ReturnType<typeof qCreateTb>;
