@@ -21,7 +21,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
       url.length <= urlLen
       ) {
       await pool
-        .query(qRowExists(TB_NEWS, [["url", "equal", url]]))
+        .query(qRowExists(TB_NEWS, [["url", "eq", url]]))
         .then(async ({ rows }) => {
           // Don't check type, just value
           if (rows[0].count == 0) {
@@ -85,11 +85,13 @@ interface SelectFilter {
 export const selectNewsData = (
   pool: Pool,
   selectConfig: SelectConfig = {}
-): Promise<Headlines> =>
-  pool
+): Promise<Headlines> => {
+  console.log(qSelectNewsHeadlines(TB_NEWS, ["category", "country", "lang", "headline", "provider", "url", "age", "timestamp"], selectConfig));
+  return pool
     .query(qSelectNewsHeadlines(TB_NEWS, ["category", "country", "lang", "headline", "provider", "url", "age", "timestamp"], selectConfig))
     .then((res) => res.rows)
     .catch((err) => {
       console.log(err);
       return [];
     });
+  }

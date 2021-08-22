@@ -1,11 +1,11 @@
 import { Headline, HeadlineColumn } from "../logic/types";
 
 const conditions = {
-  equal: "=",
-  greaterThan: ">",
-  greaterOrEqual: ">=",
-  lessThan: "<",
-  lessThanOrEqual: "<=",
+  eq: "=",
+  gt: ">",
+  gte: ">=",
+  lt: "<",
+  lte: "<=",
 };
 
 // Create database queries
@@ -80,9 +80,10 @@ const addWhere = (filterArr: NewsFilterCondition[]): string => {
   let filter = "";
 
   filterArr.forEach(([col, condition, val], i) => {
-    filter += ` ${i === 0 ? "WHERE" : "AND"} ${col} ${
-      conditions[condition]
-    } '${val}'`;
+    // timestamp::date = date '2021-08-22'
+    filter += ` ${i === 0 ? "WHERE" : "AND"} ${
+      col + (col === "timestamp" ? "::date" : "")
+    } ${conditions[condition]} ${col === "timestamp" ? "date " : ""}'${val}'`;
   });
 
   return filter;
