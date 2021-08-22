@@ -1,5 +1,5 @@
 {
-  "name": "news-scraper",
+  "name": "felidae",
   "version": "1.0.0",
   "description": "This API lists news headlines and descriptions in various categories.",
   "main": "index.js",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/spookydoodle/news-scraper.git"
+    "url": "git+https://github.com/spookydoodle/felidae.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/spookydoodle/news-scraper/issues"
+    "url": "https://github.com/spookydoodle/felidae/issues"
   },
-  "homepage": "https://github.com/spookydoodle/news-scraper#readme",
+  "homepage": "https://github.com/spookydoodle/felidae#readme",
   "devDependencies": {
     "@babel/core": "^7.15.0",
     "@babel/preset-env": "^7.15.0",

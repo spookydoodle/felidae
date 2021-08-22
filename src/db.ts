@@ -6,6 +6,7 @@
 */
 import { Pool } from "pg";
 import { qCreateDb, qCreateTb } from "./db/queries";
+import createLogMsg from "./utils/createLogMsg";
 
 const config = {
   user: "postgres",
@@ -27,8 +28,9 @@ const initializeDb = (dbName: string): Promise<string> =>
     // Create DB if doesn't exist; then end pool and re-connect again on the right db to create table
     await pool.query(qCreateDb(dbName), (dbErr) => {
       if (!dbErr || dbErr.message.indexOf("already exists") != -1) {
-        console.log(
-          `Data base '${dbName}' ${!dbErr ? "created" : "already exists"}.`
+        createLogMsg(
+          `Data base '${dbName}' ${!dbErr ? "created" : "already exists"}.`,
+          "info"
         );
 
         pool.end();
@@ -53,10 +55,11 @@ export const initializeTb = (
 
     await pool.query(qCreateTb(tbName).news, (tbErr) => {
       if (!tbErr || tbErr.message.indexOf("already exists") != -1) {
-        console.log(
+        createLogMsg(
           `Table structure of type '${tbType}' ${
             !tbErr ? "created" : "already exists"
-          }.`
+          }.`,
+          "info"
         );
 
         // End pool and resolve by returning the database name
@@ -71,7 +74,7 @@ export const initializeTb = (
 
 export const getPool = (dbName: string): Pool => {
   let pool = new Pool({ ...config, database: dbName });
-  pool.connect().catch((err) => console.log(err));
+  pool.connect().catch((err) => createLogMsg(err, "error"));
 
   return pool;
 };
