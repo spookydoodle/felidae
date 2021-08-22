@@ -111,24 +111,8 @@ interface SelectFilter {
 export const selectNewsData = (
   pool: Pool,
   selectConfig: SelectConfig = {}
-): Promise<Headlines> => {
-  console.log(
-    qSelectNewsHeadlines(
-      TB_NEWS,
-      [
-        "category",
-        "country",
-        "lang",
-        "headline",
-        "provider",
-        "url",
-        "age",
-        "timestamp",
-      ],
-      selectConfig
-    )
-  );
-  return pool
+): Promise<Headlines> =>
+  pool
     .query(
       qSelectNewsHeadlines(
         TB_NEWS,
@@ -150,4 +134,3 @@ export const selectNewsData = (
       console.log(err);
       return [];
     });
-};
