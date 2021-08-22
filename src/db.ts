@@ -13,6 +13,7 @@ const config = {
   password: process.env.DATABASE_PASS,
   host: process.env.DATABASE_HOST || "localhost",
   port: Number(process.env.DATABASE_PORT || 5432),
+  ssl: true
 };
 
 type TableType = keyof ReturnType<typeof qCreateTb>;
