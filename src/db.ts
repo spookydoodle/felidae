@@ -13,6 +13,7 @@ const config = {
   password: process.env.DATABASE_PASS,
   host: process.env.DATABASE_HOST || "localhost",
   port: Number(process.env.DATABASE_PORT || 5432),
+  database: process.env.DEFAULT_DATABASE_NAME || "postgres",
   ssl:
     process.env.NODE_ENV === "production"
       ? {
