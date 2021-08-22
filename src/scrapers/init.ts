@@ -4,9 +4,7 @@ import { getAllResults } from "../search/searchHTML";
 import { postNewsDataToDb } from "../db/postNewsData";
 import { SearchConfig, Country } from "../logic/types";
 import { categories, countryLang, queries } from "./constants";
-
-const capitalize = (text: string) =>
-  text.charAt(0).toUpperCase() + text.substring(1).toLowerCase();
+import { capitalize } from "../utils/stringTransform";
 
 export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
   const { environment, maxPageIndex, updateFreqInHrs } = config;
