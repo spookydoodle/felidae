@@ -4,6 +4,7 @@
   "description": "This API lists news headlines and descriptions in various categories.",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "test": "jest",
     "dev": "ts-node-dev src/index.ts",
     "start": "ts-node-dev src/index.ts"
