@@ -47,7 +47,9 @@ export type NewsFilterCondition = [
   string
 ];
 
-export type OrderBy = [HeadlineColumn, "ASC" | "DESC"];
+export type OrderType = "ASC" | "DESC";
+
+export type OrderBy = [HeadlineColumn, OrderType];
 
 export interface SelectConfig {
   filters?: NewsFilterCondition[];
