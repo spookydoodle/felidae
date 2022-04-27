@@ -14,7 +14,14 @@ router.get('/', async (req: any, res: any) => {
     const sec = uptime % 60;
 
     // Construct health check json
-    const healthcheck = {
+    const healthcheck: {
+        timestamp: number;
+        uptime: number;
+        uptimeFormatted: string;
+        node: { status: 'OK' | 'Not OK'; message: string };
+        startTime: string;
+        error: undefined | unknown;
+    } = {
         timestamp: Date.now(),
         uptime: uptime,
         uptimeFormatted: `${H} hrs ${min} min ${sec.toFixed(0)} s`,
