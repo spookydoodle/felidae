@@ -43,6 +43,7 @@ jspm_packages/
 
 # build folder
 built/
+lib/
 
 # TypeScript v1 declaration files
 typings/
@@ -108,3 +109,4 @@ dist
 
 # build
 built/
+lib/
