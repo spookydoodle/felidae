@@ -17,8 +17,8 @@ const config = {
   ssl:
     process.env.NODE_ENV === "production"
       ? {
-          rejectUnauthorized: true,
-          ca: process.env.CA_CERT,
+          rejectUnauthorized: false,
+        //   ca: process.env.CA_CERT,
         }
       : undefined,
 };
