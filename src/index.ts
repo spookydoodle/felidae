@@ -20,18 +20,18 @@ import { Environment } from "./logic/types";
 // Create db and table if they don't exist; then connect.
 // Then create and initialize instances of the news scraper
 // which updates data every 24 hours.
-initializeDb(DB_NAME)
-  .then((dbName) => initializeTb(dbName, "news", TB_NEWS))
-  .then((dbName) => getPool(dbName))
-  .then((pool) =>
-    initializeNewsScrapers(pool, {
-      environment: process.env.NODE_ENV as Environment,
-      engine: "bing",
-      maxPageIndex: 1,
-      updateFreqInHrs: 1, // Update every hour - the link for bing collects data from last hr
-    })
-  )
-  .catch((err) => console.error(err));
+// initializeDb(DB_NAME)
+//   .then((dbName) => initializeTb(dbName, "news", TB_NEWS))
+//   .then((dbName) => getPool(dbName))
+//   .then((pool) =>
+//     initializeNewsScrapers(pool, {
+//       environment: process.env.NODE_ENV as Environment,
+//       engine: "bing",
+//       maxPageIndex: 1,
+//       updateFreqInHrs: 1, // Update every hour - the link for bing collects data from last hr
+//     })
+//   )
+//   .catch((err) => console.error(err));
 
 // Run express app
 const PORT = process.env.PORT || 5000;
