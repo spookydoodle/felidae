@@ -2,6 +2,7 @@ import express from 'express';
 
 // Define a router for health
 const router = express.Router();
+const startTime = new Date();
 
 // Health check
 // 1. Display uptime info
@@ -22,10 +23,10 @@ router.get('/', async (req: any, res: any) => {
         startTime: string;
         error: undefined | unknown;
     } = {
-        timestamp: Date.now(),
+        timestamp: startTime.valueOf(),
         uptime: uptime,
         uptimeFormatted: `${H} hrs ${min} min ${sec.toFixed(0)} s`,
-        startTime: new Date().toUTCString(),
+        startTime: startTime.toUTCString(),
         node: {
             status: 'OK',
             message: 'Node.js server runing',
