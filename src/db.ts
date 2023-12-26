@@ -17,9 +17,9 @@ const config = {
   ssl:
     process.env.NODE_ENV === "production"
       ? {
-          rejectUnauthorized: false,
+        rejectUnauthorized: false,
         //   ca: process.env.CA_CERT,
-        }
+      }
       : undefined,
 };
 
@@ -31,7 +31,13 @@ const initializeDb = (dbName: string): Promise<string> =>
     // Connect to new pool
     let pool = new Pool(config);
 
-    pool.connect();
+    try {
+      await pool.connect();
+    } catch (e) {
+      createLogMsg((e as Error)?.message ?? 'Could not connect to data base.', 'error');
+
+      return;
+    }
 
     // Create DB if doesn't exist; then end pool and re-connect again on the right db to create table
     await pool.query(qCreateDb(dbName), (dbErr) => {
@@ -64,8 +70,7 @@ export const initializeTb = (
     await pool.query(qCreateTb(tbName).news, (tbErr) => {
       if (!tbErr || tbErr.message.indexOf("already exists") != -1) {
         createLogMsg(
-          `Table structure of type '${tbType}' ${
-            !tbErr ? "created" : "already exists"
+          `Table structure of type '${tbType}' ${!tbErr ? "created" : "already exists"
           }.`,
           "info"
         );
@@ -80,11 +85,15 @@ export const initializeTb = (
     });
   });
 
-export const getPool = (dbName: string): Pool => {
-  let pool = new Pool({ ...config, database: dbName });
-  pool.connect().catch((err) => createLogMsg(err, "error"));
+export const getPool = async (dbName: string): Promise<Pool | undefined> => {
+  try {
+    let pool = new Pool({ ...config, database: dbName });
+    await pool.connect();
 
-  return pool;
+    return pool;
+  } catch (err) {
+    createLogMsg((err as Error).message ?? 'Could not get pool', "error")
+  }
 };
 
 export { initializeDb };

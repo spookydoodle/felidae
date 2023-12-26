@@ -25,15 +25,15 @@ const router = express.Router();
 
 // Initialize PostgreSQL - give timeout for the first run, if DB_NAME does not exist, it will first need to be created
 let pool: Pool | undefined;
-setTimeout(() => {
-  pool = getPool(DB_NAME);
+setTimeout(async () => {
+  pool = await getPool(DB_NAME);
   createLogMsg(
     `Connection between router 'News' and database '${DB_NAME}' established.`,
     "info"
   );
 }, 5000);
 
-router.get("/", (req: any, res: any) => {
+router.get("/", (_req: any, res: any) => {
   res.status(200).send(generatePage("Hello from Felidae's News Scraper API."));
 });
 
@@ -98,7 +98,7 @@ router.get("/:category", addQuery, async (req, res) => {
 
     res.status(200).send(data);
   } else {
-    res.status(200).send([]);
+    res.status(500).send({ message: 'Database connection failed.' });
   }
 });
 
