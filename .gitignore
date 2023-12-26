@@ -109,4 +109,6 @@ dist
 
 # build
 built/
+build/
+dist/
 lib/
