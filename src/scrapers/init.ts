@@ -7,9 +7,9 @@ import { categories, countryLang, queries } from "./constants";
 import { capitalize } from "../utils/stringTransform";
 
 export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
-  const { environment, maxPageIndex, updateFreqInHrs } = config;
+  const { maxPageIndex } = config;
 
-  let scrapers: Scraper[] = [];
+  const scrapers: Scraper[] = [];
 
   const countries = Object.keys(countryLang);
 
@@ -21,24 +21,18 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
       const category = categories[categoryIndex];
       const country = countries[countryIndex] as Country;
       const lang = countryLang[country];
-      let scraper = await new Scraper(
+      const scraper = await new Scraper(
         `${capitalize(category)} News from ${country} in ${lang}`,
         () =>
           getAllResults(
             queries[lang][category],
-            category,
-            country,
-            lang,
+              { category, country, lang },
             maxPageIndex ||
-              (environment === "production"
-                ? 10
-                : environment === "staging"
-                ? 1
-                : 10),
+              10,
             config
           ),
         (data) => postNewsDataToDb(pool, data),
-        new Array(12).fill(null).map((el, i) => [i * 2, 0, 0, 0]), // Update to be done every two hours
+        new Array(12).fill(null).map((_el, i) => [i * 2, 0, 0, 0]), // Update to be done every two hours
         15 * 60 * 1000 // Update check every 15 min
       ).initialize();
 

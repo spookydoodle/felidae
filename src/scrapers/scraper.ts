@@ -9,7 +9,7 @@ class Scraper {
   postFunc: (data: Headlines) => Promise<Headlines>;
   updateTimes: UpdateTime[];
   initDelay: number;
-  checkUpdateFreq: any;
+  checkUpdateFreq: number;
   isUpdateInProgress: boolean;
   lastUpdate: Date | null;
   lastError: {
@@ -25,7 +25,7 @@ class Scraper {
     postFunc: (data: Headlines) => Promise<Headlines>,
     updateTimes = [[2, 0, 0, 0] as UpdateTime],
     checkUpdateFreq = 1 * 60 * 60 * 1000, // every hour = 1 (h) * 60 (min) * 60 (s) * 1000 ms
-    initDelay: number = 0,
+    initDelay = 0,
   ) {
     this.name = name;
     this.requestFunc = requestFunc;
@@ -64,11 +64,11 @@ class Scraper {
 
     updateTimes.sort((a, b) => (a < b ? 1 : -1));
 
-    for (let i = 0; i < updateTimes.length; i++) {
+    for (const updateTime of updateTimes) {
       if (
         now > lastUpdate &&
-        now > updateTimes[i] &&
-        lastUpdate < updateTimes[i]
+        now > updateTime &&
+        lastUpdate < updateTime
       ) {
         shouldUpdate = true;
         break;
@@ -102,7 +102,7 @@ class Scraper {
           // Check for 429 error and stop scraper, if occured
           this.checkFor429(response.error);
         })
-        .catch((error: any) => {
+        .catch((error: string) => {
           createLogMsg(`Error fetching data for ${this.name}.`, "error");
           createLogMsg(error, "error");
 
@@ -133,7 +133,7 @@ class Scraper {
       createLogMsg(`Scraper ${this.name} will stop due to error 429: Too many requests. Setting resume in 24 hours.`, "error");
       this.stop();
 
-      let timeout = setTimeout(() => {
+      const timeout = setTimeout(() => {
         this.initialize();
         createLogMsg(`Resuming scraper ${this.name}.`, "info");
         clearTimeout(timeout);
