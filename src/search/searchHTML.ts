@@ -40,12 +40,11 @@ export const getResults = (
   category: Category,
   country: Country = defaultCountry,
   lang: Lang = defaultLang,
-  resultPageIndex: ResultPage,
   config: SearchConfig
 ): Promise<SearchResult> => {
   const { environment, engine } = config;
 
-  const selectorData: SelectorData = getSelections(query, country, lang, resultPageIndex);
+  const selectorData: SelectorData = getSelections(query, country, lang);
 
   const { url, selector, transform } =
     selectorData[engine][environment || "development"];
@@ -120,7 +119,6 @@ export const getAllResults = async (
       category,
       country,
       lang,
-      (i + 1) as ResultPage,
       config
     )
       .then((res) => {

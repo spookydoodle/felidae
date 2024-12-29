@@ -28,31 +28,8 @@ import {
 export const getSelections = (
   query: string,
   country: Country,
-  lang: Lang,
-  resultPageIndex: ResultPage
+  lang: Lang
 ): SelectorData => ({
-  google: {
-    production: {
-      url: `https://www.google.com/search?q=${query}&tbm=nws&start=${
-        (resultPageIndex - 1) * 10
-      }&cr=${country}&lr=lang_${lang}&tbs=qdr:d,sbd:0`,
-      // selector: "#main > div:nth-child(n+2) > div > div:nth-child(1) > a",
-      selector: "#search > div > div > div a",
-      transform: transformGoogle,
-    },
-    staging: {
-      url: `https://www.google.com/search?q=${query}&tbm=nws&start=${
-        (resultPageIndex - 1) * 10
-      }&cr=${country}&lr=lang_${lang}&tbs=qdr:d,sbd:0`,
-      selector: "#search > div > div > div a",
-      transform: transformGoogle,
-    },
-    development: {
-      url: "http://localhost:5000/news/dummy/google",
-      selector: ".dbsr a",
-      transform: transformGoogle,
-    },
-  },
   bing: {
     production: {
       url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}&qft=sortbydate%3d"1"+interval%3d"4"`,
@@ -65,7 +42,7 @@ export const getSelections = (
       transform: transformBing,
     },
     development: {
-      url: "http://localhost:5000/news/dummy/bing",
+      url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}&qft=sortbydate%3d"1"+interval%3d"4"`,
       selector: ".news-card",
       transform: transformBing,
     },

@@ -12,29 +12,28 @@ router.get('/', async (req: any, res: any) => {
     const H = Math.floor(uptime / 3600);
     const min = Math.floor((uptime % 3600) / 60);
     const sec = uptime % 60;
+    let healthcheck: {
+        timestamp?: number;
+        uptime?: number;
+        uptimeFormatted?: string;
+        node?: { status: 'OK' | 'Not OK'; message: string };
+        startTime?: string;
+        error?: undefined | unknown;
+    } = {};
 
-    // Construct health check json
-    const healthcheck: {
-        timestamp: number;
-        uptime: number;
-        uptimeFormatted: string;
-        node: { status: 'OK' | 'Not OK'; message: string };
-        startTime: string;
-        error: undefined | unknown;
-    } = {
-        timestamp: startTime.valueOf(),
-        uptime: uptime,
-        uptimeFormatted: `${H} hrs ${min} min ${sec.toFixed(0)} s`,
-        startTime: startTime.toUTCString(),
-        node: {
-            status: 'OK',
-            message: 'Node.js server runing',
-        },
-        error: undefined,
-    };
-
-    // Return health check statuses
     try {
+        healthcheck = {
+            timestamp: startTime.valueOf(),
+            uptime: uptime,
+            uptimeFormatted: `${H} hrs ${min} min ${sec.toFixed(0)} s`,
+            startTime: startTime.toUTCString(),
+            node: {
+                status: 'OK',
+                message: 'Node.js server runing',
+            },
+            error: undefined,
+        };
+
         res.status(200).send(healthcheck);
     } catch (err) {
         healthcheck.error = err;

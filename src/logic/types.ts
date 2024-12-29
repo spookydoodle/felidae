@@ -2,7 +2,7 @@ type Environment = "production" | "staging" | "development";
 
 interface SearchConfig {
   environment?: Environment;
-  engine: "google" | "bing";
+  engine: Engine;
   maxPageIndex?: ResultPage;
   updateFreqInHrs?: number
 }
@@ -45,7 +45,7 @@ interface SearchResult {
 
 type UpdateTime = [number, number, number, number];
 
-type Engine = "google" | "bing";
+type Engine = "bing";
 // type Environment = "production" | "local";
 interface UrlSelectorData {
   url: string;
