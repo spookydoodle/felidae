@@ -26,15 +26,9 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
         () =>
           getAllResults(
             queries[lang][category],
-            category,
-            country,
-            lang,
+              { category, country, lang },
             maxPageIndex ||
-              (environment === "production"
-                ? 10
-                : environment === "staging"
-                ? 1
-                : 10),
+              10,
             config
           ),
         (data) => postNewsDataToDb(pool, data),

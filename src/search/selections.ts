@@ -37,7 +37,7 @@ const transformBing = (
   headlines
     .filter((el: any) => el.textContent !== "")
     .filter((el: any) => el.querySelector("a.title")?.textContent !== "")
-    .map((el: any) =>[ el.querySelector("a.title"), el.querySelector(".source span:nth-child(3)")])
+    .map((el: any) => [el.querySelector("a.title"), el.querySelector(".source span:nth-child(3)")])
     .filter(([anchor, _ageEl]) => !!anchor?.textContent)
     .map(([anchor, ageEl]) => ({
       // remove spaces, tabs and new line substrings '\n'

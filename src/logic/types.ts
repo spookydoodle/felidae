@@ -1,5 +1,11 @@
 type Environment = "production" | "staging" | "development";
 
+interface SearchParams {
+  category: Category,
+  country?: Country,
+  lang?: Lang,
+}
+
 interface SearchConfig {
   environment?: Environment;
   engine: Engine;
@@ -61,6 +67,7 @@ type SelectorData = {
 
 export {
   Environment,
+  SearchParams,
   SearchConfig,
   ResultPage,
   Lang,

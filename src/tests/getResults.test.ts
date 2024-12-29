@@ -2,7 +2,11 @@ import { getResults } from "../search/searchHTML";
 
 describe('News', () => {
   test("Check bing result objects key structure", async () => {
-    const res = await getResults("news", "general", "de", "de", {
+    const res = await getResults("news", { 
+      category: "general", 
+      country: "de", 
+      lang: "de" 
+    }, {
       environment: "production",
       engine: "bing",
     });

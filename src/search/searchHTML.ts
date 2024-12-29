@@ -10,6 +10,7 @@ import {
   Category,
   SearchConfig,
   SelectorData,
+  SearchParams,
 } from "../logic/types";
 import { getSelections } from "./selections";
 
@@ -37,11 +38,10 @@ const headers = {
 // Google sucks, better use Bing
 export const getResults = (
   query: string = defaultQuery,
-  category: Category,
-  country: Country = defaultCountry,
-  lang: Lang = defaultLang,
+  params: SearchParams,
   config: SearchConfig
 ): Promise<SearchResult> => {
+  const { category, country = defaultCountry, lang = defaultLang } = params;
   const { environment, engine } = config;
   const selectorData: SelectorData = getSelections(query, country, lang);
   const { url, selector, transform } = selectorData[engine][environment || "development"];
@@ -89,12 +89,11 @@ export const getResults = (
 // TODO: Add generic 'for ... of ...'throttle method as a wrapper to reuse in the other parts of the app
 export const getAllResults = async (
   query: string = defaultQuery,
-  category: Category,
-  country: Country = defaultCountry,
-  lang: Lang = defaultLang,
+  params: SearchParams,
   maxPageIndex: ResultPage,
   config: SearchConfig
 ): Promise<SearchResult> => {
+  const { category, country = defaultCountry, lang = defaultLang } = params;
   let results: {
     error: string | number | null;
     results: Headlines[];
@@ -113,15 +112,12 @@ export const getAllResults = async (
 
     let response = await getResults(
       query,
-      category,
-      country,
-      lang,
+      { category, country, lang },
       config
     )
       .then((res) => {
         createLogMsg(
-          `Data for query '${query}' from country '${country}' in lang '${lang}' from page ${
-            i + 1
+          `Data for query '${query}' from country '${country}' in lang '${lang}' from page ${i + 1
           } processed successfully.`,
           "success"
         );
@@ -129,8 +125,7 @@ export const getAllResults = async (
       })
       .catch((err) => {
         createLogMsg(
-          `Requesting data for query '${query}' from country '${country}' in lang '${lang}' from page ${
-            i + 1
+          `Requesting data for query '${query}' from country '${country}' in lang '${lang}' from page ${i + 1
           } returned an error.`,
           "error"
         );
