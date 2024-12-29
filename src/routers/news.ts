@@ -5,8 +5,6 @@ import { selectNewsData } from "../db/postNewsData";
 import { DB_NAME } from "../db/constants";
 import generatePage from "../pages/generatePage";
 import createLogMsg from "../utils/createLogMsg";
-import dummyPageGoogle from "../search/dummyPageGoogle";
-import dummyPageBing from "../search/dummyPageBing";
 import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
 import { Headline } from "../logic/types";
 
@@ -35,14 +33,6 @@ setTimeout(async () => {
 
 router.get("/", (_req: any, res: any) => {
   res.status(200).send(generatePage("Hello from Felidae's News Scraper API."));
-});
-
-// Dummy page for local development - static page to avoid 429 error
-router.get("/dummy/google", (req, res) => {
-  res.status(200).send(dummyPageGoogle);
-});
-router.get("/dummy/bing", (req, res) => {
-  res.status(200).send(dummyPageBing);
 });
 
 router.get("/:category", addQuery, async (req, res) => {
