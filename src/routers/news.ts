@@ -6,8 +6,9 @@ import { DB_NAME } from "../db/constants";
 import generatePage from "../pages/generatePage";
 import createLogMsg from "../utils/createLogMsg";
 import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
+import { validateNewsQueryParams } from "./news-middleware";
 import { Headline } from "../logic/types";
-import { QueryParam, validateNewsQueryParams } from "./news-middleware";
+import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsResponseBody } from "./types";
 
 const router = express.Router();
 
@@ -24,17 +25,9 @@ router.get("/", (_req, res) => {
     res.status(200).send(generatePage("Hello from Felidae's News Scraper API."));
 });
 
-router.get("/:category", validateNewsQueryParams, async (req, res) => {
+router.get<string, NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery>("/:category", validateNewsQueryParams, async (req, res) => {
     const { category } = req.params;
-    const country = req.query[QueryParam.Country];
-    const lang = req.query[QueryParam.Lang];
-    const date = req.query[QueryParam.Date];
-    const dateGt = req.query[QueryParam.DateGt];
-    const dateGte = req.query[QueryParam.DateGte];
-    const dateLt = req.query[QueryParam.DateLt];
-    const dateLte = req.query[QueryParam.DateLte];
-    const page = req.query[QueryParam.Page];
-    const sortBy = req.query[QueryParam.SortBy];
+    const { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, sortBy } = req.query;
 
     const pg = isNaN(Number(page)) ? 1 : Math.max(1, Number(page));
     const [top, skip] = [100, (pg - 1) * 100];

@@ -1,19 +1,7 @@
 import express from "express";
 import { DateTime } from 'luxon';
 import { capitalize } from "../utils/stringTransform";
-
-export enum QueryParam {
-    Locale = 'locale',
-    Country = 'country',
-    Lang = 'lang',
-    Date = 'date',
-    DateGt = 'dateGt',
-    DateGte = 'dateGte',
-    DateLt = 'dateLt',
-    DateLte = 'dateLte',
-    Page = 'page',
-    SortBy = 'sortBy'
-}
+import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsResponseBody, QueryParam } from "./types";
 
 const validateDate = (value?: string): string | null => {
     if (!value) {
@@ -105,7 +93,8 @@ const queries: [string[], QueryParam, (value?: string) => string | null][] = [
  * Modifies the expected queries to match camel case
  * @example `fOo-bar`, `foo_bar`, `FOO_BAR` and `fooBar` will all be rewritten to `fooBar`.
  */
-export const validateNewsQueryParams = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+export const validateNewsQueryParams = (req: express.Request<NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery>, res: express.Response, next: express.NextFunction) => {
+    if (['general'].some((el) => el === req.params.category))
     for (const [key, value] of Object.entries(req.query)) {
         for (const [acceptableParams, targetParam, validate] of queries) {
             if (acceptableParams.some((el) => el.toLowerCase() === key.toLowerCase())) {

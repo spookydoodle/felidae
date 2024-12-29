@@ -1,31 +1,31 @@
-type Environment = "production" | "staging" | "development";
+export type Environment = "production" | "staging" | "development";
 
-interface SearchParams {
+export interface SearchParams {
     category: Category,
     country?: Country,
     lang?: Lang,
 }
 
-interface SearchConfig {
+export interface SearchConfig {
     environment?: Environment;
     engine: Engine;
     maxPageIndex?: ResultPage;
     updateFreqInHrs?: number
 }
 
-type ResultPage = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
+export type ResultPage = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
-type Category =
+export type Category =
     | "general"
     | "business"
     | "entertainment"
     | "sport"
     | "health"
     | "science";
-type Lang = "en" | "de" | "nl" | "pl";
-type Country = "gb" | "us" | "de" | "nl" | "pl";
+export type Lang = "en" | "de" | "nl" | "pl";
+export type Country = "gb" | "us" | "de" | "nl" | "pl";
 
-interface HeadlineData {
+export interface HeadlineData {
     headline: string;
     provider: string;
     url: string;
@@ -33,55 +33,36 @@ interface HeadlineData {
     timestamp: number;
 }
 
-interface Headline extends HeadlineData {
+export interface Headline extends HeadlineData {
     id?: number;
     category: Category;
     country: Country;
     lang: Lang;
 }
 
-type HeadlineColumn = keyof Headline;
+export type HeadlineColumn = keyof Headline;
 
-type Headlines = Headline[];
+export type Headlines = Headline[];
 
-interface SearchResult {
+export interface SearchResult {
     error: null | string | number;
     results: Headlines;
 }
 
-type UpdateTime = [number, number, number, number];
+export type UpdateTime = [number, number, number, number];
 
-type Engine = "bing";
-// type Environment = "production" | "local";
-interface UrlSelectorData {
+export type Engine = "bing";
+
+export interface UrlSelectorData {
     url: string;
     selector: string;
     transform: (headlines: Element[]) => HeadlineData[];
 }
 
-type EnvUrlSelectorData = {
+export type EnvUrlSelectorData = {
     [key in Environment]: UrlSelectorData;
 };
-type SelectorData = {
-    [key in Engine]: EnvUrlSelectorData;
-};
 
-export {
-    Environment,
-    SearchParams,
-    SearchConfig,
-    ResultPage,
-    Lang,
-    Country,
-    HeadlineData,
-    Headlines,
-    Headline,
-    HeadlineColumn,
-    Category,
-    SearchResult,
-    UpdateTime,
-    Engine,
-    UrlSelectorData,
-    EnvUrlSelectorData,
-    SelectorData,
+export type SelectorData = {
+    [key in Engine]: EnvUrlSelectorData;
 };
