@@ -7,7 +7,7 @@ const startTime = new Date();
 // Health check
 // 1. Display uptime info
 // 2. Check if node.js app is running
-router.get('/', async (req: any, res: any) => {
+router.get('/', async (_req, res) => {
     const uptime = process.uptime();
     const H = Math.floor(uptime / 3600);
     const min = Math.floor((uptime % 3600) / 60);

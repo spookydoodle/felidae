@@ -8,7 +8,7 @@ import createLogMsg from "../utils/createLogMsg";
 import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
 import { Headline } from "../logic/types";
 
-const addQuery = (req: any, res: any, next: any) => {
+const addQuery = (req: express.Request, res: express.Response, next: express.NextFunction) => {
   const { page } = req.query;
   if (page && (isNaN(Number(page)) || Number(page) < 1)) {
     const { baseUrl, url } = req;
@@ -31,7 +31,7 @@ setTimeout(async () => {
   );
 }, 5000);
 
-router.get("/", (_req: any, res: any) => {
+router.get("/", (_req, res) => {
   res.status(200).send(generatePage("Hello from Felidae's News Scraper API."));
 });
 

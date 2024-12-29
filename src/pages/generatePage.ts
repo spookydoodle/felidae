@@ -1,6 +1,6 @@
 import icon from './ghost';
 
-export default (title: string, content: string = '') => `<html>
+export default (title: string, content = '') => `<html>
 <head>
     <style>
         body {

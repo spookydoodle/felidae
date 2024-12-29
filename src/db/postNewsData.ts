@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { Headlines, Category, Lang, Country } from "../logic/types";
+import { Headline, Headlines } from "../logic/types";
 import createLogMsg from "../utils/createLogMsg";
 import { TB_NEWS, DB_NAME } from "./constants";
 import {
@@ -12,7 +12,7 @@ import {
 
 export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
   const items: Headlines[] = [];
-  let duplicateCount: number = 0;
+  let duplicateCount = 0;
   const {
     categoryLen,
     countryLen,
@@ -50,7 +50,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
           // Don't check type, just value
           if (rows[0].count == 0) {
             await pool
-              .query(qInsertToNews(TB_NEWS), [
+              .query<Headline>(qInsertToNews(TB_NEWS), [
                 category,
                 country,
                 lang,
@@ -96,17 +96,6 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
 
   return items.flat();
 };
-
-// Mandatory to provide category and language; default general in English
-interface SelectFilter {
-  category: Category;
-  country: Country;
-  lang: Lang;
-  provider?: string;
-  age?: string;
-  dateFrom?: number;
-  dateTo?: number;
-}
 
 export const selectNewsData = (
   pool: Pool,

@@ -2,8 +2,8 @@ import {
   Country,
   HeadlineData,
   Lang,
-  SearchConfig,
   SelectorData,
+  UrlSelectorData,
 } from "../logic/types";
 
 export const getSelections = (
@@ -13,40 +13,42 @@ export const getSelections = (
 ): SelectorData => ({
   bing: {
     production: {
-      url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}&qft=sortbydate%3d\"1\"+interval%3d\"7\"&form=YFNR`,
+      url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}&qft=sortbydate%3d"1"+interval%3d"7"&form=YFNR`,
       selector: ".news-card",
       transform: transformBing,
     },
     staging: {
-      url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}&qft=sortbydate%3d\"1\"+interval%3d\"7\"&form=YFNR`,
+      url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}&qft=sortbydate%3d"1"+interval%3d"7"&form=YFNR`,
       selector: ".news-card",
       transform: transformBing,
     },
     development: {
-      url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}&qft=sortbydate%3d\"1\"+interval%3d\"7\"&form=YFNR`,
+      url: `https://www.bing.com/news/search?q=${query}&cc=${country}&setLang=${lang}&qft=sortbydate%3d"1"+interval%3d"7"&form=YFNR`,
       selector: ".news-card",
       transform: transformBing,
     },
   },
 });
 
-const transformBing = (
-  headlines: any[],
-  _config: SearchConfig
-): HeadlineData[] =>
-  headlines
-    .filter((el: any) => el.textContent !== "")
-    .filter((el: any) => el.querySelector("a.title")?.textContent !== "")
-    .map((el: any) => [el.querySelector("a.title"), el.querySelector(".source span:nth-child(3)")])
-    .filter(([anchor, _ageEl]) => !!anchor?.textContent)
-    .map(([anchor, ageEl]) => ({
-      // remove spaces, tabs and new line substrings '\n'
-      headline: anchor.textContent.replace(/\s\s+/g, " ").trim(),
-      url: anchor.href,
-      provider:
-        anchor.attributes.getNamedItem("data-author") != null
-          ? anchor.attributes.getNamedItem("data-author").value
-          : "",
-      age: ageEl != null ? ageEl.textContent : "",
-      timestamp: Date.now(),
-    }));
+const transformBing: UrlSelectorData['transform'] = (headlines): HeadlineData[] => {
+    const result: HeadlineData[] = [];
+
+    for (const headline of headlines) {
+        const title = headline.querySelector("a.title");
+        const anchor: HTMLAnchorElement | null = title?.hasAttribute("href") ? title as HTMLAnchorElement : null;
+        const ageEl = headline.querySelector(".source span:nth-child(3)");
+        if (!anchor?.textContent) {
+            continue;
+        }
+
+        result.push({
+            headline: anchor.textContent.replace(/\s\s+/g, " ").trim(),
+            url: anchor.href,
+            provider: anchor.attributes.getNamedItem("data-author")?.value ?? "",
+              age: ageEl?.textContent ?? "",
+            timestamp: Date.now(),
+        });
+    }
+
+    return result;
+}
