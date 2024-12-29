@@ -4,7 +4,7 @@ import { getAllResults } from "../search/searchHTML";
 import { postNewsDataToDb } from "../db/postNewsData";
 import { SearchConfig, Country } from "../logic/types";
 import { categories, countryLang, queries } from "./constants";
-import { capitalize } from "../utils/stringTransform";
+import { capitalizeWord } from "../utils/stringTransform";
 
 export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
   const { maxPageIndex } = config;
@@ -22,7 +22,7 @@ export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
       const country = countries[countryIndex] as Country;
       const lang = countryLang[country];
       const scraper = await new Scraper(
-        `${capitalize(category)} News from ${country} in ${lang}`,
+        `${capitalizeWord(category)} News from ${country} in ${lang}`,
         () =>
           getAllResults(
             queries[lang][category],

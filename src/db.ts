@@ -64,7 +64,7 @@ export const initializeTb = (
 ): Promise<string> =>
   new Promise(async (resolve, reject) => {
     // Connect to the right database and create table if doesn't exist
-    let pool = new Pool({ ...config, database: dbName });
+    const pool = new Pool({ ...config, database: dbName });
     pool.connect();
 
     await pool.query(qCreateTb(tbName).news, (tbErr) => {
@@ -87,7 +87,7 @@ export const initializeTb = (
 
 export const getPool = async (dbName: string): Promise<Pool | undefined> => {
   try {
-    let pool = new Pool({ ...config, database: dbName });
+    const pool = new Pool({ ...config, database: dbName });
     await pool.connect();
 
     return pool;
