@@ -43,11 +43,8 @@ export const getResults = (
   config: SearchConfig
 ): Promise<SearchResult> => {
   const { environment, engine } = config;
-
   const selectorData: SelectorData = getSelections(query, country, lang);
-
-  const { url, selector, transform } =
-    selectorData[engine][environment || "development"];
+  const { url, selector, transform } = selectorData[engine][environment || "development"];
 
   // Request url and transform results to the right format
   return axios
