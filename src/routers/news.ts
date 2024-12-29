@@ -35,7 +35,6 @@ router.get("/:category", validateNewsQueryParams, async (req, res) => {
     const dateLte = req.query[QueryParam.DateLte];
     const page = req.query[QueryParam.Page];
     const sortBy = req.query[QueryParam.SortBy];
-    console.log(1, req.query)
 
     const pg = isNaN(Number(page)) ? 1 : Math.max(1, Number(page));
     const [top, skip] = [100, (pg - 1) * 100];

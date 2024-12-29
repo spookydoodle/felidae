@@ -132,7 +132,6 @@ export const validateNewsQueryParams = (req: express.Request, res: express.Respo
         req.query[QueryParam.Country] = country;
         req.query[QueryParam.Lang] = lang;
     }
-
-    console.log(req.query)
+    
     next();
 };
