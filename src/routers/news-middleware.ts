@@ -17,7 +17,7 @@ const validateDate = (value?: string): string | null => {
 /**
  * Pairs of lowercase accepted query parameters and the property name to which the value should be assigned, together with a validation method.
  */
-const queries: [string[], QueryParam, (value?: string) => string | null][] = [
+const queryParams: [string[], QueryParam, (value?: string) => string | null][] = [
     [
         ['locale'],
         QueryParam.Locale,
@@ -96,7 +96,7 @@ const queries: [string[], QueryParam, (value?: string) => string | null][] = [
 export const validateNewsQueryParams = (req: express.Request<NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery>, res: express.Response, next: express.NextFunction) => {
     if (['general'].some((el) => el === req.params.category))
     for (const [key, value] of Object.entries(req.query)) {
-        for (const [acceptableParams, targetParam, validate] of queries) {
+        for (const [acceptableParams, targetParam, validate] of queryParams) {
             if (acceptableParams.some((el) => el.toLowerCase() === key.toLowerCase())) {
                 const rejectReason = validate(value?.toString());
                 if (rejectReason) {
