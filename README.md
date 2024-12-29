@@ -15,6 +15,7 @@ Returns news headlines with timestamps and providers.
 ### API query parameters
 
 | Parameter | Description | Accepted values | Required | Example |
+| --- | --- | --- | --- | --- | 
 | `locale` | Country code (of origin) and language combination | Single selection. Options:
     - `de-de` 
     - `gb-en`
