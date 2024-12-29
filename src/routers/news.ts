@@ -7,21 +7,10 @@ import generatePage from "../pages/generatePage";
 import createLogMsg from "../utils/createLogMsg";
 import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
 import { Headline } from "../logic/types";
+import { QueryParam, validateNewsQueryParams } from "./news-middleware";
 
-const addQuery = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const { page } = req.query;
-    if (page && (isNaN(Number(page)) || Number(page) < 1)) {
-        const { baseUrl, url } = req;
-        res.redirect(`${baseUrl}${url.replace(`page=${page}`, "page=1")}`);
-    } else {
-        next();
-    }
-};
-
-// Initialize router
 const router = express.Router();
 
-// Initialize PostgreSQL - give timeout for the first run, if DB_NAME does not exist, it will first need to be created
 let pool: Pool | undefined;
 setTimeout(async () => {
     pool = await getPool(DB_NAME);
@@ -35,30 +24,26 @@ router.get("/", (_req, res) => {
     res.status(200).send(generatePage("Hello from Felidae's News Scraper API."));
 });
 
-router.get("/:category", addQuery, async (req, res) => {
+router.get("/:category", validateNewsQueryParams, async (req, res) => {
     const { category } = req.params;
-    const {
-        cc,
-        lang,
-        date,
-        page
-    } = req.query;
+    const country = req.query[QueryParam.Country];
+    const lang = req.query[QueryParam.Lang];
+    const date = req.query[QueryParam.Date];
+    const dateGt = req.query[QueryParam.DateGt];
+    const dateGte = req.query[QueryParam.DateGte];
+    const dateLt = req.query[QueryParam.DateLt];
+    const dateLte = req.query[QueryParam.DateLte];
+    const page = req.query[QueryParam.Page];
+    const sortBy = req.query[QueryParam.SortBy];
+    console.log(1, req.query)
 
-    const dateGt = req.query.dateGt || req.query['date-gt'] || req.query.date_gt;
-    const dateGte = req.query.dateGte || req.query['date-gte'] || req.query.date_gte;
-    const dateLt = req.query.dateLt || req.query['date-lt'] || req.query.date_lt;
-    const dateLte = req.query.dateLte || req.query['date-lte'] || req.query.date_lte;
-    const sortBy = req.query.sortBy || req.query['sort-by'] || req.query.sort_by;
-
-    const pageNum = Number(page);
-
-    const pg = page && !isNaN(pageNum) && pageNum > 0 ? pageNum : 1;
+    const pg = isNaN(Number(page)) ? 1 : Math.max(1, Number(page));
     const [top, skip] = [100, (pg - 1) * 100];
 
     const filters: NewsFilterCondition[] = [["category", "eq", category]];
     const orderBy: OrderBy[] = [];
 
-    if (cc) filters.push(["country", "eq", cc.toString()]);
+    if (country) filters.push(["country", "eq", country.toString()]);
     if (lang) filters.push(["lang", "eq", lang.toString()]);
     if (date) filters.push(["timestamp", "eq", date.toString()]);
     if (dateGt) filters.push(["timestamp", "gt", dateGt.toString()]);
@@ -67,7 +52,7 @@ router.get("/:category", addQuery, async (req, res) => {
     if (dateLte) filters.push(["timestamp", "lte", dateLte.toString()]);
 
     if (sortBy) {
-        const [name, order] = String(sortBy).split(' ');
+        const [name, order = 'asc'] = String(sortBy).split(' ');
         const names = ['id', 'timestamp'];
         if (names.includes(name)) {
             orderBy.push([

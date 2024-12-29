@@ -18,16 +18,16 @@ Returns news headlines with timestamps and providers.
 
 | Parameter | Description | Accepted values | Required | Example |
 | --- | --- | --- | --- | --- | 
-| `locale` | Country code (of origin) and language combination | Single selection from options: `de-de`, `gb-en`, `nl-nl`, `pl-pl`, `us-en` | Optional | `&locale=gb-en` |
-| `cc` | Country code (of origin) | Single selection from options: `de`, `gb`, `nl`, `pl`, `us` | Optional | `&cc=de` |
-| `lang` | Language | Single selection from options:  `de`, `en`, `nl`, `pl` | Optional | `&lang=en` |
+| `locale` | Country code (of origin) and language combination. Takes priority over `cc` and `lang`. | Single selection from options: `de-de`, `gb-en`, `nl-nl`, `pl-pl`, `us-en` | Optional | `&locale=gb-en` |
+| `cc` | Country code (of origin). Will be ignored if `locale` is also provided. | Single selection from options: `de`, `gb`, `nl`, `pl`, `us` | Optional | `&cc=de` |
+| `lang` | Language. Will be ignored if `locale` is also provided. | Single selection from options:  `de`, `en`, `nl`, `pl` | Optional | `&lang=en` |
 | `page` | Page number. A single page contains 100 results. | Integer number greater than `0` | Optional | `&page=3` |
-| `date` | Filter by date in UTC | Format: `YYYY-MM-DD` | Optional | `&date=1999-01-01` |
-| `date-gt` | Filter by dates later than to provided date | Format: `YYYY-MM-DD` in UTC | Optional | `&date_gt=1999-01-01` |
-| `date-gte` | Filter by dates later than or equal to provided date | Format: `YYYY-MM-DD` in UTC | Optional | `&date_gte=1999-01-01` |
-| `date-lt` | Filter by dates earlier than to provided date | Format: `YYYY-MM-DD` in UTC | Optional | `&date_lt=1999-01-01` |
-| `date-lte` | Filter by dates earlier than or equal to provided | Format: `YYYY-MM-DD` in UTC | Optional | `&date_lte=1999-01-01` |
-| `sort-by` | Sort results ascending or descending by selected dimension. | Format: `<dimension> <sort-order>`, where `dimension` is one of: `id`, `timestamp` and `sort-order` is `asc` or `desc` | Optional | `&sort-by=timestamp desc` |
+| `date` | Filter by date. | Format: `YYYY-MM-DD` in UTC | Optional | `&date=1999-01-01` |
+| `date-gt` | Filter by dates later than to provided date. | Format: `YYYY-MM-DD` in UTC | Optional | `&date_gt=1999-01-01` |
+| `date-gte` | Filter by dates later than or equal to provided date. | Format: `YYYY-MM-DD` in UTC | Optional | `&date_gte=1999-01-01` |
+| `date-lt` | Filter by dates earlier than to provided date. | Format: `YYYY-MM-DD` in UTC | Optional | `&date_lt=1999-01-01` |
+| `date-lte` | Filter by dates earlier than or equal to provided. | Format: `YYYY-MM-DD` in UTC | Optional | `&date_lte=1999-01-01` |
+| `sort-by` | Sort results ascending or descending by selected dimension. | Format: `<dimension> <sort-order>`, where `dimension` is one of: `id`, `timestamp` and `sort-order` can be optionally provided as `asc` or `desc` (if not provided, will default to `asc`) | Optional | `&sort-by=timestamp` (defaults to `asc`), `&sort-by=timestamp desc` |
 
 ### Examples
 
