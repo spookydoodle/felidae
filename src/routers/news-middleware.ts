@@ -84,7 +84,19 @@ const queries: [string[], QueryParam, (value?: string) => string | null][] = [
     [
         ['sortby', 'sort-by', 'sort_by'],
         QueryParam.SortBy,
-        (value) => null
+        (value) => {
+            if (!value) {
+                return 'Cannot be empty.';
+            }
+            const [dimension, order = ''] = value.split(' ');
+            if (!['id', 'timestamp'].includes(dimension.toLowerCase())) {
+                return `'${dimension}' is not an acceptable dimension name. Must be one of: 'id', 'timestamp'.`
+            }
+            if (!['asc', 'desc'].includes(order.toLowerCase())) {
+                return order ? `${order} is not an acceptable order value. Must be either 'asc' or 'desc'.` : null;
+            }
+            return null;
+        }
     ],
 ];
 

@@ -52,12 +52,12 @@ router.get("/:category", validateNewsQueryParams, async (req, res) => {
     if (dateLte) filters.push(["timestamp", "lte", dateLte.toString()]);
 
     if (sortBy) {
-        const [name, order = 'asc'] = String(sortBy).split(' ');
-        const names = ['id', 'timestamp'];
-        if (names.includes(name)) {
+        const [name, order = 'asc'] = sortBy.toString().split(' ');
+        const names: (keyof Headline)[] = ['id', 'timestamp'];
+        if ((names as string[]).includes(name)) {
             orderBy.push([
                 name as keyof Headline,
-                (["ASC", "DESC"].includes(order.toUpperCase()) ? order.toUpperCase() as OrderType : "DESC")
+                (["ASC", "DESC"].includes(order.toUpperCase()) ? order.toUpperCase() as OrderType : "ASC")
             ]);
         }
     }
