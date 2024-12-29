@@ -15,25 +15,97 @@ Returns news headlines with timestamps and providers.
 ### API query parameters
 
 <table>
+    <th>
+        <td>Parameter</td>
+        <td>Desctription</td>
+        <td>Accepted values</td>
+        <td>Required</td>
+        <td>Example</td>
+    </th>
     <tr>
-        <td>test</td>
-        <td>test</td>
+        <td>`locale`</td>
+        <td>Country code (of origin) and language combination</td>
+        <td>
+            Single selection. Options:
+            - `de-de` 
+            - `gb-en`
+            - `nl-nl`
+            - `pl-pl`
+            - `us-en`
+        </td>
+        <td>Optional</td>
+        <td>`&locale=gb-en`</td>
     </tr>
     <tr>
-        <td>test</td>
-        <td>test</td>
+        <td>`cc`</td>
+        <td>Country code (of origin)</td>
+        <td>
+            Single selection. Options:
+            - `de` 
+            - `gb`
+            - `nl`
+            - `pl`
+            - `us`
+        </td>
+        <td>Optional</td>
+        <td>`&cc=de`</td>
+    </tr>
+    <tr>
+        <td>`lang`</td>
+        <td>Language</td>
+        <td>
+            Single selection. Options:
+            - `de` 
+            - `en`
+            - `nl`
+            - `pl`
+        </td>
+        <td>Optional</td>
+        <td>`&lang=en`</td>
+    </tr>
+    <tr>
+        <td>`page`</td>
+        <td>Page number. A single page contains 100 results.</td>
+        <td>Integer number greater than `0`</td>
+        <td>Optional</td>
+        <td>`&page=3`</td>
+    </tr>
+    <tr>
+        <td>`date`</td>
+        <td>Date in UTC</td>
+        <td>Format: `YYYY-MM-DD`</td>
+        <td>Optional</td>
+        <td>`&date=1999-01-01`</td>
+    </tr>
+    <tr>
+        <td>`date_gt`</td>
+        <td>Filter by dates later than provided date in UTC.</td>
+        <td>Format: `YYYY-MM-DD`</td>
+        <td>Optional</td>
+        <td>`&date_gt=2023-02-01`</td>
+    </tr>
+    <tr>
+        <td>`date_gte`</td>
+        <td>Filter by dates later than or equal to provided date in UTC.</td>
+        <td>Format: `YYYY-MM-DD`</td>
+        <td>Optional</td>
+        <td>`&date_gte=2023-02-01`</td>
+    </tr>
+    <tr>
+        <td>`date_lt`</td>
+        <td>Filter by date earlier than provided date in UTC.</td>
+        <td>Format: `YYYY-MM-DD`</td>
+        <td>Optional</td>
+        <td>`&date_lt=2023-02-01`</td>
+    </tr>
+    <tr>
+        <td>`date_lte`</td>
+        <td>Filter by date earlier than or equal to provided date in UTC.</td>
+        <td>Format: `YYYY-MM-DD`</td>
+        <td>Optional</td>
+        <td>`&date_lte=2023-02-01`</td>
     </tr>
 </table>
-
-- `locale` - Country code (of origin) and language combination. Optional. Options: `de-de`, `gb-en`, `nl-nl`, `pl-pl`, `us-en`. Example `locale=gb-en`.
-- `cc` - Country code (of origin). Example: `cc=de`.
-- `lang` - Optional. Language. Example: `lang=pl`.
-- `page` - Page number as integer number greater than `0`. A single page returns 100 results. Optional. Example: `page=10`.
-- `date` - Date in format `YYYY-MM-DD` equal to (in UTC). Optional. Example: `date=1999-01-01`.
-- `date_gt` - Date greater than (in UTC). Optional. Example `date_gt=2023-02-01`.
-- `date_gte` - Date greater than or equal (in UTC). Optional. Example `date_gte=2023-02-01`.
-- `date_lt` - Date less than (in UTC). Optional. Example `date_lt=2023-02-01`.
-- `date_lte` - Date less than or equal (in UTC). Optional. Example `date_lte=2023-02-01`.
 
 ### Examples
 
