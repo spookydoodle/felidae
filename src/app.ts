@@ -13,27 +13,20 @@ import newsRouter from './routers/news';
 
 const app = express();
 
-// Middleware
 app.use(cors());
 
-// Define main router
 const indexRouter = express.Router();
 
-// Define hello page for index - should be available for health checks on ALB
-indexRouter.get('/', (req, res) => {
+indexRouter.get('/', (_req, res) => {
     res.status(200).send(`
     <h1>Hello from Node.js server.</h1>
     <p>Contact: spookydoodle0@gmail.com</p>
     `);
 });
 
-// Health page displays info about uptime and data base connection
 indexRouter.use(config.baseUrl.health, healthRouter);
-
-// News router
 indexRouter.use(config.baseUrl.news, newsRouter);
 
-// Configure router to be based on a path where it's deployed, default: '/'
 app.use(config.baseUrl.index, indexRouter);
 
 export default app;
