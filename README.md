@@ -10,7 +10,9 @@ Returns news headlines with timestamps and providers.
 
 ### Path variables
 
-- `/:category` - Options: `general`, `business`, `sport`, `entertainment`, `health` and `science`. Example: `/news/general` or `/news/business`.
+| Path | Accepted values | Example |
+| --- | --- | --- |
+|`/:category` | `general`, `business`, `sport`, `entertainment`, `health` and `science` |`/news/general` or `/news/business` |
 
 ### API query parameters
 
