@@ -31,6 +31,6 @@ Returns news headlines with timestamps and providers.
 
 ### Examples
 
-- `https://felidae.spookydoodle.com/news/general?date=2021-01-01`
+- [/news/general?date=2021-01-01](https://felidae.spookydoodle.com/news/general?date=2023-01-01)
 - `https://felidae.spookydoodle.com/news/business?sortBy=timestamp desc`
 - `https://felidae.spookydoodle.com/news/sport?cc=de&date_gte=2021-01-01&date_lt=2021-02-01&page=2`
