@@ -107,8 +107,8 @@ const queries: [string[], QueryParam, (value?: string) => string | null][] = [
  */
 export const validateNewsQueryParams = (req: express.Request, res: express.Response, next: express.NextFunction) => {
     for (const [key, value] of Object.entries(req.query)) {
-        for (const [requestedParams, targetParam, validate] of queries) {
-            if (requestedParams.includes(key.toLowerCase())) {
+        for (const [acceptableParams, targetParam, validate] of queries) {
+            if (acceptableParams.some((el) => el.toLowerCase() === key.toLowerCase())) {
                 const rejectReason = validate(value?.toString());
                 if (rejectReason) {
                     res.status(400).send({ reason: `Incorrect value '${value}' of parameter ${key}. ${rejectReason}` })
@@ -132,6 +132,6 @@ export const validateNewsQueryParams = (req: express.Request, res: express.Respo
         req.query[QueryParam.Country] = country;
         req.query[QueryParam.Lang] = lang;
     }
-    
+
     next();
 };
