@@ -15,13 +15,15 @@ Returns news headlines with timestamps and providers.
 ### API query parameters
 
 <table>
-    <th>
-        <td>Parameter</td>
-        <td>Desctription</td>
-        <td>Accepted values</td>
-        <td>Required</td>
-        <td>Example</td>
-    </th>
+    <thead>
+        <tr>
+            <th>Parameter</th>
+            <th>Desctription</th>
+            <th>Accepted values</th>
+            <th>Required</th>
+            <th>Example</th>
+        </tr>
+    </thead>
     <tr>
         <td>`locale`</td>
         <td>Country code (of origin) and language combination</td>
