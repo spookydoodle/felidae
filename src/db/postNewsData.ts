@@ -23,6 +23,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
     ageLen,
   } = newsTbDataTypeLengths;
 
+//   TODO: Rewrite
   // Before inserting make sure data meets data type criteria defined in postgres table
   // Also, make sure entry does not exist yet; if it does, then skip it
   for (const {
@@ -32,8 +33,9 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
     headline,
     provider,
     url,
+    img,
     age,
-    timestamp,
+    timestamp
   } of data) {
     if (
       category.length <= categoryLen &&
@@ -57,8 +59,9 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
                 headline,
                 provider.substring(0, 40),
                 url,
+                img,
                 age,
-                timestamp,
+                timestamp
               ])
               .then(({ rows }) => items.push(rows))
               .catch((err) => console.log("Error inserting data: ", err));

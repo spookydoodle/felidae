@@ -115,16 +115,14 @@ export const getAllResults = async (
         )
             .then((res) => {
                 createLogMsg(
-                    `Data for query '${query}' from country '${country}' in lang '${lang}' from page ${i + 1
-                    } processed successfully.`,
+                    `Data for query '${query}' from country '${country}' in lang '${lang}' from page ${i + 1} processed successfully.`,
                     "success"
                 );
                 return res;
             })
             .catch((err) => {
                 createLogMsg(
-                    `Requesting data for query '${query}' from country '${country}' in lang '${lang}' from page ${i + 1
-                    } returned an error.`,
+                    `Requesting data for query '${query}' from country '${country}' in lang '${lang}' from page ${i + 1} returned an error.`,
                     "error"
                 );
 

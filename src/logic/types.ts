@@ -31,7 +31,7 @@ export type Category =
     | "uranus"
     | "neptune"
     | "pluto";
-    
+
 export type Lang = "en" | "de" | "nl" | "pl";
 export type Country = "gb" | "us" | "de" | "nl" | "pl";
 
@@ -39,6 +39,7 @@ export interface HeadlineData {
     headline: string;
     provider: string;
     url: string;
+    img?: string;
     age: string;
     timestamp: number;
 }

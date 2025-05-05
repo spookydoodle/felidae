@@ -32,6 +32,7 @@ export const qCreateTbNews = (tbName: string) => {
     headline VARCHAR(${headlineLen}),
     provider VARCHAR(${providerLen}),
     url VARCHAR(${urlLen}),
+    img VARCHAR(${urlLen}),
     age VARCHAR(${ageLen}),
     timestamp TIMESTAMP
   );`;
@@ -104,5 +105,5 @@ const addOrderBy = (orderByArr: OrderBy[]) => {
 // Post data queries
 // to_timestamp is expecting a value in seconds, while provided js timestamp is in ms, hence division by 1000.0
 export const qInsertToNews = (tbNews: string) =>
-  `INSERT INTO ${tbNews}(category, country, lang, headline, provider, url, age, timestamp) 
-  VALUES ($1, $2, $3, $4, $5, $6, $7, (to_timestamp($8 / 1000.0))) RETURNING *;`;
+  `INSERT INTO ${tbNews}(category, country, lang, headline, provider, url, img, age, timestamp) 
+  VALUES ($1, $2, $3, $4, $5, $6, $7, &8, (to_timestamp($9 / 1000.0))) RETURNING *;`;
