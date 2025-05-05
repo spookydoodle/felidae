@@ -21,7 +21,17 @@ export type Category =
     | "entertainment"
     | "sport"
     | "health"
-    | "science";
+    | "science"
+    | "mercury"
+    | "venus"
+    | "earth"
+    | "mars"
+    | "jupiter"
+    | "saturn"
+    | "uranus"
+    | "neptune"
+    | "pluto";
+    
 export type Lang = "en" | "de" | "nl" | "pl";
 export type Country = "gb" | "us" | "de" | "nl" | "pl";
 
