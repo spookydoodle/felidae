@@ -46,7 +46,7 @@ const transformBing: UrlSelectorData['transform'] = (headlines): HeadlineData[] 
             headline: anchor.textContent.replace(/\s\s+/g, " ").trim(),
             url: anchor.href,
             provider: anchor.attributes.getNamedItem("data-author")?.value ?? "",
-            img: img?.src,
+            img: img?.src ?? null,
             age: ageEl?.textContent ?? "",
             timestamp: Date.now()
         });

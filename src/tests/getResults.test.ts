@@ -20,6 +20,7 @@ describe('News', () => {
       "headline",
       "url",
       "provider",
+      "img",
       "age",
       "timestamp",
     ]);

@@ -39,7 +39,7 @@ export interface HeadlineData {
     headline: string;
     provider: string;
     url: string;
-    img?: string;
+    img: string | null;
     age: string;
     timestamp: number;
 }

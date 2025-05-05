@@ -106,4 +106,4 @@ const addOrderBy = (orderByArr: OrderBy[]) => {
 // to_timestamp is expecting a value in seconds, while provided js timestamp is in ms, hence division by 1000.0
 export const qInsertToNews = (tbNews: string) =>
   `INSERT INTO ${tbNews}(category, country, lang, headline, provider, url, img, age, timestamp) 
-  VALUES ($1, $2, $3, $4, $5, $6, $7, &8, (to_timestamp($9 / 1000.0))) RETURNING *;`;
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, (to_timestamp($9 / 1000.0))) RETURNING *;`;
