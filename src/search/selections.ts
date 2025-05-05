@@ -36,6 +36,7 @@ const transformBing: UrlSelectorData['transform'] = (headlines): HeadlineData[] 
     for (const headline of headlines) {
         const title = headline.querySelector("a.title");
         const anchor: HTMLAnchorElement | null = title?.hasAttribute("href") ? title as HTMLAnchorElement : null;
+        const img = headline.querySelector("a.imagelink > img") as HTMLImageElement | null;
         const ageEl = headline.querySelector(".source span:nth-child(3)");
         if (!anchor?.textContent) {
             continue;
@@ -45,8 +46,9 @@ const transformBing: UrlSelectorData['transform'] = (headlines): HeadlineData[] 
             headline: anchor.textContent.replace(/\s\s+/g, " ").trim(),
             url: anchor.href,
             provider: anchor.attributes.getNamedItem("data-author")?.value ?? "",
-              age: ageEl?.textContent ?? "",
-            timestamp: Date.now(),
+            img: img?.src ?? "",
+            age: ageEl?.textContent ?? "",
+            timestamp: Date.now()
         });
     }
 

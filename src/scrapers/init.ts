@@ -8,9 +8,7 @@ import { capitalizeWord } from "../utils/stringTransform";
 
 export const initializeNewsScrapers = (pool: Pool, config: SearchConfig) => {
   const { maxPageIndex } = config;
-
   const scrapers: Scraper[] = [];
-
   const countries = Object.keys(countryLang);
 
   // Set timeout for each initialization with interval of 60 seconds to prevent from 429 errors
