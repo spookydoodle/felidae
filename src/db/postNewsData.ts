@@ -78,7 +78,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
               headline,
               provider.substring(0, 40),
               url,
-              img.length,
+              img,
               age,
               timestamp
             ])
