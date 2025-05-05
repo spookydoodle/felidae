@@ -23,7 +23,6 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
     ageLen,
   } = newsTbDataTypeLengths;
 
-  //   TODO: Rewrite
   // Before inserting make sure data meets data type criteria defined in postgres table
   // Also, make sure entry does not exist yet; if it does, then skip it
   for (const {
@@ -33,7 +32,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
     headline,
     provider,
     url,
-    img,
+    img = "",
     age,
     timestamp
   } of data) {
@@ -65,7 +64,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
       createLogMsg(`Headline: "${headline}" not added due to its url length of ${url.length} (max ${urlLen})`, "error");
       continue;
     }
-    
+
     await pool
       .query(qRowExists(TB_NEWS, [["url", "eq", url]]))
       .then(async ({ rows }) => {
@@ -79,7 +78,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
               headline,
               provider.substring(0, 40),
               url,
-              (img ?? '').length <= urlLen ? img : null,
+              img.length,
               age,
               timestamp
             ])
