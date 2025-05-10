@@ -6,6 +6,7 @@ import app from "./app";
 import { initializeNewsScrapers } from "./scrapers/init";
 import { DB_NAME, TB_NEWS } from "./db/constants";
 import { Environment } from "./logic/types";
+import createLogMsg from "./utils/createLogMsg";
 
 initializeDb(DB_NAME)
     .then((dbName) => initializeTb(dbName, "news", TB_NEWS))
@@ -20,7 +21,7 @@ initializeDb(DB_NAME)
             });
         }
     })
-    .catch((err) => console.error(err));
+    .catch((err) => createLogMsg((err as Error)?.message ?? 'Unknown data base error.', 'error'));
 
 const PORT = process.env.PORT || 8081;
 
