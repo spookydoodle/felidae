@@ -83,12 +83,12 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
               timestamp
             ])
             .then(({ rows }) => items.push(rows))
-            .catch((err) => console.log("Error inserting data: ", err));
+            .catch((err) => console.error("Error inserting data: ", err));
         } else {
           duplicateCount++;
         }
       })
-      .catch((err) => console.log("Error checking for duplicates: ", err));
+      .catch((err) => console.error("Error checking for duplicates: ", err));
   }
 
   createLogMsg(
@@ -123,6 +123,6 @@ export const selectNewsData = (
     )
     .then((res) => res.rows)
     .catch((err) => {
-      console.log(err);
+      console.error(err);
       return [];
     });

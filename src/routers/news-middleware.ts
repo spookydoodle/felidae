@@ -70,18 +70,37 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
         (value) => isNaN(Number(value)) ? 'Not a number. Should be an integer greater than 0.' : null
     ],
     [
+        ['items'],
+        QueryParam.Items,
+        (value) => {
+            const n = Number(value);
+            const min = 1;
+            const max = 500;
+            if (isNaN(n)) {
+                return `Not a number. Should be an integer greater than ${min - 1} and less than or equal ${max}.`;
+            }
+            if (n < 1) {
+                return `Must be greater than ${min - 1}.`;
+            }
+            if (n > 500) {
+                return `Must be less than ${max}.`;
+            }
+            return null;
+        }
+    ],
+    [
         ['sortby', 'sort-by', 'sort_by'],
         QueryParam.SortBy,
         (value) => {
             if (!value) {
                 return 'Cannot be empty.';
             }
-            const [dimension, order = ''] = value.split(' ');
+            const [dimension, order = 'asc'] = value.split(' ');
             if (!['id', 'timestamp'].includes(dimension.toLowerCase())) {
                 return `'${dimension}' is not an acceptable dimension name. Must be one of: 'id', 'timestamp'.`
             }
             if (!['asc', 'desc'].includes(order.toLowerCase())) {
-                return order ? `${order} is not an acceptable order value. Must be either 'asc' or 'desc'.` : null;
+                return `${order} is not an acceptable order value. Must be either 'asc' or 'desc'.`;
             }
             return null;
         }
@@ -94,7 +113,6 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
  * @example `fOo-bar`, `foo_bar`, `FOO_BAR` and `fooBar` will all be rewritten to `fooBar`.
  */
 export const validateNewsQueryParams = (req: express.Request<NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery>, res: express.Response, next: express.NextFunction) => {
-    if (['general'].some((el) => el === req.params.category))
     for (const [key, value] of Object.entries(req.query)) {
         for (const [acceptableParams, targetParam, validate] of queryParams) {
             if (acceptableParams.some((el) => el.toLowerCase() === key.toLowerCase())) {

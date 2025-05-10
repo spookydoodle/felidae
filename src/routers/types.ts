@@ -10,6 +10,7 @@ export enum QueryParam {
     DateLt = 'dateLt',
     DateLte = 'dateLte',
     Page = 'page',
+    Items = 'items',
     SortBy = 'sortBy'
 }
 

@@ -70,7 +70,7 @@ export const getResults = async (
                 `Error fetching data from ${url}: ${err?.message}.`,
                 "error"
             );
-            console.log(err);
+            console.error(err);
             const results: Headlines = [];
 
             return {
