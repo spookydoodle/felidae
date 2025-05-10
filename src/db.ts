@@ -54,10 +54,9 @@ const initializeDb = async (dbName: string): Promise<string> => {
  * @returns database name
  */
 export const initializeTb = (
-    dbName: string,
     tbType: TableType,
     tbName: string
-): Promise<string> =>{
+) => (dbName: string): Promise<string> => {
     return new Promise((resolve, reject) => {
         const pool = new Pool({ ...config, database: dbName });
         pool.connect();

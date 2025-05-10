@@ -34,8 +34,7 @@ export const qCreateTbNews = (tbName: string) => {
     url VARCHAR(${urlLen}),
     img VARCHAR(${urlLen}),
     age VARCHAR(${ageLen}),
-    timestamp TIMESTAMP,
-    img VARCHAR(${urlLen}),
+    timestamp TIMESTAMP
   );`;
 }
 
