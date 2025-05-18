@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { getPool, initializeDb, initializeTb } from "./db";
-import startServer from "./app";
+import app from "./app";
 import { initializeNewsScrapers } from "./scrapers/init";
 import { DB_NAME, TB_NEWS } from "./db/constants";
 import { Environment } from "./logic/types";
@@ -20,6 +20,7 @@ initializeDb(DB_NAME)
 
 const PORT = process.env.PORT || 8081;
 
-startServer(PORT).then(() => {
+app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}!`);
 });
+
