@@ -1,32 +1,59 @@
-// This file exposes the whole app as a library.
-//
-// It *does not* connect the app to the real world. All external clients should
-// be injectable / configurable from the outside to make testing possible.
-// For example, the library does not connect to the database - it depends on
-// the caller initializing the connection. This allows using a different connection
-// in unit tests, and a different one in a production environment.
-import express from 'express';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@as-integrations/express5';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import express, { Express } from 'express';
 import cors from 'cors';
+import http from 'http';
 import { config } from './routers/config';
 import healthRouter from './routers/health';
 import newsRouter from './routers/news';
 
+const typeDefs = `#graphql
+  type Query {
+    hello: String
+  }
+`;
+
+const resolvers = {
+    Query: {
+        hello: () => 'world',
+    },
+};
+
 const app = express();
+const httpServer = http.createServer(app);
 
-app.use(cors());
-
-const indexRouter = express.Router();
-
-indexRouter.get('/', (_req, res) => {
-    res.status(200).send(`
-    <h1>Hello from Node.js server.</h1>
-    <p>Contact: spookydoodle0@gmail.com</p>
-    `);
+const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
-indexRouter.use(config.baseUrl.health, healthRouter);
-indexRouter.use(config.baseUrl.news, newsRouter);
+const startServer = async (port: string | number): Promise<Express> => {
+    await server.start();
 
-app.use(config.baseUrl.index, indexRouter);
+    app.use(
+        cors(),
+        express.json(),
+        expressMiddleware(server)
+    );
 
-export default app;
+    const indexRouter = express.Router();
+
+    indexRouter.get('/', (_req, res) => {
+        res.status(200).send(`
+            <h1>Hello from Node.js server.</h1>
+            <p>Contact: spookydoodle0@gmail.com</p>
+        `);
+    });
+
+    indexRouter.use(config.baseUrl.health, healthRouter);
+    indexRouter.use(config.baseUrl.news, newsRouter);
+
+    app.use(config.baseUrl.index, indexRouter);
+    await new Promise((resolve) => httpServer.listen({ port }, () => resolve(true)));
+
+    return app;
+};
+
+export default startServer;
