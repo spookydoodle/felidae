@@ -1,4 +1,6 @@
 import express from "express";
+import { GraphQLSchema, GraphQLObjectType, GraphQLString } from 'graphql';
+import { createHandler } from 'graphql-http/lib/use/express';
 import { Pool } from "pg";
 import { getPool } from "../db";
 import { selectNewsData } from "../db/postNewsData";
@@ -9,6 +11,18 @@ import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
 import { validateNewsQueryParams } from "./news-middleware";
 import { Headline } from "../logic/types";
 import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsResponseBody } from "./types";
+
+const schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: 'Query',
+    fields: {
+      hello: {
+        type: GraphQLString,
+        resolve: () => 'world',
+      },
+    },
+  }),
+});
 
 const router = express.Router();
 
@@ -24,6 +38,8 @@ setTimeout(async () => {
 router.get("/", (_req, res) => {
     res.status(200).send(generatePage("Hello from Felidae's News Scraper API."));
 });
+
+router.all('/graphql', createHandler({ schema }));
 
 router.get<string, NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery>(
     "/:category",

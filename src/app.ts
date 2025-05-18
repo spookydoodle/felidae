@@ -1,27 +1,10 @@
 import express from 'express';
-import { GraphQLSchema, GraphQLObjectType, GraphQLString } from 'graphql';
-import { createHandler } from 'graphql-http/lib/use/express';
 import cors from 'cors';
 import { config } from './routers/config';
 import healthRouter from './routers/health';
 import newsRouter from './routers/news';
 
-const schema = new GraphQLSchema({
-  query: new GraphQLObjectType({
-    name: 'Query',
-    fields: {
-      hello: {
-        type: GraphQLString,
-        resolve: () => 'world',
-      },
-    },
-  }),
-});
-
 const app = express();
-
-app.all('/graphql', createHandler({ schema }));
-
 app.use(cors());
 
 const indexRouter = express.Router();
