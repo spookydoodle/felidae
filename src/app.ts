@@ -11,9 +11,9 @@ const indexRouter = express.Router();
 
 indexRouter.get('/', (_req, res) => {
     res.status(200).send(`
-            <h1>Hello from Node.js server.</h1>
-            <p>Contact: spookydoodle0@gmail.com</p>
-        `);
+        <h1>Hello from Node.js server.</h1>
+        <p>Contact: spookydoodle0@gmail.com</p>
+    `);
 });
 
 indexRouter.use(config.baseUrl.health, healthRouter);

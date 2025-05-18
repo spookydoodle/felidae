@@ -16,11 +16,10 @@ initializeDb(DB_NAME)
         maxPageIndex: 1,
         updateFreqInHrs: 1
     }))
-    .catch((e) => console.error(e));
+    .catch(console.error);
 
 const PORT = process.env.PORT || 8081;
 
 app.listen(PORT, () => {
     console.log(`App listening on port ${PORT}!`);
 });
-
