@@ -36,6 +36,7 @@ setTimeout(async () => {
 }, 5000);
 
 router.get("/", (_req, res) => {
+    // TODO: Serve open API spec
     res.status(200).send(generatePage("Hello from Felidae's News Scraper API."));
 });
 

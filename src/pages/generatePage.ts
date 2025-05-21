@@ -46,7 +46,7 @@ export default (title: string, content = '') => `<html>
         ${icon}
         <h1>${title}</h1>
         ${content}
-        <a id="contact" href="mailto:spookydoodle0@gmail.com">Contact spookydoodle0@gmail.com</a>
+        <a id="contact" target="_blank" href="https://spookydoodle.com">spookydoodle.com</a>
     </div>
 </body>
 </html>`
