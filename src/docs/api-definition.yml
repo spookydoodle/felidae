@@ -1,0 +1,245 @@
+openapi: "3.1.1"
+info:
+  title: "News headlines API"
+  description: "News headlines from various providers for selected categories, countries and languages."
+  version: "1.1.0"
+contact:
+  name: spookydoodle
+  url: https://spookydoodle.com
+servers:
+  - url: "https://felidae.spookydoodle.com/news"
+    description: News headlines server
+paths: 
+  /{category}:
+    description: Finds news headlines scraped in a given category: general, business, science, entertainment, sport
+    parameters:
+      - name: category
+        in: path
+        description: Category in which news was scraped
+        required: true
+        schema:
+          $ref: '#/components/schemas/Category'
+      - name: locale
+        in: query
+        description: Combination of the country (code) of the news and the language in which it's written
+        schema: 
+          $ref: '#/components/schemas/Locale'
+      - name: language
+        in: query
+        description: Language in which the news piece is written
+        schema: 
+          $ref: '#/components/schemas/Language'
+      - name: lang
+        in: query
+        description: Alias for language param
+        schema: 
+          $ref: '#/components/schemas/Language'
+      - name: cc
+        in: query
+        description: Country (code) of the news
+        schema: 
+          $ref: '#/components/schemas/CountryCode'
+      - name: countrycode
+        in: query
+        description: Alias for cc param
+        schema: 
+          $ref: '#/components/schemas/CountryCode'
+      - name: country-code
+        in: query
+        description: Alias for cc param
+        schema: 
+          $ref: '#/components/schemas/CountryCode'
+      - name: country_code
+        in: query
+        description: Alias for cc param
+        schema: 
+          $ref: '#/components/schemas/CountryCode'
+      - name: date
+        in: query
+        description: Selects headlines scraped on the given date (in format: yyyy-MM-dd)
+        schema: 
+          type: date
+        example: 2025-02-16
+      - name: dategt
+        in: query
+        description: Selects headlines scraped after the given date (in format: yyyy-MM-dd)
+        schema: 
+          type: date
+        example: 2025-02-16
+      - name: date-gt
+        in: query
+        description: Alias for dategt param
+        schema: 
+          type: date
+      - name: date_gt
+        in: query
+        description: Alias for dategt param
+        schema: 
+          type: date
+      - name: dategte
+        in: query
+        description: Selects headlines scraped on or after the given date (in format: yyyy-MM-dd)
+        schema: 
+          type: date
+        example: 2025-02-16
+      - name: date-gte
+        in: query
+        description: Alias for dategte param
+        schema: 
+          type: date
+      - name: date_gte
+        in: query
+        description: Alias for dategte param
+        schema: 
+          type: date
+      - name: datelt
+        in: query
+        description: Selects headlines scraped before the given date (in format: yyyy-MM-dd)
+        schema: 
+          type: date
+        example: 2025-02-16
+      - name: date-lt
+        in: query
+        description: Alias for datelt param
+        schema: 
+          type: date
+      - name: date_lt
+        in: query
+        description: Alias for datelt param
+        schema: 
+          type: date
+      - name: datelte
+        in: query
+        description: Selects headlines scraped on or before the given date (in format: yyyy-MM-dd)
+        schema: 
+          type: date
+        example: 2025-02-16
+      - name: date-lte
+        in: query
+        description: Alias for datelte param
+        schema: 
+          type: date
+      - name: date_lte
+        in: query
+        description: Alias for datelte param
+        schema: 
+          type: date
+      - name: page
+        in: query
+        description: Results page
+        schema: 
+          type: integer
+          minimum: 1
+        example: 2
+      - name: items
+        in: query
+        description: Number of results per page
+        schema: 
+          type: integer
+          minimum: 1
+          maximum: 500
+        example: 350
+      - name: sortby
+        in: query
+        description: By which field to sort the results and in which direction (format: id/timestamp asc/desc)
+        schema: 
+          type: string
+        example: id desc
+      - name: sort-by
+        in: query
+        description: Alias for sortby param
+        schema: 
+          type: string
+      - name: sort_by
+        in: query
+        description: Alias for sortby param
+        schema: 
+          type: string
+    get: 
+      summary: Returns news headlines for a given query.
+      description: Returns news headlines in a given category
+      operationId: getNewsHeadlines
+      responses:
+        '200':
+          description: list of new headlines response
+          content:
+            'application/json':
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/NewsHeadline'
+        default:
+          description: error payload
+          content:
+            text/html:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+      parameters: TODO...
+components:
+  schemas:
+    Category:
+      type: string
+      enum: [general, business, entertainment, sport, health, science, mercury, venus, earth, mars, jupiter, saturn, uranus, neptun, pluto]
+    Locale:
+      type: string
+      enum: [de-de, gb-en, nl-nl, pl-pl, us-en]
+    Language:
+      type: string
+      enum: [de, en, nl, pl]
+    CountryCode:
+      type: string
+      enum: [de, nl, pl, gb, us]
+    NewsHeadline:
+      required: ["headline"]
+      type: "object"
+      properties:
+        id:
+          type: "number"
+          description: "Hheadline's unique identifier"
+        category:
+          type: "string"
+          description: "Category of the news (matches the path)"
+        country:
+          type: "string"
+          description: "Country of the news"
+        lang:
+          type: "string"
+          description: "Language in which the news piece is written"
+        headline:
+          type: "string"
+          description: "Headline of the news piece"
+        provider:
+          type: "string"
+          description: "News provider"
+        url:
+          type: "string"
+          description: "URL where the news piece is published"
+        img:
+          type: "string"
+          description: "URL to the image linked to the news headline (empty string if not available)"
+        age:
+          type: "string"
+          description: "Age of the news relative to the timestamp of scraping (empty string if not available)"
+        timestamp:
+          type: "string"
+          description: "Timestamp of scraping in UTC ISO format"
+      example:
+        id: 1
+        category: business
+        country: gb
+        lang: en
+        headline: Rocket launches to space
+        provider: Space News Today
+        url: https://example-space-news-today.com/rocket-launches-to-space
+        img: data:image/gif;base64,abcde//fghi
+        age: 2 min ago
+        timestamp: 2025-05-21T04:09:49.658Z
+    ErrorModel:
+      required: ["reason"]
+      type: "object"
+      properties:
+        reason:
+          type: "string"
+          description: "The reason of the error"
+      example:
+        reason: Incorrect value 'foo' of parameter lang.
