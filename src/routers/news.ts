@@ -32,7 +32,7 @@ router.use('/', swaggerUi.serve, swaggerUi.setup(
 router.all('/graphql', createHandler({
     schema: new GraphQLSchema({
         query: new GraphQLObjectType({
-            name: 'Query',
+            name: 'News',
             fields: {
                 hello: {
                     type: GraphQLString,
