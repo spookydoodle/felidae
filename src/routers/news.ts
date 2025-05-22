@@ -26,7 +26,17 @@ setTimeout(async () => {
 const router = express.Router();
 
 router.use('/', swaggerUi.serve, swaggerUi.setup(
-    YAML.load(path.join(__dirname, '../docs', 'news-api.yml')) as swaggerUi.JsonObject
+    YAML.load(path.join(__dirname, '../docs', 'news-api.yml')) as swaggerUi.JsonObject,
+    {
+        customCss: `
+            body { background-color: #1C191C; } 
+            .swagger-ui .opblock.opblock-get { background-color: #303341; }
+            .scheme-container, .opblock-section-header, button, button > span { background-color: #303341 !important; } 
+            div, button, span, p, h1, h2, h3, h4, td, th { color: rgba(255, 255, 255, .6) !important; }
+            .model-container { background-color: #303341 !important; }
+            .swagger-ui .topbar { display: none }
+        `
+    }
 ));
 
 router.all('/graphql', createHandler({
