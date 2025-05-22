@@ -54,11 +54,10 @@ paths:
           $ref: '#/components/schemas/CountryCode'
       - name: date
         in: query
-        description: Selects headlines scraped on the given date
+        description: Selects headlines scraped on the given date in format YYYY-MM-DD
         schema: 
           type: string
           format: date
-        example: 2025-02-16
       - name: dategt
         in: query
         description: Selects headlines scraped after the given date
@@ -89,6 +88,7 @@ paths:
         schema: 
           type: string
           format: date
+        example: "2025-03-01"
       - name: date_gte
         in: query
         description: Alias for dategte param
@@ -119,6 +119,7 @@ paths:
         schema: 
           type: string
           format: date
+        example: "2025-03-31"
       - name: date-lte
         in: query
         description: Alias for datelte param
@@ -151,7 +152,7 @@ paths:
         description: By which field to sort the results and in which direction
         schema: 
           $ref: '#/components/schemas/SortBy'
-        example: id desc
+        example: timestamp desc
       - name: sort-by
         in: query
         description: Alias for sortby param

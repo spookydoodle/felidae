@@ -1,1 +1,5 @@
 ALTER TABLE newsheadlines ADD COLUMN img VARCHAR(255);
+CREATE INDEX category_hash_index ON newsheadlines USING hash(category);
+CREATE INDEX country_hash_index ON newsheadlines USING hash(country);
+CREATE INDEX lang_hash_index ON newsheadlines USING hash(lang);
+CREATE INDEX timestamp_btree_index ON newsheadlines USING btree(timestamp);
