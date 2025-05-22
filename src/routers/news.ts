@@ -34,7 +34,8 @@ router.use('/', swaggerUi.serve, swaggerUi.setup(
             .scheme-container, .opblock-section-header, button, button > span { background-color: #303341 !important; } 
             div, button, span, p, h1, h2, h3, h4, td, th { color: rgba(255, 255, 255, .6) !important; }
             .model-container { background-color: #303341 !important; }
-            .swagger-ui .topbar { display: none }
+            .example.microlight { background-color: #474A58 !important; }
+            .swagger-ui .topbar { display: none; }
         `
     }
 ));
