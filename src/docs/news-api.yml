@@ -143,7 +143,7 @@ paths:
         in: query
         description: By which field to sort the results and in which direction (format: id/timestamp asc/desc)
         schema: 
-          type: string
+          $ref: '#/components/schemas/CountryCode'
         example: id desc
       - name: sort-by
         in: query
@@ -189,6 +189,9 @@ components:
     CountryCode:
       type: string
       enum: [de, nl, pl, gb, us]
+    SortBy:
+      type: string
+      enum: [id asc, id desc, timestamp asc, timestamp desc]
     NewsHeadline:
       required: ["headline"]
       type: "object"

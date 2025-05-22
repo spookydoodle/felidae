@@ -1,30 +1,18 @@
 import express from "express";
 import { GraphQLSchema, GraphQLObjectType, GraphQLString } from 'graphql';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+import path from 'path';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { Pool } from "pg";
 import { getPool } from "../db";
 import { selectNewsData } from "../db/postNewsData";
 import { DB_NAME } from "../db/constants";
-import generatePage from "../pages/generatePage";
 import createLogMsg from "../utils/createLogMsg";
 import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
 import { validateNewsQueryParams } from "./news-middleware";
 import { Headline } from "../logic/types";
 import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsResponseBody } from "./types";
-
-const schema = new GraphQLSchema({
-  query: new GraphQLObjectType({
-    name: 'Query',
-    fields: {
-      hello: {
-        type: GraphQLString,
-        resolve: () => 'world',
-      },
-    },
-  }),
-});
-
-const router = express.Router();
 
 let pool: Pool | undefined;
 setTimeout(async () => {
@@ -35,12 +23,25 @@ setTimeout(async () => {
     );
 }, 5000);
 
-router.get("/", (_req, res) => {
-    // TODO: Serve open API spec
-    res.status(200).send(generatePage("Hello from Felidae's News Scraper API."));
-});
+const router = express.Router();
 
-router.all('/graphql', createHandler({ schema }));
+router.use('/', swaggerUi.serve, swaggerUi.setup(
+    YAML.load(path.join(__dirname, '../docs', 'news-api.yml')) as swaggerUi.JsonObject
+));
+
+router.all('/graphql', createHandler({
+    schema: new GraphQLSchema({
+        query: new GraphQLObjectType({
+            name: 'Query',
+            fields: {
+                hello: {
+                    type: GraphQLString,
+                    resolve: () => 'world',
+                },
+            },
+        }),
+    })
+}));
 
 router.get<string, NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery>(
     "/:category",

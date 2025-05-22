@@ -10,12 +10,11 @@ app.use(cors());
 
 const indexRouter = express.Router();
 
+indexRouter.use(config.baseUrl.health, healthRouter);
+indexRouter.use(config.baseUrl.news, newsRouter);
 indexRouter.get('/', (_req, res) => {
     res.status(200).send(generatePage('Purr purr hiss.', '<a id="contact" href="/news">News API</a>'));
 });
-
-indexRouter.use(config.baseUrl.health, healthRouter);
-indexRouter.use(config.baseUrl.news, newsRouter);
 
 app.use(config.baseUrl.index, indexRouter);
 
