@@ -1,17 +1,14 @@
-openapi: "3.1.1"
+openapi: "3.0.1"
 info:
   title: "News headlines API"
   description: "News headlines from various providers for selected categories, countries and languages."
   version: "1.1.0"
-contact:
-  name: spookydoodle
-  url: https://spookydoodle.com
 servers:
   - url: "https://felidae.spookydoodle.com/news"
     description: News headlines server
 paths: 
   /{category}:
-    description: Finds news headlines scraped in a given category: general, business, science, entertainment, sport
+    description: Finds news headlines scraped in a given category
     parameters:
       - name: category
         in: path
@@ -24,6 +21,7 @@ paths:
         description: Combination of the country (code) of the news and the language in which it's written
         schema: 
           $ref: '#/components/schemas/Locale'
+        example: gb-en
       - name: language
         in: query
         description: Language in which the news piece is written
@@ -56,81 +54,91 @@ paths:
           $ref: '#/components/schemas/CountryCode'
       - name: date
         in: query
-        description: Selects headlines scraped on the given date (in format: yyyy-MM-dd)
+        description: Selects headlines scraped on the given date in format YYYY-MM-DD
         schema: 
-          type: date
-        example: 2025-02-16
+          type: string
+          format: date
       - name: dategt
         in: query
-        description: Selects headlines scraped after the given date (in format: yyyy-MM-dd)
+        description: Selects headlines scraped after the given date
         schema: 
-          type: date
-        example: 2025-02-16
+          type: string
+          format: date
       - name: date-gt
         in: query
         description: Alias for dategt param
         schema: 
-          type: date
+          type: string
+          format: date
       - name: date_gt
         in: query
         description: Alias for dategt param
         schema: 
-          type: date
+          type: string
+          format: date
       - name: dategte
         in: query
-        description: Selects headlines scraped on or after the given date (in format: yyyy-MM-dd)
+        description: Selects headlines scraped on or after the given date
         schema: 
-          type: date
-        example: 2025-02-16
+          type: string
+          format: date
       - name: date-gte
         in: query
         description: Alias for dategte param
         schema: 
-          type: date
+          type: string
+          format: date
+        example: "2025-03-01"
       - name: date_gte
         in: query
         description: Alias for dategte param
         schema: 
-          type: date
+          type: string
+          format: date
       - name: datelt
         in: query
-        description: Selects headlines scraped before the given date (in format: yyyy-MM-dd)
+        description: Selects headlines scraped before the given date
         schema: 
-          type: date
-        example: 2025-02-16
+          type: string
+          format: date
       - name: date-lt
         in: query
         description: Alias for datelt param
         schema: 
-          type: date
+          type: string
+          format: date
       - name: date_lt
         in: query
         description: Alias for datelt param
         schema: 
-          type: date
+          type: string
+          format: date
       - name: datelte
         in: query
-        description: Selects headlines scraped on or before the given date (in format: yyyy-MM-dd)
+        description: Selects headlines scraped on or before the given date
         schema: 
-          type: date
-        example: 2025-02-16
+          type: string
+          format: date
+        example: "2025-03-31"
       - name: date-lte
         in: query
         description: Alias for datelte param
         schema: 
-          type: date
+          type: string
+          format: date
       - name: date_lte
         in: query
         description: Alias for datelte param
         schema: 
-          type: date
+          type: string
+          format: date
       - name: page
         in: query
         description: Results page
         schema: 
           type: integer
           minimum: 1
-        example: 2
+        example: 1
       - name: items
         in: query
         description: Number of results per page
@@ -138,23 +146,23 @@ paths:
           type: integer
           minimum: 1
           maximum: 500
-        example: 350
+        example: 50
       - name: sortby
         in: query
-        description: By which field to sort the results and in which direction (format: id/timestamp asc/desc)
+        description: By which field to sort the results and in which direction
         schema: 
-          type: string
-        example: id desc
+          $ref: '#/components/schemas/SortBy'
+        example: timestamp desc
       - name: sort-by
         in: query
         description: Alias for sortby param
         schema: 
-          type: string
+          $ref: '#/components/schemas/SortBy'
       - name: sort_by
         in: query
         description: Alias for sortby param
         schema: 
-          type: string
+          $ref: '#/components/schemas/SortBy'
     get: 
       summary: Returns news headlines for a given query.
       description: Returns news headlines in a given category
@@ -174,7 +182,6 @@ paths:
             text/html:
               schema:
                 $ref: '#/components/schemas/ErrorModel'
-      parameters: TODO...
 components:
   schemas:
     Category:
@@ -189,6 +196,9 @@ components:
     CountryCode:
       type: string
       enum: [de, nl, pl, gb, us]
+    SortBy:
+      type: string
+      enum: [id asc, id desc, timestamp asc, timestamp desc]
     NewsHeadline:
       required: ["headline"]
       type: "object"

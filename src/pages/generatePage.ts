@@ -23,10 +23,14 @@ export default (title: string, content = '') => `<html>
             color: rgba(255, 255, 255, .6);
         }
 
+        .content {
+            text-align: center;
+        }
+
         svg {
-            height: 2rem;
-            width: 2rem;
-            padding: 1rem;
+            height: 32px;
+            width: 32px;
+            padding: 16px;
         }
 
         svg path {
@@ -34,7 +38,7 @@ export default (title: string, content = '') => `<html>
         }
 
         #contact {
-            padding: 1rem;
+            padding: 16px;
             text-decoration: none !important;
             color: inherit;
             border: none;
@@ -44,8 +48,10 @@ export default (title: string, content = '') => `<html>
 <body>
     <div>
         ${icon}
-        <h1>${title}</h1>
-        ${content}
+        <div class="content">
+            <h1>${title}</h1>
+            ${content}
+        </div>
         <a id="contact" target="_blank" href="https://spookydoodle.com">spookydoodle.com</a>
     </div>
 </body>
