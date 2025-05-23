@@ -28,11 +28,17 @@ type TableType = keyof ReturnType<typeof qCreateTb>;
 /**
  * @returns database name
  */
-const initializeDb = async (dbName: string): Promise<string> => {
+const initializeDb = async (
+    dbName: string,
+    { skip }: { skip: boolean } = { skip: true }
+): Promise<string> => {
     const pool = new Pool(config);
     await pool.connect();
 
     return new Promise((resolve, reject) => {
+        if (skip) {
+            return resolve(dbName);
+        }
         pool.query(qCreateDb(dbName), (dbErr) => {
             if (!dbErr || dbErr.message.indexOf("already exists") != -1) {
                 createLogMsg(
@@ -55,9 +61,13 @@ const initializeDb = async (dbName: string): Promise<string> => {
  */
 export const initializeTb = (
     tbType: TableType,
-    tbName: string
+    tbName: string,
+    { skip }: { skip: boolean } = { skip: true }
 ) => (dbName: string): Promise<string> => {
     return new Promise((resolve, reject) => {
+        if (skip) {
+            return resolve(dbName);
+        }
         const pool = new Pool({ ...config, database: dbName });
         pool.connect();
 
