@@ -1,8 +1,6 @@
 import express from "express";
 import { GraphQLSchema, GraphQLObjectType, GraphQLString } from 'graphql';
 import swaggerUi from 'swagger-ui-express';
-import YAML from 'yamljs';
-import path from 'path';
 import { createHandler } from 'graphql-http/lib/use/express';
 import { Pool } from "pg";
 import { getPool } from "../db";
@@ -29,9 +27,9 @@ router.get('/', (_req, res) => res.redirect('/news/docs'));
 
 router.use('/docs', swaggerUi.serve);
 router.get('/docs', swaggerUi.setup(
-    YAML.load(path.join(__dirname, '../docs', 'news-api.yml')) as swaggerUi.JsonObject,
+    null,
     {
-        swaggerUrl: 'https://spookydoodle.com',
+        swaggerUrl: '/docs/news-api.yml',
         customSiteTitle: 'Felidae News API',
         customCssUrl: '/css/news-docs.css'
     }
