@@ -205,7 +205,7 @@ components:
       properties:
         id:
           type: "number"
-          description: "Hheadline's unique identifier"
+          description: "Headline's unique identifier"
         category:
           type: "string"
           description: "Category of the news (matches the path)"

@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 
 const indexRouter = express.Router();
-
+indexRouter.use('/css', express.static(__dirname + '/public/css'));
 indexRouter.use(config.baseUrl.health, healthRouter);
 indexRouter.use(config.baseUrl.news, newsRouter);
 indexRouter.get('/', (_req, res) => {

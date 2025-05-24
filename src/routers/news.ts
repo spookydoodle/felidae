@@ -25,30 +25,15 @@ setTimeout(async () => {
 
 const router = express.Router();
 
-router.use('/', swaggerUi.serve, swaggerUi.setup(
+router.get('/', (_req, res) => res.redirect('/news/docs'));
+
+router.use('/docs', swaggerUi.serve);
+router.get('/docs', swaggerUi.setup(
     YAML.load(path.join(__dirname, '../docs', 'news-api.yml')) as swaggerUi.JsonObject,
     {
-        swaggerUrl: 'https://spookydoodle.com', 
+        swaggerUrl: 'https://spookydoodle.com',
         customSiteTitle: 'Felidae News API',
-        customCss: `
-            div, button, span, p, h1, h2, h3, h4, td, th { color: rgba(255, 255, 255, .8) !important; }
-            body { background-color: #1C191C; } 
-            .opblock.opblock-get, .swagger-ui .opblock.opblock-get .opblock-summary { border-color: rgba(255, 255, 255, .6) !important; border-bottom: 1px solid rgba(255, 255, 255, .6) !important; }
-            .swagger-ui .opblock.opblock-get { background-color: #303341; }
-            .scheme-container, .opblock-section-header { background-color: #303341 !important; } 
-            .btn.execute.opblock-control__btn, .execute-wrapper button, button.opblock-summary-control > span { background-color: purple !important; border-color: purple !important; }
-            button.models-control, button.model-box-control:focus, button.model-box-control:active { border-color: black !important; outline: none !important; }
-            .opblock-title > span::after { background-color: purple !important; }
-            .model-container { background-color: #303341 !important; }
-            .example.microlight { background-color: #474A58 !important; }
-            svg.arrow, .models-control path { stroke: rgba(255, 255, 255, .6); fill: rgba(255, 255, 255, .6); }
-            .model-toggle::after { background-color: rgba(255, 255, 255, .6) !important; border-radius: 50%; }
-            .loading::before { border-color: rgba(255, 255, 255, .1) !important; border-top-color: rgba(255, 255, 255, .6) !important }
-            .loading::after { color: rgba(255, 255, 255, .6) !important }
-            select, input { background-color: #ECEBE8 !important; color: #474A58 !important; }
-            .response-control-media-type__accept-message { color: #7FB069 !important; }
-            .swagger-ui .topbar { display: none; }
-        `
+        customCssUrl: '/css/news-docs.css'
     }
 ));
 

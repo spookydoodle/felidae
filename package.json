@@ -2,9 +2,9 @@
   "name": "felidae",
   "version": "1.1.0",
   "description": "This API lists news headlines and descriptions in various categories.",
-  "main": "src/index.ts",
+  "main": "index.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node copy.js",
     "test": "jest",
     "dev": "ts-node-dev src/index.ts",
     "start": "node build/index.js"
