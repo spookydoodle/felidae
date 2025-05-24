@@ -30,8 +30,17 @@ Returns news headlines with timestamps and providers.
 | `datelte` | `date_lt` | Filter by dates earlier than or equal to provided. | Format: `YYYY-MM-DD` in UTC | Optional | `&date_lte=1999-01-01` |
 | `sortby` | `sort_by` | Sort results ascending or descending by selected dimension. | Format: `<dimension> <sort-order>`, where `dimension` is one of: `id`, `timestamp` and `sort-order` can be optionally provided as `asc` or `desc` (if not provided, will default to `asc`) | Optional | `&sort-by=timestamp` (defaults to `asc`), `&sort-by=timestamp desc` |
 
-### Examples
+#### Examples
 
-- [/news/general?date=2023-01-01](https://felidae.spookydoodle.com/news/general?date=2023-01-01)
 - [/news/business?sortBy=timestamp%20desc](https://felidae.spookydoodle.com/news/business?sortBy=timestamp%20desc)
-- [/news/sport?cc=de&date_gte=2021-01-01&date_lt=2021-02-01&page=2](https://felidae.spookydoodle.com/news/sport?cc=de&date_gte=2021-01-01&date_lt=2021-02-01&page=2&items=50)
+- [/news/sport?cc=de&date_gte=2025-01-01&date_lt=2025-02-01&page=2](https://felidae.spookydoodle.com/news/sport?cc=de&date_gte=2021-01-01&date_lt=2021-02-01&page=2&items=50)
+- [/news/general?date=2023-01-01](https://felidae.spookydoodle.com/news/general?date=2023-01-01)
+
+### GraphQL
+
+Data can be queried using graphQL queries. Available on the same end points with at a path `/graphql`.
+
+#### Examples
+- [/news/business/graphql?query={headlines(sortby: "timestamp desc"){id,headline,timestamp}}](https://felidae.spookydoodle.com/news/business/graphql?query={headlines(sortby: "timestamp desc"){id,headline,timestamp}})
+- [/news/sport/graphql?query={headlines(cc:"de",date_gte:"2025-05-01",date_lte:"2025-05-31",page:1,items:50){id,headline,timestamp}}](/graphql?query={headlines(cc:"de",date_gte:"2025-05-01",date_lte:"2025-05-31",page:1,items:50){id,headline,timestamp}})
+- [/news/general/graphql?query={headlines(date:"2025-05-01"){id,headline,timestamp}}](https://felidae.spookydoodle.com/news/general/graphql?query={headlines(date:"2023-01-01"){id,headline,timestamp}})
