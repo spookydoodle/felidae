@@ -19,7 +19,7 @@ Returns news headlines with timestamps and providers.
 | Parameter | Aliases | Description | Accepted values | Required | Example |
 | --- | --- | --- | --- | --- | --- | 
 | `locale` | --- | Country code (of origin) and language combination. Takes priority over `cc` and `lang`. | Single selection from options: `de-de`, `gb-en`, `nl-nl`, `pl-pl`, `us-en` | Optional | `&locale=gb-en` |
-| `cc` | `countrycode`, `country_code` | Country code (of origin). Will be ignored if `locale` is also provided. | Single selection from options: `de`, `gb`, `nl`, `pl`, `us` | Optional | `&cc=de` |
+| `cc` | `country`, `countrycode`, `country_code` | Country code (of origin). Will be ignored if `locale` is also provided. | Single selection from options: `de`, `gb`, `nl`, `pl`, `us` | Optional | `&cc=de` |
 | `lang` | `language` | Language. Will be ignored if `locale` is also provided. | Single selection from options:  `de`, `en`, `nl`, `pl` | Optional | `&lang=en` |
 | `page` | --- | Page number. A single page contains 100 results by default, unless the `items` parameter specifies differently. | Integer number greater than `0` | Optional | `&page=3` |
 | `items` | --- | Number of items per page. Defaults to `100`. | Integer number greater than `0` and less than `500` | Optional | `&items=10` |
@@ -39,8 +39,18 @@ Returns news headlines with timestamps and providers.
 ### GraphQL
 
 Data can be queried using graphQL queries. Available on the same end points with at a path `/graphql`.
+Available properties for query `headlines`:
+- `id`
+- `country`
+- `lang`
+- `headline`
+- `provider`
+- `url`
+- `img`
+- `age`
+- `timestamp`
 
 #### Examples
 - [/news/business/graphql?query={headlines(sortby:"timestamp%20desc"){id,headline,timestamp}}](https://felidae.spookydoodle.com/news/business/graphql?query={headlines(sortby:"timestamp%20desc"){id,headline,timestamp}})
 - [/news/sport/graphql?query={headlines(cc:"de",date_gte:"2025-05-01",date_lte:"2025-05-31",page:1,items:50){id,headline,timestamp}}](https://felidae.spookydoodle.com/news/sport/graphql?query={headlines(cc:"de",date_gte:"2025-05-01",date_lte:"2025-05-31",page:1,items:50){id,headline,timestamp}})
-- [/news/general/graphql?query={headlines(date:"2025-05-01"){id,headline,timestamp}}](https://felidae.spookydoodle.com/news/general/graphql?query={headlines(date:"2025-05-05"){id,headline,timestamp}})
+- [/news/general/graphql?query={headlines(date:"2025-05-01"){id,headline,timestamp}}](https://felidae.spookydoodle.com/news/general/graphql?query={headlines(date:"2025-05-01"){id,headline,timestamp}})

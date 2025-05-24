@@ -59,6 +59,8 @@ describe('News', () => {
         test('country code ok', () => {
             validateNewsQueryParams(getReq('entertainment', { cc: 'gb' }), res, next);
             expect(next).toHaveBeenCalled();
+            validateNewsQueryParams(getReq('health', { country: 'us' }), res, next);
+            expect(next).toHaveBeenCalled();
             validateNewsQueryParams(getReq('general', { countrycode: 'nl' }), res, next);
             expect(next).toHaveBeenCalled();
             validateNewsQueryParams(getReq('sport', { country_code: 'de' }), res, next);
@@ -67,6 +69,8 @@ describe('News', () => {
 
         test('country code not ok', () => {
             validateNewsQueryParams(getReq('entertainment', { cc: '53245' }), res, next);
+            expect(next).not.toHaveBeenCalled();
+            validateNewsQueryParams(getReq('sport', { country: '5423' }), res, next);
             expect(next).not.toHaveBeenCalled();
             validateNewsQueryParams(getReq('sport', { countrycode: '5423' }), res, next);
             expect(next).not.toHaveBeenCalled();

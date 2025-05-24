@@ -26,7 +26,7 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
             : "Must be one of: 'de-de', 'gb-en', 'nl-nl', 'pl-pl', 'us-en'."
     ],
     [
-        ['cc', 'countrycode', 'country_code'],
+        ['cc', 'country', 'countrycode', 'country_code'],
         QueryParam.Country,
         (value) => ['de', 'gb', 'nl', 'pl', 'us'].some((el) => value === el)
             ? null

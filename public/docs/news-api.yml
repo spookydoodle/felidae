@@ -37,6 +37,11 @@ paths:
         description: Country (code) of the news
         schema: 
           $ref: '#/components/schemas/CountryCode'
+      - name: country
+        in: query
+        description: Alias for cc param
+        schema: 
+          $ref: '#/components/schemas/CountryCode'
       - name: countrycode
         in: query
         description: Alias for cc param

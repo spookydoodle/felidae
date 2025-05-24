@@ -17,6 +17,7 @@ type Query {
     headlines(
         locale: String,
         cc: String,
+        country: String,
         countrycode: String,
         country_code: String,
         lang: String,
