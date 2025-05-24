@@ -18,12 +18,12 @@ Returns news headlines with timestamps and providers.
 
 | Parameter | Aliases | Description | Accepted values | Required | Example |
 | --- | --- | --- | --- | --- | 
-| `locale` |  | Country code (of origin) and language combination. Takes priority over `cc` and `lang`. | Single selection from options: `de-de`, `gb-en`, `nl-nl`, `pl-pl`, `us-en` | Optional | `&locale=gb-en` |
+| `locale` | - | Country code (of origin) and language combination. Takes priority over `cc` and `lang`. | Single selection from options: `de-de`, `gb-en`, `nl-nl`, `pl-pl`, `us-en` | Optional | `&locale=gb-en` |
 | `cc` | `country_code` | Country code (of origin). Will be ignored if `locale` is also provided. | Single selection from options: `de`, `gb`, `nl`, `pl`, `us` | Optional | `&cc=de` |
 | `lang` | `language` | Language. Will be ignored if `locale` is also provided. | Single selection from options:  `de`, `en`, `nl`, `pl` | Optional | `&lang=en` |
-| `page` |  | Page number. A single page contains 100 results by default, unless the `items` parameter specifies differently. | Integer number greater than `0` | Optional | `&page=3` |
-| `items` |  | Number of items per page. Defaults to `100`. | Integer number greater than `0` and less than `500` | Optional | `&items=10` |
-| `date` |  | Filter by date. | Format: `YYYY-MM-DD` in UTC | Optional | `&date=1999-01-01` |
+| `page` | - | Page number. A single page contains 100 results by default, unless the `items` parameter specifies differently. | Integer number greater than `0` | Optional | `&page=3` |
+| `items` | - | Number of items per page. Defaults to `100`. | Integer number greater than `0` and less than `500` | Optional | `&items=10` |
+| `date` | - | Filter by date. | Format: `YYYY-MM-DD` in UTC | Optional | `&date=1999-01-01` |
 | `dategt` | `date_gt` | Filter by dates later than to provided date. | Format: `YYYY-MM-DD` in UTC | Optional | `&date_gt=1999-01-01` |
 | `dategte` | `date_gte` | Filter by dates later than or equal to provided date. | Format: `YYYY-MM-DD` in UTC | Optional | `&date_gte=1999-01-01` |
 | `datelt` | `date_lt` | Filter by dates earlier than to provided date. | Format: `YYYY-MM-DD` in UTC | Optional | `&date_lt=1999-01-01` |
