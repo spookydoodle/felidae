@@ -53,11 +53,9 @@ export interface Headline extends HeadlineData {
 
 export type HeadlineColumn = keyof Headline;
 
-export type Headlines = Headline[];
-
 export interface SearchResult {
     error: null | string | number;
-    results: Headlines;
+    results: Headline[];
 }
 
 export type UpdateTime = [number, number, number, number];

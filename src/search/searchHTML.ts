@@ -6,7 +6,7 @@ import {
     Lang,
     Country,
     SearchResult,
-    Headlines,
+    Headline,
     SearchConfig,
     SelectorData,
     SearchParams,
@@ -52,7 +52,7 @@ export const getResults = async (
 
             // Expected result set is 10
             // TODO: Set up automated check for length 10
-            const results: Headlines = transform(headlines).map((headline) => ({
+            const results: Headline[] = transform(headlines).map((headline) => ({
                 category,
                 country,
                 lang,
@@ -71,7 +71,7 @@ export const getResults = async (
                 "error"
             );
             console.error(err);
-            const results: Headlines = [];
+            const results: Headline[] = [];
 
             return {
                 error: Number(err?.response?.status) || err?.message || "Unknown error",
@@ -94,7 +94,7 @@ export const getAllResults = async (
     const { category, country = defaultCountry, lang = defaultLang } = params;
     const results: {
         error: string | number | null;
-        results: Headlines[];
+        results: Headline[][];
     } = {
         error: null,
         results: [],

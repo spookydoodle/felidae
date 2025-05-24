@@ -1,12 +1,12 @@
 // This class is created to schedule automatic data updates and writing them in the data base
 // Data should be updated every 24 hours
 import createLogMsg from "../utils/createLogMsg";
-import { SearchResult, UpdateTime, Headlines } from "../logic/types";
+import { SearchResult, UpdateTime, Headline } from "../logic/types";
 
 class Scraper {
   name: string;
   requestFunc: () => Promise<SearchResult>;
-  postFunc: (data: Headlines) => Promise<Headlines>;
+  postFunc: (data: Headline[]) => Promise<Headline[]>;
   updateTimes: UpdateTime[];
   initDelay: number;
   checkUpdateFreq: number;
@@ -22,7 +22,7 @@ class Scraper {
   constructor(
     name: string,
     requestFunc: () => Promise<SearchResult>,
-    postFunc: (data: Headlines) => Promise<Headlines>,
+    postFunc: (data: Headline[]) => Promise<Headline[]>,
     updateTimes = [[2, 0, 0, 0] as UpdateTime],
     checkUpdateFreq = 1 * 60 * 60 * 1000, // every hour = 1 (h) * 60 (min) * 60 (s) * 1000 ms
     initDelay = 0,

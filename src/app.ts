@@ -7,6 +7,7 @@ import newsRouter from './routers/news';
 import generatePage from './pages/generatePage';
 
 const app = express();
+app.use(express.json());
 app.use(cors());
 
 const indexRouter = express.Router();

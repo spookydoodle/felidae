@@ -1,0 +1,16 @@
+ type Headline {
+    id: ID!
+    category: String!
+    country: String!
+    lang: String!
+    headline: String!
+    provider: String!
+    url: String!
+    img: String!
+    age: String!
+    timestamp: String!
+}
+
+type Query {
+    headlines: [Headline!]!
+}
