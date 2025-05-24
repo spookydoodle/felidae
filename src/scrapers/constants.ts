@@ -1,21 +1,21 @@
 import { Category, Country, Lang } from "../logic/types";
 
 export const categories: Category[] = [
-//   "general",
-//   "business",
-//   "entertainment",
-//   "sport",
-//   "health",
-//   "science",
-//   "mercury",
-//   "venus",
-//   "earth",
-//   "mars",
-//   "jupiter",
-//   "saturn",
-//   "uranus",
-//   "neptune",
-//   "pluto"
+  "general",
+  "business",
+  "entertainment",
+  "sport",
+  "health",
+  "science",
+  "mercury",
+  "venus",
+  "earth",
+  "mars",
+  "jupiter",
+  "saturn",
+  "uranus",
+  "neptune",
+  "pluto"
 ];
 
 export const countryLang: { [key in Country]: Lang } = {
