@@ -42,11 +42,6 @@ paths:
         description: Alias for cc param
         schema: 
           $ref: '#/components/schemas/CountryCode'
-      - name: country-code
-        in: query
-        description: Alias for cc param
-        schema: 
-          $ref: '#/components/schemas/CountryCode'
       - name: country_code
         in: query
         description: Alias for cc param
@@ -64,12 +59,6 @@ paths:
         schema: 
           type: string
           format: date
-      - name: date-gt
-        in: query
-        description: Alias for dategt param
-        schema: 
-          type: string
-          format: date
       - name: date_gt
         in: query
         description: Alias for dategt param
@@ -79,12 +68,6 @@ paths:
       - name: dategte
         in: query
         description: Selects headlines scraped on or after the given date
-        schema: 
-          type: string
-          format: date
-      - name: date-gte
-        in: query
-        description: Alias for dategte param
         schema: 
           type: string
           format: date
@@ -101,12 +84,6 @@ paths:
         schema: 
           type: string
           format: date
-      - name: date-lt
-        in: query
-        description: Alias for datelt param
-        schema: 
-          type: string
-          format: date
       - name: date_lt
         in: query
         description: Alias for datelt param
@@ -120,12 +97,6 @@ paths:
           type: string
           format: date
         example: "2025-03-31"
-      - name: date-lte
-        in: query
-        description: Alias for datelte param
-        schema: 
-          type: string
-          format: date
       - name: date_lte
         in: query
         description: Alias for datelte param
@@ -153,11 +124,6 @@ paths:
         schema: 
           $ref: '#/components/schemas/SortBy'
         example: timestamp desc
-      - name: sort-by
-        in: query
-        description: Alias for sortby param
-        schema: 
-          $ref: '#/components/schemas/SortBy'
       - name: sort_by
         in: query
         description: Alias for sortby param

@@ -12,5 +12,25 @@
 }
 
 type Query {
-    headlines: [Headline!]!
+    headlines(
+        locale: String,
+        cc: String,
+        countrycode: String,
+        country_code: String,
+        lang: String,
+        language: String,
+        date: String,
+        dategt: String,
+        date_gt: String,
+        dategte: String,
+        date_gte: String,
+        datelt: String,
+        date_lt: String,
+        datelte: String,
+        date_lte: String,
+        page: Int,
+        items: Int,
+        sortby: String,
+        sort_by: String
+    ): [Headline!]!
 }

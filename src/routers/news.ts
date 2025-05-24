@@ -10,8 +10,8 @@ import { selectNewsData } from "../db/postNewsData";
 import { DB_NAME } from "../db/constants";
 import createLogMsg from "../utils/createLogMsg";
 import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
-import { validateNewsQueryParams } from "./news-middleware";
-import { Headline } from "../logic/types";
+import { validateFilter, validateNewsQueryParams } from "./news-middleware";
+import { Category, Headline } from "../logic/types";
 import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsRequestQueryGraphQL, NewsResponseBody, NewsResponseBodyGraphQL, NewsResponseBodyGraphQLError, NewsResponseBodyGraphQLSuccess } from "./types";
 
 let pool: Pool | undefined;
@@ -36,12 +36,21 @@ router.get('/docs', swaggerUi.setup(
     }
 ));
 
-const newsGraphQLHandler = createHandler<unknown, unknown, { headlines: Headline[] }>({
+const newsGraphQLHandler = createHandler<unknown, unknown, { category: Category }>({
     schema: buildSchema(fs.readFileSync(path.join(__dirname, './news.graphql'), 'utf-8')),
-    rootValue: { headlines: (_: unknown, context: { headlines: Headline[] }) => context.headlines },
-    context: async (req) => {
-        const headlines = await getNewsHeadlines(pool!, req as unknown as Request<NewsRequestParams, NewsResponseBody, undefined, NewsRequestQuery>);
-        return { headlines };
+    rootValue: { 
+        headlines: async (filter: NewsRequestQuery, context: { category: Category }) => {
+            const validatedFilter = validateFilter(filter);
+            const headlines = await getNewsHeadlines(pool!, context, validatedFilter);
+            return headlines;
+        }
+    },
+    context: async (req, _params) => {
+        const category = (req as unknown as { params?: { category?: Category } })?.params?.['category'];
+        if (!category) {
+            throw new Error('Category value missing');
+        }
+        return { category}
     },
 });
 
@@ -52,25 +61,23 @@ router.all<string, NewsRequestParams, NewsResponseBodyGraphQL, NewsRequestBody, 
             res.status(500).send({ errors: [{ message: 'Database connection failed', }] });
             return;
         };
-        try {
-            const maybeParams = await parseRequestParams(req as unknown as (Parameters<typeof parseRequestParams>[0]));
-            console.log({ maybeParams, params: req.params, query: req.query })
-            if (!maybeParams) {
-                throw new Error('Missing query data');
-            }
 
+        try {
             const response = await newsGraphQLHandler(req as unknown as (Parameters<typeof parseRequestParams>[0]));
+
             if (!response?.[0]) {
                 throw new Error('Could not get data');
             }
+
             const body = JSON.parse(response[0]);
             const status = response?.[1]?.status ?? 500;
+
             if (status !== 200 || 'errors' in body) {
                 res.status(status).send(body as NewsResponseBodyGraphQLError);
                 return;
             }
-            const headlines = body['data']['headlines'] as unknown as NewsResponseBodyGraphQLSuccess;
-            res.status(200).send(headlines);
+
+            res.status(200).send(body['data']['headlines'] as unknown as NewsResponseBodyGraphQLSuccess);
         } catch (err) {
             res.status(400).send({ errors: [{ message: (err as Error).message || 'Unknown error', }] });
         }
@@ -84,8 +91,11 @@ router.get<string, NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsReq
             res.status(500).send({ reason: 'Database connection failed.' });
             return;
         };
+        
+        const { category } = req.params;
+        const { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, items = '100', sortBy } = req.query;
         try {
-            const data = await getNewsHeadlines(pool, req);
+            const data = await getNewsHeadlines(pool, { category }, { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, items, sortBy });
             res.status(200).send(data);
         } catch (err) {
             res.status(400).send({ reason: (err as Error).message || 'Unknown error' });
@@ -93,13 +103,9 @@ router.get<string, NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsReq
     }
 );
 
-const getNewsHeadlines = async (pool: Pool, req: Request<NewsRequestParams, NewsResponseBody, undefined, NewsRequestQuery>) => {
-    if (!pool) {
-        throw new Error('Database connection failed.')
-    };
-    const { category } = req.params;
-    const { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, items = '100', sortBy } = req.query;
-
+const getNewsHeadlines = async (pool: Pool, params: NewsRequestParams, query: NewsRequestQuery) => {
+    const { category } = params;
+    const { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, items = '100', sortBy } = query;
     const pg = isNaN(Number(page)) ? 1 : Math.max(1, Number(page));
     const itemsPerPage = Number(items);
     const [top, skip] = [itemsPerPage, (pg - 1) * itemsPerPage];

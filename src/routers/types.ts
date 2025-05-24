@@ -26,7 +26,7 @@ export interface NewsResponseError {
 export type NewsResponseBody = NewsResponseBodySuccess | NewsResponseError;
 export type NewsRequestBody = undefined;
 
-export type NewsRequestQuery = { [key in QueryParam]: string; };
+export type NewsRequestQuery = { [key in QueryParam]?: string; };
 
 export interface NewsRequestQueryGraphQL extends NewsRequestQuery {
     query: string;
