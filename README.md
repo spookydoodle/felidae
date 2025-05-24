@@ -12,7 +12,7 @@ Returns news headlines with timestamps and providers.
 
 | Path | Accepted values | Example |
 | --- | --- | --- |
-|`/:category` | `general`, `business`, `sport`, `entertainment`, `health` and `science` | `/news/business` |
+|`/:category` | `general`, `business`, `sport`, `entertainment`, `health`, `science`, `mercury`, `venus`, `earth`, `mars`, `jupiter`, `saturn`, `uranus`, `neptune`, `pluto` | `/news/business` |
 
 ### API query parameters
 
