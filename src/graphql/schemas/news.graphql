@@ -1,0 +1,39 @@
+ scalar Date
+ 
+ type Headline {
+    id: ID!
+    category: String!
+    country: String!
+    lang: String!
+    headline: String!
+    provider: String!
+    url: String!
+    img: String!
+    age: String!
+    timestamp: Date!
+}
+
+type Query {
+    headlines(
+        locale: String,
+        cc: String,
+        country: String,
+        countrycode: String,
+        country_code: String,
+        lang: String,
+        language: String,
+        date: String,
+        dategt: String,
+        date_gt: String,
+        dategte: String,
+        date_gte: String,
+        datelt: String,
+        date_lt: String,
+        datelte: String,
+        date_lte: String,
+        page: Int,
+        items: Int,
+        sortby: String,
+        sort_by: String
+    ): [Headline!]!
+}

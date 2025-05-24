@@ -26,7 +26,7 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
             : "Must be one of: 'de-de', 'gb-en', 'nl-nl', 'pl-pl', 'us-en'."
     ],
     [
-        ['cc', 'countrycode', 'country-code', 'country_code'],
+        ['cc', 'country', 'countrycode', 'country_code'],
         QueryParam.Country,
         (value) => ['de', 'gb', 'nl', 'pl', 'us'].some((el) => value === el)
             ? null
@@ -45,29 +45,33 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
         validateDate
     ],
     [
-        ['dategt', 'date-gt', 'date_gt'],
+        ['dategt', 'date_gt'],
         QueryParam.DateGt,
         validateDate
     ],
     [
-        ['dategte', 'date-gte', 'date_gte'],
+        ['dategte', 'date_gte'],
         QueryParam.DateGte,
         validateDate
     ],
     [
-        ['datelt', 'date-lt', 'date_lt'],
+        ['datelt', 'date_lt'],
         QueryParam.DateLt,
         validateDate
     ],
     [
-        ['datelte', 'date-lte', 'date_lte'],
+        ['datelte', 'date_lte'],
         QueryParam.DateLte,
         validateDate
     ],
     [
         ['page'],
         QueryParam.Page,
-        (value) => isNaN(Number(value)) ? 'Not a number. Should be an integer greater than 0.' : null
+        (value) => isNaN(Number(value))
+            ? 'Not a number. Should be an integer greater than 0.'
+            : Number(value) < 1
+                ? 'Page number should be an integer greater than 0'
+                : null
     ],
     [
         ['items'],
@@ -89,7 +93,7 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
         }
     ],
     [
-        ['sortby', 'sort-by', 'sort_by'],
+        ['sortby', 'sort_by'],
         QueryParam.SortBy,
         (value) => {
             if (!value) {
@@ -113,32 +117,40 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
  * @example `fOo-bar`, `foo_bar`, `FOO_BAR` and `fooBar` will all be rewritten to `fooBar`.
  */
 export const validateNewsQueryParams = (req: express.Request<NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery>, res: express.Response, next: express.NextFunction) => {
-    for (const [key, value] of Object.entries(req.query)) {
+    try {
+        validateFilter(req.query);
+        next();
+    } catch (err) {
+        res.status(400).send({ reason: (err as Error).message || 'Incorrect query' })
+    }
+};
+
+/**
+ * Validates each query parameter and handles aliases.
+ * If values are provided for a given alias, they will be assigned to the effective parameter name.
+ * @param filter Filter object which will be mutated by validation methods.
+ * @returns Modified `filter`.
+ */
+export const validateFilter = (filter: NewsRequestQuery): NewsRequestQuery => {
+    for (const [key, value] of Object.entries(filter)) {
         for (const [acceptableParams, targetParam, validate] of queryParams) {
             if (acceptableParams.some((el) => el.toLowerCase() === key.toLowerCase())) {
                 const rejectReason = validate(value?.toString());
                 if (rejectReason) {
-                    res.status(400).send({ reason: `Incorrect value '${value}' of parameter ${key}. ${rejectReason}` })
-                    return;
+                    console.log({rejectReason})
+                   throw new Error(`Incorrect value '${value}' of parameter '${key}'. ${rejectReason}`)
                 }
-                req.query[targetParam] = value;
+                filter[targetParam] = value;
             }
         }
     }
 
-    const page = req.query[QueryParam.Page];
-    if (page && (isNaN(Number(page)) || Number(page) < 1)) {
-        const { baseUrl, url } = req;
-        res.redirect(`${baseUrl}${url.replace(`page=${page}`, "page=1")}`);
-        return;
-    }
-
-    const locale = req.query[QueryParam.Locale];
+    const locale = filter[QueryParam.Locale];
     if (locale) {
         const [country, lang] = locale.toString().split('-');
-        req.query[QueryParam.Country] = country;
-        req.query[QueryParam.Lang] = lang;
+        filter[QueryParam.Country] = country;
+        filter[QueryParam.Lang] = lang;
     }
 
-    next();
+    return filter;
 };

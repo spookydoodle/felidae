@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { Headline, Headlines } from "../logic/types";
+import { Headline } from "../logic/types";
 import createLogMsg from "../utils/createLogMsg";
 import { TB_NEWS, DB_NAME } from "./constants";
 import {
@@ -10,8 +10,8 @@ import {
   newsTbDataTypeLengths,
 } from "./queries";
 
-export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
-  const items: Headlines[] = [];
+export const postNewsDataToDb = async (pool: Pool, data: Headline[]) => {
+  const items: Headline[][] = [];
   let duplicateCount = 0;
   const {
     categoryLen,
@@ -102,7 +102,7 @@ export const postNewsDataToDb = async (pool: Pool, data: Headlines) => {
 export const selectNewsData = (
   pool: Pool,
   selectConfig: SelectConfig = {}
-): Promise<Headlines> =>
+): Promise<Headline[]> =>
   pool
     .query(
       qSelectNewsHeadlines(

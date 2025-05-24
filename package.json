@@ -4,7 +4,7 @@
   "description": "This API lists news headlines and descriptions in various categories.",
   "main": "src/index.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && node copy.js",
     "test": "jest",
     "dev": "ts-node-dev src/index.ts",
     "start": "node build/index.js"
@@ -40,7 +40,6 @@
     "@types/pg": "^8.11.10",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/typescript": "^2.0.0",
-    "@types/yamljs": "^0.2.34",
     "@typescript-eslint/types": "^8.18.2",
     "babel-jest": "29.7.0",
     "eslint": "^9.17.0",
@@ -54,6 +53,7 @@
     "typescript-eslint": "^8.18.2"
   },
   "dependencies": {
+    "@graphql-tools/schema": "^10.0.23",
     "axios": "1.7.9",
     "chalk": "4.1.2",
     "cors": "^2.8.5",
@@ -67,7 +67,6 @@
     "node-fetch": "^3.3.2",
     "pg": "^8.13.1",
     "swagger-ui-express": "^5.0.1",
-    "ts-postgres": "^2.0.4",
-    "yamljs": "^0.3.0"
+    "ts-postgres": "^2.0.4"
   }
 }

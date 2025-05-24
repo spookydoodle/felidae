@@ -59,9 +59,9 @@ describe('News', () => {
         test('country code ok', () => {
             validateNewsQueryParams(getReq('entertainment', { cc: 'gb' }), res, next);
             expect(next).toHaveBeenCalled();
-            validateNewsQueryParams(getReq('general', { countrycode: 'nl' }), res, next);
+            validateNewsQueryParams(getReq('health', { country: 'us' }), res, next);
             expect(next).toHaveBeenCalled();
-            validateNewsQueryParams(getReq('business', { 'country-code': 'pl' }), res, next);
+            validateNewsQueryParams(getReq('general', { countrycode: 'nl' }), res, next);
             expect(next).toHaveBeenCalled();
             validateNewsQueryParams(getReq('sport', { country_code: 'de' }), res, next);
             expect(next).toHaveBeenCalled();
@@ -70,9 +70,9 @@ describe('News', () => {
         test('country code not ok', () => {
             validateNewsQueryParams(getReq('entertainment', { cc: '53245' }), res, next);
             expect(next).not.toHaveBeenCalled();
-            validateNewsQueryParams(getReq('sport', { countrycode: '5423' }), res, next);
+            validateNewsQueryParams(getReq('sport', { country: '5423' }), res, next);
             expect(next).not.toHaveBeenCalled();
-            validateNewsQueryParams(getReq('business', { 'country-code': '532' }), res, next);
+            validateNewsQueryParams(getReq('sport', { countrycode: '5423' }), res, next);
             expect(next).not.toHaveBeenCalled();
             validateNewsQueryParams(getReq('science', { country_code: 'fdsgv' }), res, next);
             expect(next).not.toHaveBeenCalled();
@@ -105,16 +105,12 @@ describe('News', () => {
         test('dategt ok', () => {
             validateNewsQueryParams(getReq('general', { dategt: '2025-01-01' }), res, next);
             expect(next).toHaveBeenCalled();
-            validateNewsQueryParams(getReq('business', { 'date-gt': '2024-02-05' }), res, next);
-            expect(next).toHaveBeenCalled();
             validateNewsQueryParams(getReq('entertainment', { 'date_gt': '2025-01-01' }), res, next);
             expect(next).toHaveBeenCalled();
         });
 
         test('dategt not ok', () => {
             validateNewsQueryParams(getReq('sport', { dategt: 'fs'}), res, next);
-            expect(next).not.toHaveBeenCalled();
-            validateNewsQueryParams(getReq('sport', { 'date-gt': 'fs'}), res, next);
             expect(next).not.toHaveBeenCalled();
             validateNewsQueryParams(getReq('sport', { date_gt: 'fs'}), res, next);
             expect(next).not.toHaveBeenCalled();
@@ -123,16 +119,12 @@ describe('News', () => {
         test('dategte ok', () => {
             validateNewsQueryParams(getReq('general', { dategte: '2025-01-01' }), res, next);
             expect(next).toHaveBeenCalled();
-            validateNewsQueryParams(getReq('business', { 'date-gte': '2024-02-05' }), res, next);
-            expect(next).toHaveBeenCalled();
             validateNewsQueryParams(getReq('entertainment', { 'date_gte': '2025-01-01' }), res, next);
             expect(next).toHaveBeenCalled();
         });
 
         test('dategte not ok', () => {
             validateNewsQueryParams(getReq('sport', { dategte: 'fs'}), res, next);
-            expect(next).not.toHaveBeenCalled();
-            validateNewsQueryParams(getReq('sport', { 'date-gte': 'fs'}), res, next);
             expect(next).not.toHaveBeenCalled();
             validateNewsQueryParams(getReq('sport', { date_gte: 'fs'}), res, next);
             expect(next).not.toHaveBeenCalled();
@@ -141,16 +133,12 @@ describe('News', () => {
         test('datelt ok', () => {
             validateNewsQueryParams(getReq('general', { datelt: '2025-01-01' }), res, next);
             expect(next).toHaveBeenCalled();
-            validateNewsQueryParams(getReq('business', { 'date-lt': '2024-02-05' }), res, next);
-            expect(next).toHaveBeenCalled();
             validateNewsQueryParams(getReq('entertainment', { 'date_lt': '2025-01-01' }), res, next);
             expect(next).toHaveBeenCalled();
         });
 
         test('datelt not ok', () => {
             validateNewsQueryParams(getReq('sport', { datelt: 'fs'}), res, next);
-            expect(next).not.toHaveBeenCalled();
-            validateNewsQueryParams(getReq('sport', { 'date-lt': 'fs'}), res, next);
             expect(next).not.toHaveBeenCalled();
             validateNewsQueryParams(getReq('sport', { date_lt: 'fs'}), res, next);
             expect(next).not.toHaveBeenCalled();
@@ -159,16 +147,12 @@ describe('News', () => {
         test('datelte ok', () => {
             validateNewsQueryParams(getReq('general', { datelte: '2025-01-01' }), res, next);
             expect(next).toHaveBeenCalled();
-            validateNewsQueryParams(getReq('business', { 'date-lte': '2024-02-05' }), res, next);
-            expect(next).toHaveBeenCalled();
             validateNewsQueryParams(getReq('entertainment', { 'date_lte': '2025-01-01' }), res, next);
             expect(next).toHaveBeenCalled();
         });
 
         test('datelte not ok', () => {
             validateNewsQueryParams(getReq('sport', { datelte: 'fs'}), res, next);
-            expect(next).not.toHaveBeenCalled();
-            validateNewsQueryParams(getReq('sport', { 'date-lte': 'fs'}), res, next);
             expect(next).not.toHaveBeenCalled();
             validateNewsQueryParams(getReq('sport', { date_lte: 'fs'}), res, next);
             expect(next).not.toHaveBeenCalled();
@@ -201,16 +185,12 @@ describe('News', () => {
         test('sortby ok', () => {
             validateNewsQueryParams(getReq('health', { sortby: 'id' }), res, next);
             expect(next).toHaveBeenCalled();
-            validateNewsQueryParams(getReq('health', { 'sort-by': 'id desc' }), res, next);
-            expect(next).toHaveBeenCalled();
             validateNewsQueryParams(getReq('health', { sort_by: 'timestamp  asc' }), res, next);
             expect(next).toHaveBeenCalled();
         });
 
         test('sortby not ok', () => {
             validateNewsQueryParams(getReq('health', { sortby: 'id abc' }), res, next);
-            expect(next).not.toHaveBeenCalled();
-            validateNewsQueryParams(getReq('health', { 'sort-by': 'dsg' }), res, next);
             expect(next).not.toHaveBeenCalled();
             validateNewsQueryParams(getReq('health', { sort_by: 'fsds' }), res, next);
             expect(next).not.toHaveBeenCalled();
