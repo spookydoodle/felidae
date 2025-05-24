@@ -32,8 +32,8 @@ Returns news headlines with timestamps and providers.
 
 #### Examples
 
-- [/news/business?sortBy=timestamp%20desc](https://felidae.spookydoodle.com/news/business?sortBy=timestamp%20desc)
-- [/news/sport?cc=de&date_gte=2025-01-01&date_lt=2025-02-01&page=2](https://felidae.spookydoodle.com/news/sport?cc=de&date_gte=2021-01-01&date_lt=2021-02-01&page=2&items=50)
+- [/news/business?sortby=timestamp%20desc](https://felidae.spookydoodle.com/news/business?sortby=timestamp%20desc)
+- [/news/sport?cc=de&date_gte=2022-01-01&date_lt=2022-02-01&page=1&items=50](https://felidae.spookydoodle.com/news/sport?cc=de&date_gte=2022-01-01&date_lt=2022-02-01&page=1&items=50)
 - [/news/general?date=2023-01-01](https://felidae.spookydoodle.com/news/general?date=2023-01-01)
 
 ### GraphQL
