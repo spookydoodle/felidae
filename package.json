@@ -53,6 +53,7 @@
     "typescript-eslint": "^8.18.2"
   },
   "dependencies": {
+    "@graphql-tools/schema": "^10.0.23",
     "axios": "1.7.9",
     "chalk": "4.1.2",
     "cors": "^2.8.5",

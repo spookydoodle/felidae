@@ -1,17 +1,18 @@
 import fs from 'fs';
 import path from 'path';
+import { Pool } from "pg";
 import express, { Request, Response } from "express";
 import swaggerUi from 'swagger-ui-express';
-import { buildSchema } from 'graphql';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { createHandler, parseRequestParams } from "graphql-http";
-import { Pool } from "pg";
+import { dateScalar } from '../graphql/scalars';
 import { getPool } from "../db";
-import { selectNewsData } from "../db/postNewsData";
 import { DB_NAME } from "../db/constants";
-import createLogMsg from "../utils/createLogMsg";
+import { selectNewsData } from "../db/postNewsData";
 import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
 import { validateFilter, validateNewsQueryParams } from "./news-middleware";
 import { Category, Headline } from "../logic/types";
+import createLogMsg from "../utils/createLogMsg";
 import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsRequestQueryGraphQL, NewsResponseBody, NewsResponseBodyGraphQL, NewsResponseBodyGraphQLError, NewsResponseBodyGraphQLSuccess } from "./types";
 
 let pool: Pool | undefined;
@@ -21,7 +22,7 @@ setTimeout(async () => {
         `Connection between router 'News' and database '${DB_NAME}' established.`,
         "info"
     );
-}, 5000);
+}, 1000);
 
 const router = express.Router();
 
@@ -37,8 +38,13 @@ router.get('/docs', swaggerUi.setup(
 ));
 
 const newsGraphQLHandler = createHandler<unknown, unknown, { category: Category }>({
-    schema: buildSchema(fs.readFileSync(path.join(__dirname, './news.graphql'), 'utf-8')),
-    rootValue: { 
+    schema: makeExecutableSchema({
+        typeDefs: fs.readFileSync(path.join(__dirname, '../graphql/schemas/news.graphql'), 'utf-8'),
+        resolvers: {
+            Date: dateScalar
+        },
+    }),
+    rootValue: {
         headlines: async (filter: NewsRequestQuery, context: { category: Category }) => {
             const validatedFilter = validateFilter(filter);
             const headlines = await getNewsHeadlines(pool!, context, validatedFilter);
@@ -50,7 +56,7 @@ const newsGraphQLHandler = createHandler<unknown, unknown, { category: Category 
         if (!category) {
             throw new Error('Category value missing');
         }
-        return { category}
+        return { category }
     },
 });
 
@@ -91,7 +97,7 @@ router.get<string, NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsReq
             res.status(500).send({ reason: 'Database connection failed.' });
             return;
         };
-        
+
         const { category } = req.params;
         const { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, items = '100', sortBy } = req.query;
         try {

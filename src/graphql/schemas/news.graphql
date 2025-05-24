@@ -1,3 +1,5 @@
+ scalar Date
+ 
  type Headline {
     id: ID!
     category: String!
@@ -8,7 +10,7 @@
     url: String!
     img: String!
     age: String!
-    timestamp: String!
+    timestamp: Date!
 }
 
 type Query {
