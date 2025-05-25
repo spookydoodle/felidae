@@ -167,7 +167,7 @@ paths:
         description: GrapQL query for getting news headlines. Filter options and queried fields are the same as in /:category API.
         schema: 
           type: string
-        example: '{headlines(sortby:"id_desc"){id,headline,timestamp}}'
+        example: '{headlines(sortby:id_desc){id,headline,timestamp}}'
     get: 
       summary: Returns news headlines for a given graphQL query.
       description: Returns news headlines in a given category
