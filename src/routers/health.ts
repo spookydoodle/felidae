@@ -1,12 +1,16 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 
-// Define a router for health
-const router = express.Router();
 const startTime = new Date();
+const router = express.Router();
 
-// Health check
-// 1. Display uptime info
-// 2. Check if node.js app is running
+router.use(rateLimit({
+    windowMs: 1000,
+    max: 10,
+    message: "Give me a break or I'll scratch you.",
+}));
+
+
 router.get('/', async (_req, res) => {
     const uptime = process.uptime();
     const H = Math.floor(uptime / 3600);

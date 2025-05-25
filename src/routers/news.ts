@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Pool } from "pg";
 import express, { Request, Response } from "express";
+import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { createHandler, parseRequestParams } from "graphql-http";
@@ -23,6 +24,12 @@ setTimeout(async () => {
 }, 1000);
 
 const router = express.Router();
+
+router.use(rateLimit({
+    windowMs: 1000,
+    max: 10,
+    message: "Give me a break or I'll scratch you.",
+}));
 
 router.get('/', (_req, res) => res.redirect('/news/docs'));
 router.use('/docs', swaggerUi.serve);
