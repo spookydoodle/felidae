@@ -1,4 +1,5 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import cors from 'cors';
 import path from 'path';
 import { config } from './routers/config';
@@ -9,6 +10,17 @@ import generatePage from './pages/generatePage';
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(rateLimit({
+    windowMs: 1000,
+    max: 10,
+    message: "Give me a break or I'll scratch you.",
+}));
+app.use(rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    message: "Give me a break for some minutes or I'll show you my claws.",
+
+}));
 
 const indexRouter = express.Router();
 indexRouter.use('/css', express.static(path.join(__dirname, '../public/css')));
