@@ -150,7 +150,41 @@ paths:
         default:
           description: error payload
           content:
-            text/html:
+            'application/json':
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+  /{category}/graphql:
+    description: Same as /{category} just using graphql queries.
+    parameters:
+      - name: category
+        in: path
+        description: Category in which news was scraped
+        required: true
+        schema:
+          $ref: '#/components/schemas/Category'
+      - name: query
+        in: query
+        description: GrapQL query for getting news headlines. Filter options and queried fields are the same as in /:category API.
+        schema: 
+          type: string
+        example: '{headlines(sortby:"id desc"){id,headline,timestamp}}'
+    get: 
+      summary: Returns news headlines for a given graphQL query.
+      description: Returns news headlines in a given category
+      operationId: getNewsHeadlinesGraphQL
+      responses:
+        '200':
+          description: list of new headlines response
+          content:
+            'application/json':
+              schema: 
+                type: array
+                items: 
+                  $ref: '#/components/schemas/NewsHeadlineGraphQL'
+        default:
+          description: error payload
+          content:
+            'application/json':
               schema:
                 $ref: '#/components/schemas/ErrorModel'
 components:
@@ -171,7 +205,7 @@ components:
       type: string
       enum: [id asc, id desc, timestamp asc, timestamp desc]
     NewsHeadline:
-      required: ["headline"]
+      required: ["id", "category", "country", "lang", "headline", "provider", "url", "img", "age", "timestamp"]
       type: "object"
       properties:
         id:
@@ -214,6 +248,43 @@ components:
         url: https://example-space-news-today.com/rocket-launches-to-space
         img: data:image/gif;base64,abcde//fghi
         age: 2 min ago
+        timestamp: 2025-05-21T04:09:49.658Z
+    NewsHeadlineGraphQL:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+          description: "Headline's unique identifier"
+        category:
+          type: "string"
+          description: "Category of the news (matches the path)"
+        country:
+          type: "string"
+          description: "Country of the news"
+        lang:
+          type: "string"
+          description: "Language in which the news piece is written"
+        headline:
+          type: "string"
+          description: "Headline of the news piece"
+        provider:
+          type: "string"
+          description: "News provider"
+        url:
+          type: "string"
+          description: "URL where the news piece is published"
+        img:
+          type: "string"
+          description: "URL to the image linked to the news headline (empty string if not available)"
+        age:
+          type: "string"
+          description: "Age of the news relative to the timestamp of scraping (empty string if not available)"
+        timestamp:
+          type: "string"
+          description: "Timestamp of scraping in UTC ISO format"
+      example:
+        headline: Rocket launches to space
+        provider: Space News Today
         timestamp: 2025-05-21T04:09:49.658Z
     ErrorModel:
       required: ["reason"]
