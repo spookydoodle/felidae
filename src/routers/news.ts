@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { Pool } from "pg";
 import express, { Request, Response } from "express";
+import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { createHandler, parseRequestParams } from "graphql-http";
@@ -12,7 +13,6 @@ import { getNewsHeadlines, validateFilter, validateNewsQueryParams } from "./new
 import { Category } from "../logic/types";
 import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsRequestQueryGraphQL, NewsResponseBody, NewsResponseBodyGraphQL, NewsResponseBodyGraphQLError, NewsResponseBodyGraphQLSuccess } from "./types";
 import createLogMsg from "../utils/createLogMsg";
-import rateLimit from 'express-rate-limit';
 
 let pool: Pool | undefined;
 setTimeout(async () => {
