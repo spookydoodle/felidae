@@ -32,7 +32,9 @@ export interface NewsRequestQueryGraphQL extends NewsRequestQuery {
     query: string;
 }
 
-export type NewsResponseBodyGraphQLSuccess = Partial<Headline>[];
+export interface NewsResponseBodyGraphQLSuccess {
+    headlines: Partial<Headline>[];
+};
 export interface NewsResponseBodyGraphQLError {
     errors: {
         message: string,

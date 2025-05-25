@@ -1,39 +1,89 @@
- scalar Date
- 
- type Headline {
-    id: ID!
-    category: String!
-    country: String!
-    lang: String!
+scalar Date
+scalar Page
+scalar Items
+
+enum Category {
+    general
+    business
+    entertainment
+    sport
+    health
+    science
+    mercury
+    venus
+    earth
+    mars
+    jupiter
+    saturn
+    uranus
+    neptune
+    pluto
+}
+
+enum Locale {
+    de_de
+    gb_en
+    nl_nl
+    pl_pl
+    us_en
+}
+
+enum CountryCode {
+    de
+    gb
+    nl
+    pl
+    us
+}
+
+enum Language {
+    de
+    en
+    nl
+    pl
+}
+
+enum SortBy {
+    id_asc
+    id_desc
+    timestamp_asc
+    timestamp_desc
+}
+
+type Headline {
+    id: Int!
+    category: Category!
+    country: CountryCode!
+    lang: Language!
     headline: String!
     provider: String!
     url: String!
-    img: String!
+    img: String
     age: String!
     timestamp: Date!
 }
 
 type Query {
     headlines(
-        locale: String,
-        cc: String,
-        country: String,
-        countrycode: String,
-        country_code: String,
-        lang: String,
-        language: String,
-        date: String,
-        dategt: String,
-        date_gt: String,
-        dategte: String,
-        date_gte: String,
-        datelt: String,
-        date_lt: String,
-        datelte: String,
-        date_lte: String,
-        page: Int,
-        items: Int,
-        sortby: String,
-        sort_by: String
+        locale: Locale,
+        cc: CountryCode,
+        country: CountryCode,
+        countrycode: CountryCode,
+        country_code: CountryCode,
+        lang: Language,
+        language: Language,
+        date: Date,
+        dategt: Date,
+        date_gt: Date,
+        dategte: Date,
+        date_gte: Date,
+        datelt: Date,
+        date_lt: Date,
+        datelte: Date,
+        date_lte: Date,
+        page: Page,
+        items: Items,
+        sortby: SortBy,
+        sort_by: SortBy
     ): [Headline!]!
 }
