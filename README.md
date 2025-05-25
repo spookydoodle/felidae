@@ -51,6 +51,11 @@ Available properties for query `headlines`:
 - `timestamp`
 
 #### Examples
+
 - [/news/business/graphql?query={headlines(sortby:"timestamp%20desc"){id,headline,timestamp}}](https://felidae.spookydoodle.com/news/business/graphql?query={headlines(sortby:"timestamp%20desc"){id,headline,timestamp}})
 - [/news/sport/graphql?query={headlines(cc:"pl",date_gte:"2025-05-01",date_lte:"2025-05-31",page:1,items:50){id,headline,age,timestamp}}](https://felidae.spookydoodle.com/news/sport/graphql?query={headlines(cc:"pl",date_gte:"2025-05-01",date_lte:"2025-05-31",page:1,items:50){id,headline,age,timestamp}})
 - [/news/general/graphql?query={headlines(date:"2025-05-01"){id,headline,provider,timestamp}}](https://felidae.spookydoodle.com/news/general/graphql?query={headlines(date:"2025-05-01"){id,headline,provider,timestamp}})
+
+##### GraphiQL
+
+GraphQL API can be introspected at `/news/:category/graphiql`, for example [/news/business/graphiql](https://felidae.spookydoodle.com/news/business/graphiql)

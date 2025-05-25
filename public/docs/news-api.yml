@@ -178,9 +178,12 @@ paths:
           content:
             'application/json':
               schema: 
-                type: array
-                items: 
-                  $ref: '#/components/schemas/NewsHeadlineGraphQL'
+                type: object
+                properties:
+                  headlines: 
+                    type: array
+                    items: 
+                      $ref: '#/components/schemas/NewsHeadlineGraphQL'
         default:
           description: error payload
           content:
@@ -232,6 +235,7 @@ components:
         img:
           type: "string"
           description: "URL to the image linked to the news headline (empty string if not available)"
+          nullable: true
         age:
           type: "string"
           description: "Age of the news relative to the timestamp of scraping (empty string if not available)"
@@ -276,6 +280,7 @@ components:
         img:
           type: "string"
           description: "URL to the image linked to the news headline (empty string if not available)"
+          nullable: true
         age:
           type: "string"
           description: "Age of the news relative to the timestamp of scraping (empty string if not available)"

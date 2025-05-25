@@ -1,7 +1,11 @@
+import { Pool } from "pg";
 import express from "express";
 import { DateTime } from 'luxon';
 import { capitalize } from "../utils/stringTransform";
 import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsResponseBody, QueryParam } from "./types";
+import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
+import { selectNewsData } from "../db/postNewsData";
+import { Headline } from "../logic/types";
 
 const validateDate = (value?: string): string | null => {
     if (!value) {
@@ -153,4 +157,43 @@ export const validateFilter = (filter: NewsRequestQuery): NewsRequestQuery => {
     }
 
     return filter;
+};
+
+export const getNewsHeadlines = async (pool: Pool, params: NewsRequestParams, query: NewsRequestQuery) => {
+    const { category } = params;
+    const { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, items = '100', sortBy } = query;
+    const pg = isNaN(Number(page)) ? 1 : Math.max(1, Number(page));
+    const itemsPerPage = Number(items);
+    const [top, skip] = [itemsPerPage, (pg - 1) * itemsPerPage];
+
+    const filters: NewsFilterCondition[] = [["category", "eq", category]];
+    const orderBy: OrderBy[] = [];
+
+    if (country) filters.push(["country", "eq", country.toString()]);
+    if (lang) filters.push(["lang", "eq", lang.toString()]);
+    if (date) filters.push(["timestamp", "eq", date.toString()]);
+    if (dateGt) filters.push(["timestamp", "gt", dateGt.toString()]);
+    if (dateGte) filters.push(["timestamp", "gte", dateGte.toString()]);
+    if (dateLt) filters.push(["timestamp", "lt", dateLt.toString()]);
+    if (dateLte) filters.push(["timestamp", "lte", dateLte.toString()]);
+
+    if (sortBy) {
+        const [name, order = 'asc'] = sortBy.toString().split(' ');
+        const names: (keyof Headline)[] = ['id', 'timestamp'];
+        if ((names as string[]).includes(name)) {
+            orderBy.push([
+                name as keyof Headline,
+                (["ASC", "DESC"].includes(order.toUpperCase()) ? order.toUpperCase() as OrderType : "ASC")
+            ]);
+        }
+    }
+
+    const data = await selectNewsData(pool, {
+        filters: filters,
+        orderBy: orderBy,
+        top: top,
+        skip: skip,
+    });
+
+    return data;
 };

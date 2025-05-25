@@ -12,6 +12,7 @@ app.use(cors());
 
 const indexRouter = express.Router();
 indexRouter.use('/css', express.static(path.join(__dirname, '../public/css')));
+indexRouter.use('/html', express.static(path.join(__dirname, '../public/html')));
 indexRouter.use('/docs', express.static(path.join(__dirname, '../public/docs')));
 indexRouter.use(config.baseUrl.health, healthRouter);
 indexRouter.use(config.baseUrl.news, newsRouter);

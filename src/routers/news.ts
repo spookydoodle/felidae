@@ -8,12 +8,10 @@ import { createHandler, parseRequestParams } from "graphql-http";
 import { dateScalar } from '../graphql/scalars';
 import { getPool } from "../db";
 import { DB_NAME } from "../db/constants";
-import { selectNewsData } from "../db/postNewsData";
-import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
-import { validateFilter, validateNewsQueryParams } from "./news-middleware";
-import { Category, Headline } from "../logic/types";
-import createLogMsg from "../utils/createLogMsg";
+import { getNewsHeadlines, validateFilter, validateNewsQueryParams } from "./news-middleware";
+import { Category } from "../logic/types";
 import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsRequestQueryGraphQL, NewsResponseBody, NewsResponseBodyGraphQL, NewsResponseBodyGraphQLError, NewsResponseBodyGraphQLSuccess } from "./types";
+import createLogMsg from "../utils/createLogMsg";
 
 let pool: Pool | undefined;
 setTimeout(async () => {
@@ -37,13 +35,15 @@ router.get('/docs', swaggerUi.setup(
     }
 ));
 
-const newsGraphQLHandler = createHandler<unknown, unknown, { category: Category }>({
-    schema: makeExecutableSchema({
+const newsHeadlinesSchema = makeExecutableSchema({
         typeDefs: fs.readFileSync(path.join(__dirname, '../graphql/schemas/news.graphql'), 'utf-8'),
         resolvers: {
             Date: dateScalar
-        },
-    }),
+        }
+    });
+
+const newsGraphQLHandler = createHandler<unknown, unknown, { category: Category }>({
+    schema: newsHeadlinesSchema,
     rootValue: {
         headlines: async (filter: NewsRequestQuery, context: { category: Category }) => {
             const validatedFilter = validateFilter(filter);
@@ -60,7 +60,7 @@ const newsGraphQLHandler = createHandler<unknown, unknown, { category: Category 
     },
 });
 
-router.all<string, NewsRequestParams, NewsResponseBodyGraphQL, NewsRequestBody, NewsRequestQueryGraphQL>(
+router.all<string, NewsRequestParams, NewsResponseBodyGraphQL | unknown, NewsRequestBody, NewsRequestQueryGraphQL>(
     '/:category/graphql',
     async (req, res) => {
         if (!pool) {
@@ -70,24 +70,32 @@ router.all<string, NewsRequestParams, NewsResponseBodyGraphQL, NewsRequestBody, 
 
         try {
             const response = await newsGraphQLHandler(req as unknown as (Parameters<typeof parseRequestParams>[0]));
-
             if (!response?.[0]) {
                 throw new Error('Could not get data');
             }
 
             const body = JSON.parse(response[0]);
             const status = response?.[1]?.status ?? 500;
-
             if (status !== 200 || 'errors' in body) {
                 res.status(status).send(body as NewsResponseBodyGraphQLError);
                 return;
             }
 
-            res.status(200).send(body['data']['headlines'] as unknown as NewsResponseBodyGraphQLSuccess);
+            res.status(200).send(body['data'] as unknown as NewsResponseBodyGraphQLSuccess);
         } catch (err) {
             res.status(400).send({ errors: [{ message: (err as Error).message || 'Unknown error', }] });
         }
-    });
+    }
+);
+
+router.use<string, NewsRequestParams, NewsResponseBodyGraphQL, NewsRequestBody, NewsRequestQueryGraphQL>(
+    '/:category/graphiql',
+    (_req, res) => {
+        res.sendFile(path.join(__dirname, '../../public/html/graphiql.html'));
+        // res.send('/html/graphiql.html');
+    }
+);
+
 
 router.get<string, NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery>(
     "/:category",
@@ -108,44 +116,5 @@ router.get<string, NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsReq
         }
     }
 );
-
-const getNewsHeadlines = async (pool: Pool, params: NewsRequestParams, query: NewsRequestQuery) => {
-    const { category } = params;
-    const { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, items = '100', sortBy } = query;
-    const pg = isNaN(Number(page)) ? 1 : Math.max(1, Number(page));
-    const itemsPerPage = Number(items);
-    const [top, skip] = [itemsPerPage, (pg - 1) * itemsPerPage];
-
-    const filters: NewsFilterCondition[] = [["category", "eq", category]];
-    const orderBy: OrderBy[] = [];
-
-    if (country) filters.push(["country", "eq", country.toString()]);
-    if (lang) filters.push(["lang", "eq", lang.toString()]);
-    if (date) filters.push(["timestamp", "eq", date.toString()]);
-    if (dateGt) filters.push(["timestamp", "gt", dateGt.toString()]);
-    if (dateGte) filters.push(["timestamp", "gte", dateGte.toString()]);
-    if (dateLt) filters.push(["timestamp", "lt", dateLt.toString()]);
-    if (dateLte) filters.push(["timestamp", "lte", dateLte.toString()]);
-
-    if (sortBy) {
-        const [name, order = 'asc'] = sortBy.toString().split(' ');
-        const names: (keyof Headline)[] = ['id', 'timestamp'];
-        if ((names as string[]).includes(name)) {
-            orderBy.push([
-                name as keyof Headline,
-                (["ASC", "DESC"].includes(order.toUpperCase()) ? order.toUpperCase() as OrderType : "ASC")
-            ]);
-        }
-    }
-
-    const data = await selectNewsData(pool, {
-        filters: filters,
-        orderBy: orderBy,
-        top: top,
-        skip: skip,
-    });
-
-    return data;
-};
 
 export default router;

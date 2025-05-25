@@ -1,14 +1,14 @@
  scalar Date
  
  type Headline {
-    id: ID!
+    id: Int!
     category: String!
     country: String!
     lang: String!
     headline: String!
     provider: String!
     url: String!
-    img: String!
+    img: String
     age: String!
     timestamp: Date!
 }
