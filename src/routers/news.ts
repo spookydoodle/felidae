@@ -94,7 +94,6 @@ router.use<string, NewsRequestParams, NewsResponseBodyGraphQL, NewsRequestBody, 
     '/:category/graphiql',
     (_req, res) => {
         res.sendFile(path.join(__dirname, '../../public/html/graphiql.html'));
-        // res.send('/html/graphiql.html');
     }
 );
 
