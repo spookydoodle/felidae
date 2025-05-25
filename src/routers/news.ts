@@ -5,7 +5,7 @@ import express, { Request, Response } from "express";
 import swaggerUi from 'swagger-ui-express';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { createHandler, parseRequestParams } from "graphql-http";
-import { dateScalar } from '../graphql/scalars';
+import { dateScalar, itemsScalar, pageScalar } from '../graphql/scalars';
 import { getPool } from "../db";
 import { DB_NAME } from "../db/constants";
 import { getNewsHeadlines, validateFilter, validateNewsQueryParams } from "./news-middleware";
@@ -38,7 +38,9 @@ router.get('/docs', swaggerUi.setup(
 const newsHeadlinesSchema = makeExecutableSchema({
         typeDefs: fs.readFileSync(path.join(__dirname, '../graphql/schemas/news.graphql'), 'utf-8'),
         resolvers: {
-            Date: dateScalar
+            Date: dateScalar,
+            Page: pageScalar,
+            Items: itemsScalar,
         }
     });
 

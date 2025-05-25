@@ -7,6 +7,8 @@ import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
 import { selectNewsData } from "../db/postNewsData";
 import { Headline } from "../logic/types";
 
+export const MAX_ITEMS_PER_PAGE = 500;
+
 const validateDate = (value?: string): string | null => {
     if (!value) {
         return 'Cannot be empty.';
@@ -25,9 +27,9 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
     [
         ['locale'],
         QueryParam.Locale,
-        (value) => ['de-de', 'gb-en', 'nl-nl', 'pl-pl', 'us-en'].some((el) => value === el)
+        (value) => ['de_de', 'gb_en', 'nl_nl', 'pl_pl', 'us_en'].some((el) => value === el)
             ? null
-            : "Must be one of: 'de-de', 'gb-en', 'nl-nl', 'pl-pl', 'us-en'."
+            : "Must be one of: 'de_de', 'gb_en', 'nl_nl', 'pl_pl', 'us_en'."
     ],
     [
         ['cc', 'country', 'countrycode', 'country_code'],
@@ -83,7 +85,7 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
         (value) => {
             const n = Number(value);
             const min = 1;
-            const max = 500;
+            const max = MAX_ITEMS_PER_PAGE;
             if (isNaN(n)) {
                 return `Not a number. Should be an integer greater than ${min - 1} and less than or equal ${max}.`;
             }
@@ -103,7 +105,7 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
             if (!value) {
                 return 'Cannot be empty.';
             }
-            const [dimension, order = 'asc'] = value.split(' ');
+            const [dimension, order = 'asc'] = value.split('_');
             if (!['id', 'timestamp'].includes(dimension.toLowerCase())) {
                 return `'${dimension}' is not an acceptable dimension name. Must be one of: 'id', 'timestamp'.`
             }
@@ -141,7 +143,6 @@ export const validateFilter = (filter: NewsRequestQuery): NewsRequestQuery => {
             if (acceptableParams.some((el) => el.toLowerCase() === key.toLowerCase())) {
                 const rejectReason = validate(value?.toString());
                 if (rejectReason) {
-                    console.log({rejectReason})
                    throw new Error(`Incorrect value '${value}' of parameter '${key}'. ${rejectReason}`)
                 }
                 filter[targetParam] = value;
@@ -151,7 +152,7 @@ export const validateFilter = (filter: NewsRequestQuery): NewsRequestQuery => {
 
     const locale = filter[QueryParam.Locale];
     if (locale) {
-        const [country, lang] = locale.toString().split('-');
+        const [country, lang] = locale.toString().split('_');
         filter[QueryParam.Country] = country;
         filter[QueryParam.Lang] = lang;
     }
@@ -178,7 +179,7 @@ export const getNewsHeadlines = async (pool: Pool, params: NewsRequestParams, qu
     if (dateLte) filters.push(["timestamp", "lte", dateLte.toString()]);
 
     if (sortBy) {
-        const [name, order = 'asc'] = sortBy.toString().split(' ');
+        const [name, order = 'asc'] = sortBy.toString().split('_');
         const names: (keyof Headline)[] = ['id', 'timestamp'];
         if ((names as string[]).includes(name)) {
             orderBy.push([

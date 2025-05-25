@@ -21,7 +21,7 @@ paths:
         description: Combination of the country (code) of the news and the language in which it's written
         schema: 
           $ref: '#/components/schemas/Locale'
-        example: gb-en
+        example: gb_en
       - name: language
         in: query
         description: Language in which the news piece is written
@@ -128,7 +128,7 @@ paths:
         description: By which field to sort the results and in which direction
         schema: 
           $ref: '#/components/schemas/SortBy'
-        example: timestamp desc
+        example: timestamp_desc
       - name: sort_by
         in: query
         description: Alias for sortby param
@@ -167,7 +167,7 @@ paths:
         description: GrapQL query for getting news headlines. Filter options and queried fields are the same as in /:category API.
         schema: 
           type: string
-        example: '{headlines(sortby:"id desc"){id,headline,timestamp}}'
+        example: '{headlines(sortby:"id_desc"){id,headline,timestamp}}'
     get: 
       summary: Returns news headlines for a given graphQL query.
       description: Returns news headlines in a given category
@@ -197,7 +197,7 @@ components:
       enum: [general, business, entertainment, sport, health, science, mercury, venus, earth, mars, jupiter, saturn, uranus, neptun, pluto]
     Locale:
       type: string
-      enum: [de-de, gb-en, nl-nl, pl-pl, us-en]
+      enum: [de_de, gb_en, nl_nl, pl_pl, us_en]
     Language:
       type: string
       enum: [de, en, nl, pl]
@@ -206,7 +206,7 @@ components:
       enum: [de, nl, pl, gb, us]
     SortBy:
       type: string
-      enum: [id asc, id desc, timestamp asc, timestamp desc]
+      enum: [id_asc, id_desc, timestamp_asc, timestamp_desc]
     NewsHeadline:
       required: ["id", "category", "country", "lang", "headline", "provider", "url", "img", "age", "timestamp"]
       type: "object"

@@ -45,7 +45,7 @@ describe('News', () => {
         });
 
         test('locale ok', () => {
-            validateNewsQueryParams(getReq('sport', { locale: 'de-de' }), res, next);
+            validateNewsQueryParams(getReq('sport', { locale: 'de_de' }), res, next);
             expect(next).toHaveBeenCalled();
             // expect(res.statusCode).toBe(200);
         });
@@ -185,7 +185,7 @@ describe('News', () => {
         test('sortby ok', () => {
             validateNewsQueryParams(getReq('health', { sortby: 'id' }), res, next);
             expect(next).toHaveBeenCalled();
-            validateNewsQueryParams(getReq('health', { sort_by: 'timestamp  asc' }), res, next);
+            validateNewsQueryParams(getReq('health', { sort_by: 'timestamp_asc' }), res, next);
             expect(next).toHaveBeenCalled();
         });
 
