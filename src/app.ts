@@ -11,13 +11,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(rateLimit({
-    windowMs: 1000,
-    max: 10,
-    message: "Give me a break or I'll scratch you.",
-}));
-app.use(rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 100,
+    max: 1000,
     message: "Give me a break for some minutes or I'll show you my claws.",
 
 }));

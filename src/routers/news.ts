@@ -12,6 +12,7 @@ import { getNewsHeadlines, validateFilter, validateNewsQueryParams } from "./new
 import { Category } from "../logic/types";
 import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsRequestQueryGraphQL, NewsResponseBody, NewsResponseBodyGraphQL, NewsResponseBodyGraphQLError, NewsResponseBodyGraphQLSuccess } from "./types";
 import createLogMsg from "../utils/createLogMsg";
+import rateLimit from 'express-rate-limit';
 
 let pool: Pool | undefined;
 setTimeout(async () => {
@@ -23,6 +24,12 @@ setTimeout(async () => {
 }, 1000);
 
 const router = express.Router();
+
+router.use(rateLimit({
+    windowMs: 1000,
+    max: 10,
+    message: "Give me a break or I'll scratch you.",
+}));
 
 router.get('/', (_req, res) => res.redirect('/news/docs'));
 router.use('/docs', swaggerUi.serve);
