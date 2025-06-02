@@ -7,7 +7,7 @@ import { categories, countryLang, queries } from "./constants";
 import { capitalizeWord } from "../utils/stringTransform";
 
 export const initializeNewsScrapers = (config: SearchConfig) => (pool: Pool | undefined) => {
-    if (!pool) {
+    if (!pool || config.environment === 'development') {
         return;
     }
     

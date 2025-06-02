@@ -1,19 +1,19 @@
+syntax = "proto3";
 package newspackage;
-syntax proto3;
 
 message Headline {
-    int32 id;
-    string category;
-    string country;
-    string lang;
-    string headline;
-    string provider;
-    string url;
-    optional string img;
-    string age;
-    string timestamp;
+    int32 id = 1;
+    string category = 2;
+    string country = 3;
+    string lang = 4;
+    string headline = 5;
+    string provider = 6;
+    string url = 7;
+    optional string img = 8;
+    string age = 9;
+    int64 timestamp = 10;
 }
 
 message Headlines {
-    repeated Headline headlines;
+    repeated Headline headlines = 1;
 }

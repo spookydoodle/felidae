@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Pool } from "pg";
+import protobuf from "protobufjs";
 import express from "express";
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
@@ -106,7 +107,7 @@ router.use<string, NewsRequestParamsBase, NewsResponseBodyGraphQL, NewsRequestBo
 );
 
 
-router.get<string, NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery & NewsRequestQueryAliases>(
+router.get<string, NewsRequestParams, NewsResponseBody | Uint8Array<ArrayBufferLike>, NewsRequestBody, NewsRequestQuery & NewsRequestQueryAliases>(
     "/:category/:format?",
     validateNewsParams,
     validateNewsQueryParams,
@@ -120,7 +121,38 @@ router.get<string, NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsReq
         const { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, items = '100', sortBy } = req.query;
         try {
             const data = await getNewsHeadlines(pool, { category }, { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, items, sortBy });
-            res.status(200).send(data);
+            switch (format) {
+                case 'json':
+                    res.status(200).send(data);
+                    break;
+                case 'pbf': {
+                    protobuf.load(path.join(__dirname, '../proto/news.proto'), function (err, root) {
+                        if (err) {
+                            throw err;
+                        }
+                        if (!root) {
+                            throw Error('No pbf root');
+                        }
+                        const AwesomeMessage = root.lookupType("newspackage.Headlines");
+                        const errMsg = AwesomeMessage.verify(data);
+                        if (errMsg)
+                            throw Error(errMsg);
+                        const message = AwesomeMessage.create({ headlines: data.map(({ timestamp, ...rest }) => ({ timestamp: timestamp.valueOf(), ...rest })) }); // or use .fromObject if conversion is necessary
+                        const buffer = AwesomeMessage.encode(message).finish();
+                        res.status(200).send(buffer);
+
+                        const messageDecoded = AwesomeMessage.decode(buffer);
+                        console.log({messageDecoded: Object.values(messageDecoded.toJSON())[0]})
+                        // const object = AwesomeMessage.toObject(messageDecoded, {
+                        //     longs: String,
+                        //     enums: String,
+                        //     bytes: String,
+                        //     // see ConversionOptions
+                        // });
+                    });   
+                    break;
+                }
+            }
         } catch (err) {
             res.status(400).send({ reason: (err as Error).message || 'Unknown error' });
         }
