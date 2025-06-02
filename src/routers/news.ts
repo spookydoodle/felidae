@@ -106,7 +106,6 @@ router.use<string, NewsRequestParamsBase, NewsResponseBodyGraphQL, NewsRequestBo
     }
 );
 
-
 router.get<string, NewsRequestParams, NewsResponseBody | Uint8Array<ArrayBufferLike>, NewsRequestBody, NewsRequestQuery & NewsRequestQueryAliases>(
     "/:category/:format?",
     validateNewsParams,
