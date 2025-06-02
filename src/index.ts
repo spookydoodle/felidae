@@ -11,7 +11,7 @@ initializeDb(DB_NAME)
     .then(initializeTb("news", TB_NEWS))
     .then(getPool)
     .then(initializeNewsScrapers({
-        environment: process.env.NODE_ENV as Environment,
+        environment: (process.env.NODE_ENV ?? 'development') as Environment,
         engine: "bing",
         maxPageIndex: 1,
         updateFreqInHrs: 1

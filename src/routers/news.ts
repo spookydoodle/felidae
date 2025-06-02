@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import { Pool } from "pg";
-import express, { Request, Response } from "express";
+import protobuf from "protobufjs";
+import express from "express";
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import { makeExecutableSchema } from '@graphql-tools/schema';
@@ -9,9 +10,9 @@ import { createHandler, parseRequestParams } from "graphql-http";
 import { dateScalar, itemsScalar, pageScalar } from '../graphql/scalars';
 import { getPool } from "../db";
 import { DB_NAME } from "../db/constants";
-import { getNewsHeadlines, validateFilter, validateNewsQueryParams } from "./news-middleware";
+import { getNewsHeadlines, validateRequestFilter, validateNewsQueryParams, validateRequestParameters, validateNewsParams } from "./news-middleware";
 import { Category } from "../logic/types";
-import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsRequestQueryGraphQL, NewsResponseBody, NewsResponseBodyGraphQL, NewsResponseBodyGraphQLError, NewsResponseBodyGraphQLSuccess } from "./types";
+import { NewsRequestBody, NewsRequestParams, NewsRequestParamsBase, NewsRequestQuery, NewsRequestQueryAliases, NewsRequestQueryGraphQL, NewsResponseBody, NewsResponseBodyGraphQL, NewsResponseBodyGraphQLError, NewsResponseBodyGraphQLSuccess } from "./types";
 import createLogMsg from "../utils/createLogMsg";
 
 let pool: Pool | undefined;
@@ -53,23 +54,24 @@ const newsHeadlinesSchema = makeExecutableSchema({
 
 const newsGraphQLHandler = createHandler<unknown, unknown, { category: Category }>({
     schema: newsHeadlinesSchema,
-    rootValue: {
-        headlines: async (filter: NewsRequestQuery, context: { category: Category }) => {
-            const validatedFilter = validateFilter(filter);
-            const headlines = await getNewsHeadlines(pool!, context, validatedFilter);
-            return headlines;
-        }
-    },
     context: async (req, _params) => {
         const category = (req as unknown as { params?: { category?: Category } })?.params?.['category'];
         if (!category) {
             throw new Error('Category value missing');
         }
+        validateRequestParameters({ category });
         return { category }
+    },
+    rootValue: {
+        headlines: async (filter: NewsRequestQuery & NewsRequestQueryAliases, context: { category: Category }) => {
+            const validatedFilter = validateRequestFilter(filter);
+            const headlines = await getNewsHeadlines(pool!, context, validatedFilter);
+            return headlines;
+        }
     },
 });
 
-router.all<string, NewsRequestParams, NewsResponseBodyGraphQL | unknown, NewsRequestBody, NewsRequestQueryGraphQL>(
+router.all<string, NewsRequestParamsBase, NewsResponseBodyGraphQL | unknown, NewsRequestBody, NewsRequestQueryGraphQL>(
     '/:category/graphql',
     async (req, res) => {
         if (!pool) {
@@ -97,28 +99,48 @@ router.all<string, NewsRequestParams, NewsResponseBodyGraphQL | unknown, NewsReq
     }
 );
 
-router.use<string, NewsRequestParams, NewsResponseBodyGraphQL, NewsRequestBody, NewsRequestQueryGraphQL>(
+router.use<string, NewsRequestParamsBase, NewsResponseBodyGraphQL, NewsRequestBody, NewsRequestQueryGraphQL>(
     '/:category/graphiql',
     (_req, res) => {
         res.sendFile(path.join(__dirname, '../../public/html/graphiql.html'));
     }
 );
 
-
-router.get<string, NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery>(
-    "/:category",
+router.get<string, NewsRequestParams, NewsResponseBody | Uint8Array<ArrayBufferLike>, NewsRequestBody, NewsRequestQuery & NewsRequestQueryAliases>(
+    "/:category/:format?",
+    validateNewsParams,
     validateNewsQueryParams,
-    async (req: Request<NewsRequestParams, NewsResponseBody, undefined, NewsRequestQuery>, res: Response<NewsResponseBody>) => {
+    async (req, res) => {
         if (!pool) {
             res.status(500).send({ reason: 'Database connection failed.' });
             return;
         };
 
-        const { category } = req.params;
+        const { category, format = 'json' } = req.params;
         const { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, items = '100', sortBy } = req.query;
         try {
             const data = await getNewsHeadlines(pool, { category }, { country, lang, date, dateGt, dateGte, dateLt, dateLte, page, items, sortBy });
-            res.status(200).send(data);
+            switch (format) {
+                case 'json':
+                    res.status(200).send(data);
+                    break;
+                case 'pbf': {
+                    protobuf.load(path.join(__dirname, '../proto/news.proto'), function (err, root) {
+                        if (err || !root) {
+                            throw err || new Error('No pbf root');
+                        }
+                        const NewsMessage = root.lookupType("newspackage.Headlines");
+                        const errMsg = NewsMessage.verify(data);
+                        if (errMsg) {
+                            throw Error(errMsg);
+                        }
+                        const message = NewsMessage.create({ headlines: data.map(({ timestamp, ...row }) => ({ ...row, timestamp: new Date(timestamp).toISOString() })) });
+                        const buffer = NewsMessage.encode(message).finish();
+                        res.status(200).send(buffer);
+                    });   
+                    break;
+                }
+            }
         } catch (err) {
             res.status(400).send({ reason: (err as Error).message || 'Unknown error' });
         }

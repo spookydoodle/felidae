@@ -39,6 +39,7 @@
     "@types/node": "22.10.2",
     "@types/node-fetch": "^2.6.12",
     "@types/pg": "^8.11.10",
+    "@types/protobufjs": "^6.0.0",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/typescript": "^2.0.0",
     "@typescript-eslint/types": "^8.18.2",
@@ -68,6 +69,7 @@
     "luxon": "^3.5.0",
     "node-fetch": "^3.3.2",
     "pg": "^8.13.1",
+    "protobufjs": "^7.4.0",
     "swagger-ui-express": "^5.0.1",
     "ts-postgres": "^2.0.4"
   }

@@ -8,3 +8,7 @@ fs.cpSync(srcDir, destDir, { recursive: true });
 srcDir = path.join(__dirname, 'src/graphql/schemas');
 destDir = path.join(__dirname, 'build', 'graphql/schemas');
 fs.cpSync(srcDir, destDir, { recursive: true });
+
+srcDir = path.join(__dirname, 'src/proto');
+destDir = path.join(__dirname, 'build', 'proto');
+fs.cpSync(srcDir, destDir, { recursive: true });
