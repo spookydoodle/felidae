@@ -11,7 +11,7 @@ message Headline {
     string url = 7;
     optional string img = 8;
     string age = 9;
-    int64 timestamp = 10;
+    string timestamp = 10;
 }
 
 message Headlines {

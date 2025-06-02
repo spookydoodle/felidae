@@ -127,28 +127,17 @@ router.get<string, NewsRequestParams, NewsResponseBody | Uint8Array<ArrayBufferL
                     break;
                 case 'pbf': {
                     protobuf.load(path.join(__dirname, '../proto/news.proto'), function (err, root) {
-                        if (err) {
-                            throw err;
+                        if (err || !root) {
+                            throw err || new Error('No pbf root');
                         }
-                        if (!root) {
-                            throw Error('No pbf root');
-                        }
-                        const AwesomeMessage = root.lookupType("newspackage.Headlines");
-                        const errMsg = AwesomeMessage.verify(data);
-                        if (errMsg)
+                        const NewsMessage = root.lookupType("newspackage.Headlines");
+                        const errMsg = NewsMessage.verify(data);
+                        if (errMsg) {
                             throw Error(errMsg);
-                        const message = AwesomeMessage.create({ headlines: data.map(({ timestamp, ...rest }) => ({ timestamp: timestamp.valueOf(), ...rest })) }); // or use .fromObject if conversion is necessary
-                        const buffer = AwesomeMessage.encode(message).finish();
+                        }
+                        const message = NewsMessage.create({ headlines: data.map(({ timestamp, ...row }) => ({ ...row, timestamp: new Date(timestamp).toISOString() })) });
+                        const buffer = NewsMessage.encode(message).finish();
                         res.status(200).send(buffer);
-
-                        const messageDecoded = AwesomeMessage.decode(buffer);
-                        console.log({messageDecoded: Object.values(messageDecoded.toJSON())[0]})
-                        // const object = AwesomeMessage.toObject(messageDecoded, {
-                        //     longs: String,
-                        //     enums: String,
-                        //     bytes: String,
-                        //     // see ConversionOptions
-                        // });
                     });   
                     break;
                 }
