@@ -15,9 +15,15 @@ export enum QueryParam {
     SortBy = 'sortBy'
 }
 
-export interface NewsRequestParams {
+export interface NewsRequestParamsBase {
     category: Category;
 }
+
+export interface NewsRequestParams extends NewsRequestParamsBase {
+    format?: NewsRequestFormat;
+}
+
+export type NewsRequestFormat = 'json' | 'pbf';
 
 export type NewsResponseBodySuccess = Headline[];
 export interface NewsResponseError {
@@ -27,6 +33,30 @@ export type NewsResponseBody = NewsResponseBodySuccess | NewsResponseError;
 export type NewsRequestBody = undefined;
 
 export type NewsRequestQuery = { [key in QueryParam]?: string; };
+export type NewsRequestQueryAliases = {
+    [key in
+    'locale' |
+    'cc' |
+    'country' |
+    'countrycode' |
+    'country_code' |
+    'lang' |
+    'language' |
+    'page' |
+    'items' |
+    'date' |
+    'dategt' |
+    'date_gt' |
+    'dategte' |
+    'date_gte' |
+    'datelt' |
+    'date_lt' |
+    'datelte' |
+    'date_lte' |
+    'sortby' |
+    'sort_by'
+    ]?: string;
+};
 
 export interface NewsRequestQueryGraphQL extends NewsRequestQuery {
     query: string;

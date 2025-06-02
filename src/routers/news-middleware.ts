@@ -2,10 +2,11 @@ import { Pool } from "pg";
 import express from "express";
 import { DateTime } from 'luxon';
 import { capitalize } from "../utils/stringTransform";
-import { NewsRequestBody, NewsRequestParams, NewsRequestQuery, NewsResponseBody, QueryParam } from "./types";
+import { NewsRequestBody, NewsRequestFormat, NewsRequestParams, NewsRequestQuery, NewsRequestQueryAliases, NewsResponseBody, QueryParam } from "./types";
 import { NewsFilterCondition, OrderBy, OrderType } from "../db/queries";
 import { selectNewsData } from "../db/postNewsData";
 import { Headline } from "../logic/types";
+import { categories } from "../scrapers/constants";
 
 export const MAX_ITEMS_PER_PAGE = 500;
 
@@ -17,7 +18,7 @@ const validateDate = (value?: string): string | null => {
     if (formatted.isValid) {
         return null;
     }
-    return capitalize((formatted.invalidReason ?? 'Invalid value') + '.');
+    return capitalize((formatted.invalidReason ?? 'Invalid value') + '. Must follow format yyyy-MM-dd.');
 };
 
 /**
@@ -76,7 +77,7 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
         (value) => isNaN(Number(value))
             ? 'Not a number. Should be an integer greater than 0.'
             : Number(value) < 1
-                ? 'Page number should be an integer greater than 0'
+                ? 'Page number should be an integer greater than 0.'
                 : null
     ],
     [
@@ -93,7 +94,7 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
                 return `Must be greater than ${min - 1}.`;
             }
             if (n > 500) {
-                return `Must be less than ${max}.`;
+                return `Must be less than or equal ${max}.`;
             }
             return null;
         }
@@ -110,7 +111,7 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
                 return `'${dimension}' is not an acceptable dimension name. Must be one of: 'id', 'timestamp'.`
             }
             if (!['asc', 'desc'].includes(order.toLowerCase())) {
-                return `${order} is not an acceptable order value. Must be either 'asc' or 'desc'.`;
+                return `'${order}' is not an acceptable order value. Must be either 'asc' or 'desc'.`;
             }
             return null;
         }
@@ -122,9 +123,41 @@ const queryParams: [string[], QueryParam, (value?: string) => string | null][] =
  * Modifies the expected queries to match camel case
  * @example `fOo-bar`, `foo_bar`, `FOO_BAR` and `fooBar` will all be rewritten to `fooBar`.
  */
-export const validateNewsQueryParams = (req: express.Request<NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery>, res: express.Response, next: express.NextFunction) => {
+export const validateNewsParams = (req: express.Request<NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery>, res: express.Response, next: express.NextFunction) => {
     try {
-        validateFilter(req.query);
+        validateRequestParameters(req.params);
+        next();
+    } catch (err) {
+        res.status(400).send({ reason: (err as Error).message || 'Incorrect params' })
+    }
+};
+
+/**
+ * Validates predefined request parameters.
+ * Throws if any is invalid.
+ * @param params 
+ * @returns 
+ */
+export const validateRequestParameters = (params: NewsRequestParams) => {
+    const { category, format = 'json' } = params;
+    if (!categories.includes(category)) {
+        throw new Error(`Category parameter '${category}' is not valid. Must be one of: ${categories.join(', ')}.`);
+    }
+    const validFormats: NewsRequestFormat[] = ['json', 'pbf'];
+    if (!validFormats.includes(format)) {
+        throw new Error(`Format parameter '${format}' is not valid. Must be one of: ${validFormats.join(', ')}.`)
+    };
+    return params;
+}
+
+/**
+ * Validates the query parameters in a case insensitive manner accommodating various casing styles.
+ * Modifies the expected queries to match camel case
+ * @example `fOo-bar`, `foo_bar`, `FOO_BAR` and `fooBar` will all be rewritten to `fooBar`.
+ */
+export const validateNewsQueryParams = (req: express.Request<NewsRequestParams, NewsResponseBody, NewsRequestBody, NewsRequestQuery & NewsRequestQueryAliases>, res: express.Response, next: express.NextFunction) => {
+    try {
+        validateRequestFilter(req.query);
         next();
     } catch (err) {
         res.status(400).send({ reason: (err as Error).message || 'Incorrect query' })
@@ -137,7 +170,7 @@ export const validateNewsQueryParams = (req: express.Request<NewsRequestParams, 
  * @param filter Filter object which will be mutated by validation methods.
  * @returns Modified `filter`.
  */
-export const validateFilter = (filter: NewsRequestQuery): NewsRequestQuery => {
+export const validateRequestFilter = (filter: NewsRequestQuery & NewsRequestQueryAliases): NewsRequestQuery => {
     for (const [key, value] of Object.entries(filter)) {
         for (const [acceptableParams, targetParam, validate] of queryParams) {
             if (acceptableParams.some((el) => el.toLowerCase() === key.toLowerCase())) {
