@@ -24,7 +24,9 @@
                     ...headers
                 },
                 body: JSON.stringify(graphQLParams),
-            }).then(response => response.json());
+            })
+                .then(response => response.json())
+                .catch(console.error);
         };
 
         ReactDOM.render(
