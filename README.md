@@ -12,7 +12,7 @@ Returns news headlines with timestamps and providers.
 
 | Path | Accepted values | Example |
 | --- | --- | --- |
-|`/:category/:format?` | `general`, `business`, `sport`, `entertainment`, `health`, `science`, `mercury`, `venus`, `earth`, `mars`, `jupiter`, `saturn`, `uranus`, `neptune`, `pluto` | `/news/business` (defaults to `json`) or `/news/entertainment/pbf` (protobuf format - see [/src/proto] for model definition) |
+|`/:category/:format?` | `general`, `business`, `sport`, `entertainment`, `health`, `science`, `mercury`, `venus`, `earth`, `mars`, `jupiter`, `saturn`, `uranus`, `neptune`, `pluto` | `/news/business` (defaults to `json`) or `/news/entertainment/pbf` (protobuf format - see [/src/proto](/src/proto) for model definition) |
 
 ### API query parameters
 
