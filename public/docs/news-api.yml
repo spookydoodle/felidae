@@ -7,7 +7,7 @@ servers:
   - url: "https://felidae.spookydoodle.com/news"
     description: News headlines server
 paths: 
-  /{category}:
+  /{category}/{format}:
     description: Finds news headlines scraped in a given category
     parameters:
       - name: category
@@ -16,6 +16,12 @@ paths:
         required: true
         schema:
           $ref: '#/components/schemas/Category'
+      - name: format
+        in: path
+        description: Format in which to return the data. Either JSON or protobuf.
+        required: false
+        schema:
+          $ref: '#/components/schemas/Format'
       - name: locale
         in: query
         description: Combination of the country (code) of the news and the language in which it's written
@@ -192,6 +198,9 @@ paths:
                 $ref: '#/components/schemas/ErrorModel'
 components:
   schemas:
+    Format:
+      type: string
+      enum: [json, pbf]
     Category:
       type: string
       enum: [general, business, entertainment, sport, health, science, mercury, venus, earth, mars, jupiter, saturn, uranus, neptun, pluto]
