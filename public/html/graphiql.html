@@ -3,29 +3,37 @@
 
 <head>
     <title>Felidae News GraphiQL</title>
-    <link href="https://unpkg.com/graphiql/graphiql.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/graphiql@4.1.2/graphiql.min.css" />
 </head>
 
 <body style="margin:0;">
     <div id="graphiql" style="height: 100vh;"></div>
-    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/graphiql@4.1.0/graphiql.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/graphiql@4.1.2/graphiql.min.js"></script>
     <script>
         const currentPath = window.location.pathname;
         const introspectionPath = currentPath.replace('/graphiql', '/graphql');
-        const graphQLFetcher = async (graphQLParams) => {
+
+        const graphQLFetcher = (graphQLParams, options) => {
+            const headers = options?.headers || {};
             return fetch(introspectionPath, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...headers
+                },
                 body: JSON.stringify(graphQLParams),
             })
-            .then((res) => res.json())
-            .catch(console.error);
-        }
+                .then(response => response.json())
+                .catch(console.error);
+        };
 
         ReactDOM.render(
-            React.createElement(GraphiQL, { fetcher: graphQLFetcher }),
+            React.createElement(GraphiQL, {
+                fetcher: graphQLFetcher,
+                headersEditorEnabled: true
+            }),
             document.getElementById('graphiql'),
         );
     </script>
