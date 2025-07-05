@@ -35,14 +35,14 @@ export const getResults = async (
     query: string = defaultQuery,
     params: SearchParams,
     config: SearchConfig
-): Promise<SearchResult> => {
+): Promise<SearchResult<Headline>> => {
     const { category, country = defaultCountry, lang = defaultLang } = params;
     const { environment, engine } = config;
     const selectorData: SelectorData = getSelections(query, country, lang);
     const { url, selector, transform } = selectorData[engine][environment || "development"];
 
     // Request url and transform results to the right format
-    const result: SearchResult = await axios
+    const result: SearchResult<Headline> = await axios
         .get<string>(url, { headers })
         .then(({ data }) => {
             createLogMsg(`Processing data received from ${url}`, "info");
@@ -90,7 +90,7 @@ export const getAllResults = async (
     params: SearchParams,
     maxPageIndex: ResultPage,
     config: SearchConfig
-): Promise<SearchResult> => {
+): Promise<SearchResult<Headline>> => {
     const { category, country = defaultCountry, lang = defaultLang } = params;
     const results: {
         error: string | number | null;
@@ -108,7 +108,7 @@ export const getAllResults = async (
         });
         clearTimeout(timeout);
 
-        const response: SearchResult = await getResults(
+        const response: SearchResult<Headline> = await getResults(
             query,
             { category, country, lang },
             config
