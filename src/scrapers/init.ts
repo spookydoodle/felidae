@@ -2,7 +2,7 @@ import { Pool } from "pg";
 import Scraper from "./scraper";
 import { getAllResults } from "../search/searchHTML";
 import { postNewsDataToDb } from "../db/postNewsData";
-import { SearchConfig, Country } from "../logic/types";
+import { SearchConfig, Country, Headline } from "../logic/types";
 import { categories, countryLang, queries } from "./constants";
 import { capitalizeWord } from "../utils/stringTransform";
 
@@ -23,7 +23,7 @@ export const initializeNewsScrapers = (config: SearchConfig) => (pool: Pool | un
             const category = categories[categoryIndex];
             const country = countries[countryIndex] as Country;
             const lang = countryLang[country];
-            const scraper = await new Scraper(
+            const scraper = await new Scraper<Headline>(
                 `${capitalizeWord(category)} News from ${country} in ${lang}`,
                 () =>
                     getAllResults(
@@ -38,7 +38,7 @@ export const initializeNewsScrapers = (config: SearchConfig) => (pool: Pool | un
                 15 * 60 * 1000 // Update check every 15 min
             ).initialize();
 
-            scrapers.push(scraper);
+            scrapers.push(scraper as Scraper);
             clearTimeout(timeout);
         }, 30000 * (i + 1));
     }
