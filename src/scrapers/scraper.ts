@@ -1,12 +1,10 @@
-// This class is created to schedule automatic data updates and writing them in the data base
-// Data should be updated every 24 hours
 import createLogMsg from "../utils/createLogMsg";
-import { SearchResult, UpdateTime, Headline } from "../logic/types";
+import { SearchResult, UpdateTime } from "../logic/types";
 
-class Scraper {
+class Scraper<T = unknown> {
   name: string;
-  requestFunc: () => Promise<SearchResult>;
-  postFunc: (data: Headline[]) => Promise<Headline[]>;
+  requestFunc: () => Promise<SearchResult<T>>;
+  postFunc: (data: T[]) => Promise<T[]>;
   updateTimes: UpdateTime[];
   initDelay: number;
   checkUpdateFreq: number;
@@ -21,9 +19,9 @@ class Scraper {
 
   constructor(
     name: string,
-    requestFunc: () => Promise<SearchResult>,
-    postFunc: (data: Headline[]) => Promise<Headline[]>,
-    updateTimes = [[2, 0, 0, 0] as UpdateTime],
+    requestFunc: () => Promise<SearchResult<T>>,
+    postFunc: (data: T[]) => Promise<T[]>,
+    updateTimes: [number, number, number, number][] = [[2, 0, 0, 0]],
     checkUpdateFreq = 1 * 60 * 60 * 1000, // every hour = 1 (h) * 60 (min) * 60 (s) * 1000 ms
     initDelay = 0,
   ) {
@@ -86,7 +84,7 @@ class Scraper {
       this.setUpdateInProgress(true);
 
       this.requestFunc()
-        .then((response: SearchResult) => {
+        .then((response: SearchResult<T>) => {
           createLogMsg(
             `Data fetch for ${this.name} finished. Saving in the data base...`,
             "success"
@@ -164,7 +162,7 @@ class Scraper {
     }, n);
   };
 
-  initialize = (): Scraper => {
+  initialize = (): Scraper<T> => {
     this.timeout = setTimeout(() => {
       this.setAutomaticUpdate(this.checkUpdateFreq);
       this.updateData();
@@ -173,7 +171,7 @@ class Scraper {
     return this;
   };
 
-  stop = (): Scraper => {
+  stop = (): Scraper<T> => {
     if (this.interval) {
       clearInterval(this.interval);
       this.interval = null;
